@@ -11,7 +11,7 @@
 struct item_t {
 	void * data;
 	const char * file;
-	__hot_loader_t loader;
+	hot_t loader;
 	TAILQ_ENTRY(item_t) _;
 };
 
@@ -31,7 +31,7 @@ void hot_init () {
 hot_handle_t hot_load (
 	void * data,
 	const char * file,
-	__hot_loader_t loader
+	hot_t loader
 ) {
 	if (loader (data, file) != 0) {
 		return (NULL);
@@ -50,14 +50,15 @@ hot_handle_t hot_load (
 
 int hot_check () {
 	int errors = 0;
-	/*if (WaitForSingleObject (__handle, 0) == WAIT_OBJECT_0) {
-		struct item_t * item;
-		TAILQ_FOREACH (item, __list, _) {
-			if (item->loader (item->data, item->file)) {
-				errors++;
-			}
+
+	Sleep(10);
+	/*if (WaitForSingleObject (__handle, 0) == WAIT_OBJECT_0) {*/
+	struct item_t * item;
+	TAILQ_FOREACH (item, __list, _) {
+		if (item->loader (item->data, item->file)) {
+			errors++;
 		}
-	}*/
+	}
 
 	return (errors);
 }

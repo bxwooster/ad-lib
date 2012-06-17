@@ -2,6 +2,7 @@
 #include "w_GL.h"
 #include "w_SDL.h"
 #include "common.h"
+#include "hot.h"
 #include "quotes.h"
 #include "shader.h"
 
@@ -17,6 +18,8 @@ int main (int /*argc*/, char * /*argv*/ []) {
 	shader_t fss = { GL_FRAGMENT_SHADER, &fs, &prog };
 
 	fprintf (stdout, "%s\n\n", randomquote ());
+
+	hot_init ();
 
 	if (SDL_Init (SDL_INIT_VIDEO) == -1) {
 		error = __LINE__;
@@ -39,11 +42,11 @@ int main (int /*argc*/, char * /*argv*/ []) {
 
 	prog = glCreateProgram ();
 
-	if (loadshader (&vss, "shd/vs.glsl") != 0) {
+	if (hot_load(&vss, "shd/vs.glsl", (hot_t) loadshader) == NULL) {
 		error = __LINE__;
 		goto end;
 	}
-	if (loadshader (&fss, "shd/fs.glsl") != 0) {
+	if (hot_load(&fss, "shd/fs.glsl", (hot_t) loadshader) == NULL) {
 		error = __LINE__;
 		goto end;
 	}
@@ -103,6 +106,8 @@ int main (int /*argc*/, char * /*argv*/ []) {
 				goto end;
 			}
 		}
+
+		hot_check ();
 
 		glUseProgram (prog);
 
