@@ -15,7 +15,7 @@ struct item_t {
 	TAILQ_ENTRY(item_t) _;
 };
 
-/*HANDLE __handle = INVALID_HANDLE_VALUE;*/
+HANDLE __handle = INVALID_HANDLE_VALUE;
 TAILQ_HEAD(head_t, item_t) * __list = NULL;
 
 void hot_init () {
@@ -23,9 +23,10 @@ void hot_init () {
 	assert (__list != NULL);
 	TAILQ_INIT (__list);
 
-	/*char dir [1024];
-	GetCurrentDirectory (sizeof (dir), dir);
-	__handle = FindFirstChangeNotification (dir, FALSE, FILE_NOTIFY_CHANGE_LAST_WRITE);*/
+	char dir [1024];
+	assert (GetCurrentDirectory (sizeof (dir), dir));
+	__handle = FindFirstChangeNotification (dir, FALSE, FILE_NOTIFY_CHANGE_LAST_WRITE);
+	assert (__handle != INVALID_HANDLE_VALUE);
 }
 
 hot_handle_t hot_load (
@@ -51,12 +52,13 @@ hot_handle_t hot_load (
 int hot_check () {
 	int errors = 0;
 
-	Sleep(10);
-	/*if (WaitForSingleObject (__handle, 0) == WAIT_OBJECT_0) {*/
-	struct item_t * item;
-	TAILQ_FOREACH (item, __list, _) {
-		if (item->loader (item->data, item->file)) {
-			errors++;
+	if (WaitForSingleObject (__handle, 0) == WAIT_OBJECT_0) {
+		FindNextChangeNotification(__handle);
+		struct item_t * item;
+		TAILQ_FOREACH (item, __list, _) {
+			if (item->loader (item->data, item->file)) {
+				errors++;
+			}
 		}
 	}
 

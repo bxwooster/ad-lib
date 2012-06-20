@@ -35,12 +35,15 @@
     <ClInclude Include="..\src\w_windows.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\projection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\shd\fs.glsl">
+    <None Include="..\shd\draw.frag">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="..\shd\vs.glsl">
+    <None Include="..\shd\draw.vert">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>
@@ -55,6 +58,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\shader.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\projection.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

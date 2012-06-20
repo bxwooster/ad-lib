@@ -4,3 +4,6 @@ msvs/ipch
 *.sdf
 *.suo
 *.vcxproj.user
+*.exe
+*.dll
+*.rar
