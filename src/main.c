@@ -8,13 +8,13 @@
 #include "planet.h"
 #include "matrix.h"
 
-static float const WIDTH = 640.0f;
-static float const HEIGHT = 640.0f;
+static float const WIDTH = 960.0f;
+static float const HEIGHT = 960.0f;
 static float const ROTSPEED = 128.0f;
 static float const TRANSPEED = 2.0f;
 static float const CORKSPEED = 16.0f;
 static float const FOV = 90.0f;
-static float const NEAR_PLANE = 0.001f;
+static float const NEAR_PLANE = 0.0001f;
 
 int main (int /*argc*/, char * /*argv*/ []) {
 	int error = 0;
@@ -29,7 +29,7 @@ int main (int /*argc*/, char * /*argv*/ []) {
 
 	fprintf (stdout, "%s\n\n", randomquote ());
 
-	hot_init ();
+	hotinit ();
 
 	if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_TIMER) == -1) {
 		error = __LINE__;
@@ -54,11 +54,11 @@ int main (int /*argc*/, char * /*argv*/ []) {
 
 	prog = glCreateProgram ();
 
-	if (hot_load (&vss, "shd/draw.vert", (hot_loader_t) loadshader) == NULL) {
+	if (hotload (&vss, "shd/draw.vert", (hot_loader_t) loadshader) == NULL) {
 		error = __LINE__;
 		goto end;
 	}
-	if (hot_load (&fss, "shd/draw.frag", (hot_loader_t) loadshader) == NULL) {
+	if (hotload (&fss, "shd/draw.frag", (hot_loader_t) loadshader) == NULL) {
 		error = __LINE__;
 		goto end;
 	}
@@ -91,6 +91,8 @@ int main (int /*argc*/, char * /*argv*/ []) {
 	glBindBuffer (GL_ARRAY_BUFFER, vbo);
     glBufferData (GL_ARRAY_BUFFER, sizeof (tris), tris, GL_STATIC_DRAW);
 	
+	glEnable(GL_DEPTH_TEST);
+
 	GLuint const attribute_pos = (GLuint) glGetAttribLocation (prog, "pos");
 	if (attribute_pos == -1 ) {
 		error = __LINE__;
@@ -112,28 +114,28 @@ int main (int /*argc*/, char * /*argv*/ []) {
 		goto end;
 	}
 
+	glMatrixMode(GL_MODELVIEW);
+
 	float mproj  [4 * 4];
-	float mview  [4 * 4];
 	float aspect = WIDTH / HEIGHT;
 	projectionmatrix (FOV, aspect, NEAR_PLANE, mproj);
 
-	glMatrixMode(GL_MODELVIEW);
-
+	float mcam  [4 * 4];
 	glLoadIdentity ();
-	glTranslatef (0.0f, 0.0f, 10.0f);
 	glRotatef (180.0f, 0.0f, 1.0f, 0.0f);
-	glGetFloatv (GL_MODELVIEW_MATRIX, mview);
+	glTranslatef (0.0f, 0.0f, -10.0f);
+	glGetFloatv (GL_MODELVIEW_MATRIX, mcam);
 
-	struct planet planets [3];
-	planets[0].size = 1.0f;
-	planets[0].color[0] = 0.4f;
-	planets[0].color[1] = 0.7f;
-	planets[0].color[2] = 1.0f;
-	planets[0].orbit.major = 6.0f;
-	planets[0].orbit.minor = 3.0f;
-	planets[0].orbit.period = 10.0f;
-	glLoadIdentity ();
-	glGetFloatv (GL_MODELVIEW_MATRIX, planets[0].orbit.matrix);
+	struct planet planets [4];
+
+	planets[0].size = 2.0f;
+	planets[0].color[0] = 1.0f;
+	planets[0].color[1] = 1.0f;
+	planets[0].color[2] = 0.2f;
+	planets[0].orbit.major = 0.0f;
+	planets[0].orbit.minor = 0.0f;
+	planets[0].orbit.period = 1.0f;
+	identitymatrix(planets[0].orbit.matrix);
 
 	planets[1].size = 0.7f;
 	planets[1].color[0] = 1.0f;
@@ -142,20 +144,33 @@ int main (int /*argc*/, char * /*argv*/ []) {
 	planets[1].orbit.major = 4.0f;
 	planets[1].orbit.minor = 4.0f;
 	planets[1].orbit.period = 8.0f;
-	glLoadIdentity ();
-	glGetFloatv (GL_MODELVIEW_MATRIX, planets[1].orbit.matrix);
+	identitymatrix(planets[1].orbit.matrix);
 
-	planets[2].size = 1.8f;
-	planets[2].color[0] = 1.0f;
-	planets[2].color[1] = 1.0f;
-	planets[2].color[2] = 0.3f;
+	planets[2].size = 0.9f;
+	planets[2].color[0] = 0.4f;
+	planets[2].color[1] = 0.7f;
+	planets[2].color[2] = 1.0f;
 	planets[2].orbit.major = 7.0f;
-	planets[2].orbit.minor = 8.0f;
-	planets[2].orbit.period = 17.0f;
-	glLoadIdentity ();
-	glGetFloatv (GL_MODELVIEW_MATRIX, planets[2].orbit.matrix);
+	planets[2].orbit.minor = 3.0f;
+	planets[2].orbit.period = 11.0f;
+	identitymatrix(planets[2].orbit.matrix);
+
+	planets[3].size = 0.8f;
+	planets[3].color[0] = 0.7f;
+	planets[3].color[1] = 0.4f;
+	planets[3].color[2] = 1.0f;
+	planets[3].orbit.major = 3.0f;
+	planets[3].orbit.minor = 8.0f;
+	planets[3].orbit.period = 10.0f;
+	identitymatrix(planets[3].orbit.matrix);
 
 	for (;;) {
+		GLuint glerror = glGetError ();
+		if (glerror != 0) {
+			error = __LINE__;
+			goto end;
+		}
+
 		SDL_Event evt;
 		if (SDL_PollEvent (&evt)) {
 			if (evt.type == SDL_KEYDOWN) {
@@ -164,27 +179,24 @@ int main (int /*argc*/, char * /*argv*/ []) {
 					goto end;
 				}
 			} else if (evt.type == SDL_MOUSEMOTION) {
-				float x =  evt.motion.xrel / WIDTH;
-				float y = -evt.motion.yrel / HEIGHT;
+				float x = -evt.motion.xrel / WIDTH;
+				float y = evt.motion.yrel / HEIGHT;
 
 				if (evt.motion.state == SDL_BUTTON (SDL_BUTTON_LEFT)) {
-					glLoadIdentity();
+					glLoadMatrixf (mcam);
 					glTranslatef (x * TRANSPEED, y * TRANSPEED, 0.0f);
-					glMultMatrixf (mview);
-					glGetFloatv (GL_MODELVIEW_MATRIX, mview);
+					glGetFloatv (GL_MODELVIEW_MATRIX, mcam);
 				} else
 				if (evt.motion.state == SDL_BUTTON (SDL_BUTTON_RIGHT)) {
-					glLoadIdentity();
-					glRotatef (sqrtf(x * x + y * y) * ROTSPEED, -y, x, 0.0f);
-					glMultMatrixf (mview);
-					glGetFloatv (GL_MODELVIEW_MATRIX, mview);
+					glLoadMatrixf (mcam);
+					glRotatef (sqrtf(x * x + y * y) * ROTSPEED, y, -x, 0.0f);
+					glGetFloatv (GL_MODELVIEW_MATRIX, mcam);
 				} else
 				if (evt.motion.state == SDL_BUTTON (SDL_BUTTON_MIDDLE)) {
-					glLoadIdentity();
+					glLoadMatrixf (mcam);
+					glRotatef (-x * CORKSPEED, 0.0f, 0.0f, 1.0f);
 					glTranslatef (0.0f, 0.0f, y * TRANSPEED);
-					glRotatef (x * CORKSPEED, 0.0f, 0.0f, 1.0f);
-					glMultMatrixf (mview);
-					glGetFloatv (GL_MODELVIEW_MATRIX, mview);
+					glGetFloatv (GL_MODELVIEW_MATRIX, mcam);
 				}
 			} else if (evt.type == SDL_QUIT) {
 				goto end;
@@ -199,7 +211,7 @@ int main (int /*argc*/, char * /*argv*/ []) {
 			SDL_WM_GrabInput (SDL_GRAB_OFF);
 		}
 
-		hot_check ();
+		hotcheck ();
 		glUseProgram (prog);
 
 		double time = (double) SDL_GetTicks () / 1000;
@@ -207,17 +219,21 @@ int main (int /*argc*/, char * /*argv*/ []) {
 		glClearColor (0.0, 0.0, 0.0, 0.0);
 		glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		float mview [4 * 4];
+		memcpy (mview, mcam, sizeof (mview));
+		invertspecialmatrix (mview);
+
 		for (int i = 0; i < sizeof (planets) / sizeof (planets[0]); ++i) {
 			float mmodel [4 * 4];
-			planetmatrix (&planets[i], time, mview, mmodel);
+			planetmatrix (&planets[i], time, mcam, mmodel);
 
 			float matrix [4 * 4];
-			glLoadMatrixf(mproj);
-			glMultMatrixf(mview);
-			glMultMatrixf(mmodel);
+			glLoadMatrixf (mproj);
+			glMultMatrixf (mview);
+			glMultMatrixf (mmodel);
 			glGetFloatv (GL_MODELVIEW_MATRIX, matrix);
 			glUniformMatrix4fv (uniform_mvp, 1, GL_FALSE, matrix);
-			glUniform3fv (uniform_color, 1, (float const *) &planets[i].color);
+			glUniform3fv (uniform_color, 1, (float const *) planets[i].color);
 
 			glDrawArrays (GL_TRIANGLES, 0, vertices);
 		}

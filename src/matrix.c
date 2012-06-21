@@ -1,7 +1,17 @@
 #include <wrap/math.h>
 
-void projectionmatrix (float fov, float aspect, float near, float matrix [4 * 4]) {
-	float e = 1 / tanf((float) M_PI / 360.0f * fov);
+void identitymatrix (float matrix [4 * 4]) {
+	for (int i = 0; i < 4; ++i)
+		for (int j = 0; j < 4; ++j)
+			matrix[i + 4 * j] = (i == j ? 1.0f : 0.0f);
+}
+
+void projectionmatrix (
+		float fov,
+		float aspect,
+		float near,
+		float matrix [4 * 4]) {
+	float e = 1 / tanf ((float) M_PI / 360.0f * fov);
 
 	matrix[0] = e;
 	matrix[1] = 0.0f;
@@ -24,7 +34,7 @@ void projectionmatrix (float fov, float aspect, float near, float matrix [4 * 4]
 	matrix[15] = 0.0f;
 }
 
-void invertmatrix(float matrix [4 * 4]) {
+void invertspecialmatrix(float matrix [4 * 4]) {
 	float a = matrix[1];
 	float b = matrix[2];
 	float c = matrix[6];
@@ -37,7 +47,11 @@ void invertmatrix(float matrix [4 * 4]) {
 	matrix[8] = b;
 	matrix[9] = c;
 
-	matrix[12] = -matrix[12];
-	matrix[13] = -matrix[13];
-	matrix[14] = -matrix[14];
+	float x = -matrix[12];
+	float y = -matrix[13];
+	float z = -matrix[14];
+
+	matrix[12] = matrix[0] * x + matrix[4] * y + matrix[ 8] * z;
+	matrix[13] = matrix[1] * x + matrix[5] * y + matrix[ 9] * z;
+	matrix[14] = matrix[2] * x + matrix[6] * y + matrix[10] * z;
 }

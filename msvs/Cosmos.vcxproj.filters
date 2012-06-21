@@ -12,6 +12,9 @@
     <Filter Include="Shader Files">
       <UniqueIdentifier>{ee8320d8-be26-4b96-a452-871b15f0c461}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Wrappers">
+      <UniqueIdentifier>{d19b7e94-1562-46b4-a8c9-026fd787a351}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\common.h">
@@ -34,6 +37,18 @@
     </ClInclude>
     <ClInclude Include="..\src\planet.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\wrap\GL.h">
+      <Filter>Header Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\wrap\math.h">
+      <Filter>Header Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\wrap\SDL.h">
+      <Filter>Header Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\wrap\windows.h">
+      <Filter>Header Wrappers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

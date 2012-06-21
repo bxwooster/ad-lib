@@ -17,7 +17,7 @@ struct item_t {
 HANDLE __handle = INVALID_HANDLE_VALUE;
 TAILQ_HEAD(head_t, item_t) * __list = NULL;
 
-void hot_init () {
+void hotinit () {
 	__list = (head_t *) malloc (sizeof (*__list));
 	assert (__list != NULL);
 	TAILQ_INIT (__list);
@@ -28,7 +28,7 @@ void hot_init () {
 	assert (__handle != INVALID_HANDLE_VALUE);
 }
 
-hot_handle_t hot_load (
+hot_handle_t hotload (
 	void * data,
 	const char * file,
 	hot_loader_t loader
@@ -48,7 +48,7 @@ hot_handle_t hot_load (
 	return (item);
 }
 
-int hot_check () {
+int hotcheck () {
 	int errors = 0;
 
 	if (WaitForSingleObject (__handle, 0) == WAIT_OBJECT_0) {

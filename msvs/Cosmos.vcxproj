@@ -117,6 +117,10 @@
     <ClInclude Include="..\src\quotes.h" />
     <ClInclude Include="..\src\shader.h" />
     <ClInclude Include="..\src\vector.h" />
+    <ClInclude Include="..\wrap\GL.h" />
+    <ClInclude Include="..\wrap\math.h" />
+    <ClInclude Include="..\wrap\SDL.h" />
+    <ClInclude Include="..\wrap\windows.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shd\draw.frag" />
