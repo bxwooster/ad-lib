@@ -1,4 +1,4 @@
-#include "w_GL.h"
+#include <wrap/GL.h>
 
 struct shader_t {
 	GLenum type;

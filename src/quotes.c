@@ -26,7 +26,6 @@ char const * quotes [] = {
 
 #include <time.h>
 #include <stdlib.h>
-#include "common.h"
 
 char const * randomquote ()
 {

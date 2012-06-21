@@ -39,14 +39,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\..\__external__\glew-1.7.0\include;..\..\__external__\SDL-1.2.15\include;..\..\__external__\bsd\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\__external__\glew-1.7.0\include;..\..\__external__\SDL-1.2.15\include;..\..\__external__\bsd\include;..;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\__external__\SDL-1.2.15\lib\x86;..\..\__external__\glew-1.7.0\lib;$(LibraryPath)</LibraryPath>
     <OutDir>..\bin\$(Configuration)\</OutDir>
     <IntDir>..\bin\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\..\__external__\glew-1.7.0\include;..\..\__external__\SDL-1.2.15\include;..\..\__external__\bsd\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\__external__\glew-1.7.0\include;..\..\__external__\SDL-1.2.15\include;..\..\__external__\bsd\include;..;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\__external__\SDL-1.2.15\lib\x86;..\..\__external__\glew-1.7.0\lib;$(LibraryPath)</LibraryPath>
     <OutDir>..\bin\$(Configuration)\</OutDir>
     <IntDir>..\bin\$(Configuration)\</IntDir>
@@ -96,6 +96,7 @@
       <ExceptionHandling>false</ExceptionHandling>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MinimalRebuild>false</MinimalRebuild>
+      <ForcedIncludeFiles>common.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -111,12 +112,11 @@
   <ItemGroup>
     <ClInclude Include="..\src\common.h" />
     <ClInclude Include="..\src\hot.h" />
-    <ClInclude Include="..\src\projection.h" />
+    <ClInclude Include="..\src\matrix.h" />
+    <ClInclude Include="..\src\planet.h" />
     <ClInclude Include="..\src\quotes.h" />
     <ClInclude Include="..\src\shader.h" />
-    <ClInclude Include="..\src\w_GL.h" />
-    <ClInclude Include="..\src\w_SDL.h" />
-    <ClInclude Include="..\src\w_windows.h" />
+    <ClInclude Include="..\src\vector.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shd\draw.frag" />
@@ -125,9 +125,11 @@
   <ItemGroup>
     <ClCompile Include="..\src\hot.c" />
     <ClCompile Include="..\src\main.c" />
-    <ClCompile Include="..\src\projection.c" />
+    <ClCompile Include="..\src\matrix.c" />
+    <ClCompile Include="..\src\planet.c" />
     <ClCompile Include="..\src\quotes.c" />
     <ClCompile Include="..\src\shader.c" />
+    <ClCompile Include="..\src\vector.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -26,16 +26,13 @@
     <ClInclude Include="..\src\shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\w_GL.h">
+    <ClInclude Include="..\src\matrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\w_SDL.h">
+    <ClInclude Include="..\src\vector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\w_windows.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\projection.h">
+    <ClInclude Include="..\src\planet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -60,7 +57,13 @@
     <ClCompile Include="..\src\shader.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\projection.c">
+    <ClCompile Include="..\src\matrix.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vector.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\planet.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

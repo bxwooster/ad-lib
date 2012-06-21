@@ -1,8 +1,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <sys/queue.h>
-#include "w_windows.h"
-#include "common.h"
+#include <wrap/windows.h>
 #include "hot.h"
 
 #pragma warning (disable : 4127) /* conditional expression is constant */
@@ -11,7 +10,7 @@
 struct item_t {
 	void * data;
 	const char * file;
-	hot_t loader;
+	hot_loader_t loader;
 	TAILQ_ENTRY(item_t) _;
 };
 
@@ -32,7 +31,7 @@ void hot_init () {
 hot_handle_t hot_load (
 	void * data,
 	const char * file,
-	hot_t loader
+	hot_loader_t loader
 ) {
 	if (loader (data, file) != 0) {
 		return (NULL);
