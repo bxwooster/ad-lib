@@ -1,20 +1,33 @@
 #include <stdio.h>
-#include <wrap/GL.h>
-#include <wrap/SDL.h>
-#include <wrap/math.h>
+#include <assert.h>
+#include <wrap/dirent.h>
+#include <sys/queue.h>
+#include <GL/glew.h>
+#include <SDL.h>
+#include <math.h>
 #include "hot.h"
 #include "quotes.h"
 #include "shader.h"
 #include "planet.h"
 #include "matrix.h"
 
+#pragma warning (disable : 4127) /* conditional expression is constant */
+/* needed because TAILQ uses some peculiar constructions in its macros */
+
 static float const WIDTH = 960.0f;
 static float const HEIGHT = 960.0f;
 static float const ROTSPEED = 128.0f;
 static float const TRANSPEED = 2.0f;
 static float const CORKSPEED = 16.0f;
-static float const FOV = 90.0f;
+static float const FOV = 60.0f;
 static float const NEAR_PLANE = 0.0001f;
+static const char * const SYSDIR = "sys";
+
+struct sysplanet {
+	struct planet planet;
+	char * file;
+	TAILQ_ENTRY(sysplanet) _;
+};
 
 int main (int /*argc*/, char * /*argv*/ []) {
 	int error = 0;
@@ -23,6 +36,11 @@ int main (int /*argc*/, char * /*argv*/ []) {
 	GLuint vbo = GL_FALSE;
 	GLuint vs = GL_FALSE;
 	GLuint fs = GL_FALSE;
+
+	DIR * sysdir = NULL;
+
+	TAILQ_HEAD (head, sysplanet) list;
+	TAILQ_INIT (&list);
 
 	shader_t vss = {GL_VERTEX_SHADER, &vs, &prog};
 	shader_t fss = {GL_FRAGMENT_SHADER, &fs, &prog};
@@ -123,46 +141,33 @@ int main (int /*argc*/, char * /*argv*/ []) {
 	float mcam  [4 * 4];
 	glLoadIdentity ();
 	glRotatef (180.0f, 0.0f, 1.0f, 0.0f);
-	glTranslatef (0.0f, 0.0f, -10.0f);
+	glTranslatef (0.0f, 0.0f, -20.0f);
 	glGetFloatv (GL_MODELVIEW_MATRIX, mcam);
 
-	struct planet planets [4];
+	sysdir = opendir (SYSDIR);
+	if (sysdir == NULL) {
+		error = __LINE__;
+		goto end;
+	}
 
-	planets[0].size = 2.0f;
-	planets[0].color[0] = 1.0f;
-	planets[0].color[1] = 1.0f;
-	planets[0].color[2] = 0.2f;
-	planets[0].orbit.major = 0.0f;
-	planets[0].orbit.minor = 0.0f;
-	planets[0].orbit.period = 1.0f;
-	identitymatrix(planets[0].orbit.matrix);
+	struct dirent * dirent = NULL;
+	while ((dirent = readdir (sysdir)) != NULL) {
+		if (dirent->d_type == DT_REG) {
+			size_t len = strlen (SYSDIR) + 1 + dirent->d_namlen + 1;
+			struct sysplanet * item = (struct sysplanet *) malloc (sizeof (*item));
+			assert (item != NULL);
+			item->file = (char *) malloc (len);
+			assert (item->file != NULL);
+			
+			sprintf_s (item->file, len, "%s/%s", SYSDIR, dirent->d_name);
+			TAILQ_INSERT_TAIL (&list, item, _);
 
-	planets[1].size = 0.7f;
-	planets[1].color[0] = 1.0f;
-	planets[1].color[1] = 0.3f;
-	planets[1].color[2] = 0.2f;
-	planets[1].orbit.major = 4.0f;
-	planets[1].orbit.minor = 4.0f;
-	planets[1].orbit.period = 8.0f;
-	identitymatrix(planets[1].orbit.matrix);
-
-	planets[2].size = 0.9f;
-	planets[2].color[0] = 0.4f;
-	planets[2].color[1] = 0.7f;
-	planets[2].color[2] = 1.0f;
-	planets[2].orbit.major = 7.0f;
-	planets[2].orbit.minor = 3.0f;
-	planets[2].orbit.period = 11.0f;
-	identitymatrix(planets[2].orbit.matrix);
-
-	planets[3].size = 0.8f;
-	planets[3].color[0] = 0.7f;
-	planets[3].color[1] = 0.4f;
-	planets[3].color[2] = 1.0f;
-	planets[3].orbit.major = 3.0f;
-	planets[3].orbit.minor = 8.0f;
-	planets[3].orbit.period = 10.0f;
-	identitymatrix(planets[3].orbit.matrix);
+			if (hotload (&item->planet, item->file, (hot_loader_t) loadplanet) == NULL) {
+				error = __LINE__;
+				goto end;
+			}
+		}
+	}
 
 	for (;;) {
 		GLuint glerror = glGetError ();
@@ -223,9 +228,10 @@ int main (int /*argc*/, char * /*argv*/ []) {
 		memcpy (mview, mcam, sizeof (mview));
 		invertspecialmatrix (mview);
 
-		for (int i = 0; i < sizeof (planets) / sizeof (planets[0]); ++i) {
+		struct sysplanet * item;
+		TAILQ_FOREACH(item, &list, _) {
 			float mmodel [4 * 4];
-			planetmatrix (&planets[i], time, mcam, mmodel);
+			planetmatrix (&item->planet, time, mcam, mmodel);
 
 			float matrix [4 * 4];
 			glLoadMatrixf (mproj);
@@ -233,7 +239,7 @@ int main (int /*argc*/, char * /*argv*/ []) {
 			glMultMatrixf (mmodel);
 			glGetFloatv (GL_MODELVIEW_MATRIX, matrix);
 			glUniformMatrix4fv (uniform_mvp, 1, GL_FALSE, matrix);
-			glUniform3fv (uniform_color, 1, (float const *) planets[i].color);
+			glUniform3fv (uniform_color, 1, (float const *) item->planet.color);
 
 			glDrawArrays (GL_TRIANGLES, 0, vertices);
 		}
@@ -242,13 +248,30 @@ int main (int /*argc*/, char * /*argv*/ []) {
 	}
  
   end:
+
+	hotfin ();
+
+	struct sysplanet * item;
+	struct sysplanet * tvar;
+
+	TAILQ_FOREACH_SAFE(item, &list, _, tvar) {
+		free ((void *) item->file);
+		TAILQ_REMOVE (&list, item, _);
+		free ((void *) item);
+	}
+
+	if (sysdir != NULL) {
+		closedir (sysdir);
+	}
+
 	glDeleteBuffers (0, &vbo);
 	glDeleteProgram (prog);
 	SDL_Quit ();
 
 	if (error) {
 		fprintf (stderr, "Something went wrong! "
-			"If anyone asks, reply '%d'.\n", error);
+			"If anyone asks, reply '%d'.\n"
+			"Press the 'Any' key to exit.\n", error);
 		getchar ();
 		return (EXIT_FAILURE);
 	}

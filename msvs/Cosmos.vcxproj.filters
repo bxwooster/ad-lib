@@ -38,16 +38,13 @@
     <ClInclude Include="..\src\planet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\wrap\GL.h">
+    <ClInclude Include="..\wrap\windows.h">
       <Filter>Header Wrappers</Filter>
     </ClInclude>
     <ClInclude Include="..\wrap\math.h">
       <Filter>Header Wrappers</Filter>
     </ClInclude>
-    <ClInclude Include="..\wrap\SDL.h">
-      <Filter>Header Wrappers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\wrap\windows.h">
+    <ClInclude Include="..\wrap\dirent.h">
       <Filter>Header Wrappers</Filter>
     </ClInclude>
   </ItemGroup>

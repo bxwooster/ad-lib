@@ -9,6 +9,8 @@ struct planet {
 	} orbit;
 };
 
+int loadplanet (struct planet * planet, char const * file);
+
 void planetmatrix(
 	struct planet const * planet,
 	double time,

@@ -20,7 +20,7 @@ void logshader (GLuint sh)
 int loadshader (struct shader_t * info, char const * file) {
 	int error = 0;
 	long size;
-	FILE * fp;
+	FILE * fp = NULL;
 	char * src = NULL;
 	GLuint sh = GL_FALSE;
 

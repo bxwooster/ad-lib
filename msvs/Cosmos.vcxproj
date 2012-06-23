@@ -39,14 +39,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\..\__external__\glew-1.7.0\include;..\..\__external__\SDL-1.2.15\include;..\..\__external__\bsd\include;..;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\__external__\glew-1.7.0\include;..\..\__external__\SDL-1.2.15\include;..\..\__external__\bsd\include;..;..\..\__external__\dirent;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\__external__\SDL-1.2.15\lib\x86;..\..\__external__\glew-1.7.0\lib;$(LibraryPath)</LibraryPath>
     <OutDir>..\bin\$(Configuration)\</OutDir>
     <IntDir>..\bin\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\..\__external__\glew-1.7.0\include;..\..\__external__\SDL-1.2.15\include;..\..\__external__\bsd\include;..;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\__external__\glew-1.7.0\include;..\..\__external__\SDL-1.2.15\include;..\..\__external__\bsd\include;..;..\..\__external__\dirent;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\__external__\SDL-1.2.15\lib\x86;..\..\__external__\glew-1.7.0\lib;$(LibraryPath)</LibraryPath>
     <OutDir>..\bin\$(Configuration)\</OutDir>
     <IntDir>..\bin\$(Configuration)\</IntDir>
@@ -117,9 +117,8 @@
     <ClInclude Include="..\src\quotes.h" />
     <ClInclude Include="..\src\shader.h" />
     <ClInclude Include="..\src\vector.h" />
-    <ClInclude Include="..\wrap\GL.h" />
+    <ClInclude Include="..\wrap\dirent.h" />
     <ClInclude Include="..\wrap\math.h" />
-    <ClInclude Include="..\wrap\SDL.h" />
     <ClInclude Include="..\wrap\windows.h" />
   </ItemGroup>
   <ItemGroup>

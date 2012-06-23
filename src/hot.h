@@ -3,6 +3,7 @@ typedef void * hot_handle_t;
 
 void hotinit ();
 int hotcheck ();
+void hotfin ();
 
 hot_handle_t hotload (
 	void * data,

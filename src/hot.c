@@ -7,18 +7,18 @@
 #pragma warning (disable : 4127) /* conditional expression is constant */
 /* needed because TAILQ uses some peculiar constructions in its macros */
 
-struct item_t {
+struct item {
 	void * data;
 	const char * file;
 	hot_loader_t loader;
-	TAILQ_ENTRY(item_t) _;
+	TAILQ_ENTRY(item) _;
 };
 
 HANDLE __handle = INVALID_HANDLE_VALUE;
-TAILQ_HEAD(head_t, item_t) * __list = NULL;
+TAILQ_HEAD(head, item) * __list = NULL;
 
 void hotinit () {
-	__list = (head_t *) malloc (sizeof (*__list));
+	__list = (head *) malloc (sizeof (*__list));
 	assert (__list != NULL);
 	TAILQ_INIT (__list);
 
@@ -37,7 +37,7 @@ hot_handle_t hotload (
 		return (NULL);
 	}
 
-	struct item_t * item = (item_t *) malloc (sizeof (*item));
+	struct item * item = (struct item *) malloc (sizeof (*item));
 	assert (item != NULL);
 
 	item->data = data;
@@ -53,7 +53,7 @@ int hotcheck () {
 
 	if (WaitForSingleObject (__handle, 0) == WAIT_OBJECT_0) {
 		FindNextChangeNotification(__handle);
-		struct item_t * item;
+		struct item * item;
 		TAILQ_FOREACH (item, __list, _) {
 			if (item->loader (item->data, item->file)) {
 				errors++;
@@ -62,4 +62,13 @@ int hotcheck () {
 	}
 
 	return (errors);
+}
+
+void hotfin () {
+	struct item * item;
+	struct item * tvar;
+	TAILQ_FOREACH_SAFE (item, __list, _, tvar) {
+		free (item);
+	}
+	free (__list);
 }
