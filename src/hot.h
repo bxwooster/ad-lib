@@ -10,3 +10,4 @@ hot_handle_t hotload (
 	char const * file,
 	hot_loader_t loader
 );
+

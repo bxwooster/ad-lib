@@ -7,3 +7,4 @@ struct shader_t {
 };
 
 int loadshader (struct shader_t * shader, char const * file);
+

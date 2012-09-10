@@ -1,18 +1,14 @@
 #include <stdio.h>
 #include <assert.h>
-#include <wrap/dirent.h>
-#include <sys/queue.h>
+#include <dirent.h>
 #include <GL/glew.h>
-#include <SDL.h>
+#include <SDL/SDL.h>
 #include <math.h>
+#include "sys/queue.h"
 #include "hot.h"
-#include "quotes.h"
 #include "shader.h"
 #include "planet.h"
 #include "matrix.h"
-
-#pragma warning (disable : 4127) /* conditional expression is constant */
-/* needed because TAILQ uses some peculiar constructions in its macros */
 
 static float const WIDTH = 960.0f;
 static float const HEIGHT = 960.0f;
@@ -23,13 +19,17 @@ static float const FOV = 60.0f;
 static float const NEAR_PLANE = 0.0001f;
 static const char * const SYSDIR = "sys";
 
+#ifndef __USE_BSD
+	error;
+#endif
+
 struct sysplanet {
 	struct planet planet;
 	char * file;
 	TAILQ_ENTRY(sysplanet) _;
 };
 
-int main (int /*argc*/, char * /*argv*/ []) {
+int main (int argc, char * argv []) {
 	int error = 0;
 
 	GLuint prog = GL_FALSE;
@@ -42,10 +42,8 @@ int main (int /*argc*/, char * /*argv*/ []) {
 	TAILQ_HEAD (head, sysplanet) list;
 	TAILQ_INIT (&list);
 
-	shader_t vss = {GL_VERTEX_SHADER, &vs, &prog};
-	shader_t fss = {GL_FRAGMENT_SHADER, &fs, &prog};
-
-	fprintf (stdout, "%s\n\n", randomquote ());
+	struct shader_t vss = {GL_VERTEX_SHADER, &vs, &prog};
+	struct shader_t fss = {GL_FRAGMENT_SHADER, &fs, &prog};
 
 	hotinit ();
 
@@ -153,13 +151,13 @@ int main (int /*argc*/, char * /*argv*/ []) {
 	struct dirent * dirent = NULL;
 	while ((dirent = readdir (sysdir)) != NULL) {
 		if (dirent->d_type == DT_REG) {
-			size_t len = strlen (SYSDIR) + 1 + dirent->d_namlen + 1;
+			size_t len = strlen (SYSDIR) + 1 + strlen(dirent->d_name) + 1;
 			struct sysplanet * item = (struct sysplanet *) malloc (sizeof (*item));
 			assert (item != NULL);
 			item->file = (char *) malloc (len);
 			assert (item->file != NULL);
 			
-			sprintf_s (item->file, len, "%s/%s", SYSDIR, dirent->d_name);
+			snprintf (item->file, len, "%s/%s", SYSDIR, dirent->d_name);
 			TAILQ_INSERT_TAIL (&list, item, _);
 
 			if (hotload (&item->planet, item->file, (hot_loader_t) loadplanet) == NULL) {
@@ -278,3 +276,4 @@ int main (int /*argc*/, char * /*argv*/ []) {
 
 	return (EXIT_SUCCESS);
 }
+

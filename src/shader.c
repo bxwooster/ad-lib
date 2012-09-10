@@ -12,9 +12,9 @@ void logshader (GLuint sh)
 	char * log = (char *) malloc ((size_t) size);
 	assert (log != NULL);
 
-	glGetShaderInfoLog(sh, size, NULL, log);
-	fprintf(stderr, "%s\n", log);
-	free(log);
+	glGetShaderInfoLog (sh, size, NULL, log);
+	fprintf (stderr, "%s\n", log);
+	free (log);
 }
 
 int loadshader (struct shader_t * info, char const * file) {
@@ -25,7 +25,7 @@ int loadshader (struct shader_t * info, char const * file) {
 	GLuint sh = GL_FALSE;
 
 	if (
-		fopen_s (&fp, file, "rb") != 0 ||
+		(fp = fopen (file, "rb")) == 0 ||
 		fseek (fp, 0L, SEEK_END) != 0 ||
 		(size = ftell (fp)) < 0 ||
 		fseek (fp, 0L, SEEK_SET) != 0 ||
@@ -81,22 +81,23 @@ int loadshader (struct shader_t * info, char const * file) {
 			}
 		}
 
-		glDeleteProgram(*info->program);
+		glDeleteProgram (*info->program);
 		*info->program = prog;
 	}
 
-	glDeleteShader(*info->shader);
+	glDeleteShader (*info->shader);
 	*info->shader = sh;
 	sh = GL_FALSE;
 
   end:
 	if (sh != GL_FALSE) {
-		glDeleteShader(sh);
+		glDeleteShader (sh);
 	}
 	if (fp != NULL) {
-		fclose(fp);
+		fclose (fp);
 	}
-	free(src);
+	free (src);
 
 	return (error);
 }
+

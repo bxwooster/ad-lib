@@ -7,3 +7,4 @@ void main (void) {
 	float light = sqrt (1.0 - radius);
 	gl_FragColor = vec4 (color * light, 0.0);
 }
+

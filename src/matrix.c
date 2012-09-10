@@ -1,4 +1,4 @@
-#include <wrap/math.h>
+#include <math.h>
 
 void identitymatrix (float matrix [4 * 4]) {
 	for (int i = 0; i < 4; ++i)
@@ -55,3 +55,4 @@ void invertspecialmatrix(float matrix [4 * 4]) {
 	matrix[13] = matrix[1] * x + matrix[5] * y + matrix[ 9] * z;
 	matrix[14] = matrix[2] * x + matrix[6] * y + matrix[10] * z;
 }
+

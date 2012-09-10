@@ -1,6 +1,6 @@
 #include <string.h> /* memcpy */
 #include <GL/glew.h>
-#include <wrap/math.h>
+#include <math.h>
 #include <stdio.h>
 #include "planet.h"
 #include "vector.h"
@@ -11,30 +11,30 @@ int loadplanet (struct planet * planet, char const * file) {
 	FILE * fp = NULL;
 	struct planet read;
 
-	if (fopen_s (&fp, file, "rb") != 0 ||
-		fscanf_s (fp, "size: %f", &read.size) != 1 ||
-		fscanf_s (fp, "\ncolor: %f, %f, %f", read.color, read.color + 1, read.color + 2) != 3 ||
-		fscanf_s (fp, "\nmajor: %f", &read.orbit.major) != 1 ||
-		fscanf_s (fp, "\nminor: %f", &read.orbit.minor) != 1 ||
-		fscanf_s (fp, "\nperiod: %f", &read.orbit.period) != 1
+	if ((fp = fopen (file, "rb")) == 0 ||
+		fscanf (fp, "size: %f", &read.size) != 1 ||
+		fscanf (fp, "\ncolor: %f, %f, %f", read.color, read.color + 1, read.color + 2) != 3 ||
+		fscanf (fp, "\nmajor: %f", &read.orbit.major) != 1 ||
+		fscanf (fp, "\nminor: %f", &read.orbit.minor) != 1 ||
+		fscanf (fp, "\nperiod: %f", &read.orbit.period) != 1
 	) {
 		error = __LINE__;
 		goto end;
 	}
 
-	fscanf_s (fp, "\n");
+	fscanf (fp, "\n");
 	if (fgetc (fp) != EOF) {
 		error = __LINE__;
 		goto end;
 	}
 
-	identitymatrix(read.orbit.matrix);
+	identitymatrix (read.orbit.matrix);
 
 	*planet = read;
 
   end:
 	if (fp != NULL) {
-		fclose(fp);
+		fclose (fp);
 	}
 
 	return (error);
@@ -87,3 +87,4 @@ void planetmatrix (
 	glScalef (apparent, apparent, apparent);
 	glGetFloatv (GL_MODELVIEW_MATRIX, matrix);
 }
+

@@ -5,3 +5,4 @@ void projectionmatrix (
 	float near,
 	float matrix [4 * 4]);
 void invertspecialmatrix (float matrix [4 * 4]);
+

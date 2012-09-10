@@ -1,7 +1,7 @@
 #include <math.h>
 #include "vector.h"
 
-void vectorsum(
+void vectorsum (
 		float const a [3],
 		float const b [3],
 		float out [3]) {
@@ -10,7 +10,7 @@ void vectorsum(
 	out[2] = a[2] + b[2];
 }
 
-void vectordiff(
+void vectordiff (
 		float const a [3],
 		float const b [3],
 		float out [3]) {
@@ -19,13 +19,13 @@ void vectordiff(
 	out[2] = a[2] - b[2];
 }
 
-void vectorscale(float v[3], float scale) {
+void vectorscale (float v[3], float scale) {
 	v[0] *= scale;
 	v[1] *= scale;
 	v[2] *= scale;
 }
 
-void vectorproduct(
+void vectorproduct (
 		float const a [3],
 		float const b [3],
 		float out [3]) {
@@ -34,14 +34,15 @@ void vectorproduct(
 	out[2] = a[0] * b[1] - a[1] * b[0];
 }
 
-float vectorlen(float const v [3]) {
+float vectorlen (float const v [3]) {
 	return sqrtf (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
 }
 
-void vectornorm(float v [3]) {
+void vectornorm (float v [3]) {
 	float len = vectorlen(v);
 
 	v[0] /= len;
 	v[1] /= len;
 	v[2] /= len;
 }
+
