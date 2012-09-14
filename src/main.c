@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <dirent.h>
 #include <GL/glew.h>
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #include <math.h>
 #include "sys/queue.h"
 #include "hot.h"
@@ -18,10 +18,6 @@ static float const CORKSPEED = 16.0f;
 static float const FOV = 60.0f;
 static float const NEAR_PLANE = 0.0001f;
 static const char * const SYSDIR = "sys";
-
-#ifndef __USE_BSD
-	error;
-#endif
 
 struct sysplanet {
 	struct planet planet;
@@ -47,23 +43,30 @@ int main (int argc, char * argv []) {
 
 	hotinit ();
 
-	if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_TIMER) == -1) {
+	if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
 		error = __LINE__;
 		goto end;
 	}
 
-	SDL_WM_SetCaption ("Cosmos", NULL);
+	SDL_Window * window = SDL_CreateWindow ("Cosmos",
+		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+		(int) WIDTH, (int) HEIGHT,
+		SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 
-	SDL_Surface * const screen = SDL_SetVideoMode (
-		(int) WIDTH, (int) HEIGHT, 32,
-		SDL_OPENGL | SDL_DOUBLEBUF);
-
-	if (screen == NULL) {
+	if (window == NULL) {
 		error = __LINE__;
 		goto end;
 	}
-	
+
+	SDL_GLContext context = SDL_GL_CreateContext (window);
+
+	if (context == 0) {
+		error = __LINE__;
+		goto end;
+	}
+
 	if (glewInit () != GLEW_OK) {
+		printf ("GLEW error: %s\n", glewGetString(glewInit ()));
 		error = __LINE__;
 		goto end;
 	}
@@ -105,7 +108,7 @@ int main (int argc, char * argv []) {
 	
 	glGenBuffers (1, &vbo);
 	glBindBuffer (GL_ARRAY_BUFFER, vbo);
-    glBufferData (GL_ARRAY_BUFFER, sizeof (tris), tris, GL_STATIC_DRAW);
+	glBufferData (GL_ARRAY_BUFFER, sizeof (tris), tris, GL_STATIC_DRAW);
 	
 	glEnable(GL_DEPTH_TEST);
 
@@ -177,7 +180,7 @@ int main (int argc, char * argv []) {
 		SDL_Event evt;
 		if (SDL_PollEvent (&evt)) {
 			if (evt.type == SDL_KEYDOWN) {
-				SDLKey key = evt.key.keysym.sym;
+				SDL_Keycode key = evt.key.keysym.sym;
 				if (key == SDLK_ESCAPE) {
 					goto end;
 				}
@@ -208,10 +211,10 @@ int main (int argc, char * argv []) {
 
 		if (SDL_GetMouseState(NULL, NULL) != 0) {
 			SDL_ShowCursor (0);
-			SDL_WM_GrabInput (SDL_GRAB_ON);
+			SDL_SetWindowGrab (window, SDL_TRUE);
 		} else {
 			SDL_ShowCursor (1);
-			SDL_WM_GrabInput (SDL_GRAB_OFF);
+			SDL_SetWindowGrab (window, SDL_FALSE);
 		}
 
 		hotcheck ();
@@ -242,7 +245,7 @@ int main (int argc, char * argv []) {
 			glDrawArrays (GL_TRIANGLES, 0, vertices);
 		}
  
-		SDL_GL_SwapBuffers ();
+		SDL_GL_SwapWindow (window);
 	}
  
   end:
@@ -262,8 +265,9 @@ int main (int argc, char * argv []) {
 		closedir (sysdir);
 	}
 
-	glDeleteBuffers (0, &vbo);
+	glDeleteBuffers (1, &vbo);
 	glDeleteProgram (prog);
+	SDL_GL_DeleteContext (context);
 	SDL_Quit ();
 
 	if (error) {
