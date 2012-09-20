@@ -1,5 +1,4 @@
 #include <string.h> /* memcpy */
-#include <GL/glew.h>
 #include <math.h>
 #include <stdio.h>
 #include "planet.h"
@@ -47,9 +46,9 @@ void planetmatrix (
 		float matrix [4 * 4]) {
 	float phi = (float) ((time / planet->orbit.period) * M_PI * 2.0);
 
-	glLoadMatrixf (planet->orbit.matrix);
-	glTranslatef (planet->orbit.major * cosf (phi), planet->orbit.minor * sinf (phi), 0.0f);
-	glGetFloatv (GL_MODELVIEW_MATRIX, matrix);
+	memcpy (matrix, planet->orbit.matrix, sizeof (float) * 16);
+	matrix[12] += planet->orbit.major * cosf (phi);
+	matrix[13] += planet->orbit.minor * sinf (phi);
 
 	float first [3];
 	vectordiff (&matrix[12], &mcam[12], first);
@@ -82,9 +81,8 @@ void planetmatrix (
 	memcpy (&rotation[4], third, sizeof (third));
 	rotation[15] = 1.0f;
 
-	glMultMatrixf (rotation);
-	glTranslatef (0.0f, 0.0f, -offset);
-	glScalef (apparent, apparent, apparent);
-	glGetFloatv (GL_MODELVIEW_MATRIX, matrix);
+	//multiplymatrix (matrix, rotation);
+	matrix[14] -= offset;
+	//scalematrix (matrix, apparent);
 }
 

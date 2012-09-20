@@ -133,17 +133,18 @@ int main (int argc, char * argv []) {
 		goto end;
 	}
 
-	glMatrixMode(GL_MODELVIEW);
-
 	float mproj  [4 * 4];
 	float aspect = WIDTH / HEIGHT;
 	projectionmatrix (FOV, aspect, NEAR_PLANE, mproj);
 
-	float mcam  [4 * 4];
-	glLoadIdentity ();
-	glRotatef (180.0f, 0.0f, 1.0f, 0.0f);
-	glTranslatef (0.0f, 0.0f, -20.0f);
-	glGetFloatv (GL_MODELVIEW_MATRIX, mcam);
+	/* rotate one-eighty around Y */
+	float mcam  [4 * 4] = {
+		-1.0f, 0.0f, 0.0f, 0.0f,
+		 0.0f, 1.0f, 0.0f, 0.0f,
+		 0.0f, 0.0f,-1.0f, 0.0f,
+		 0.0f, 0.0f, 0.0f, 1.0f };
+	/* remember the reverse order */
+	mcam[14] += 20.0f;
 
 	sysdir = opendir (SYSDIR);
 	if (sysdir == NULL) {
@@ -189,20 +190,20 @@ int main (int argc, char * argv []) {
 				float y = evt.motion.yrel / HEIGHT;
 
 				if (evt.motion.state == SDL_BUTTON (SDL_BUTTON_LEFT)) {
-					glLoadMatrixf (mcam);
+					/*glLoadMatrixf (mcam);
 					glTranslatef (x * TRANSPEED, y * TRANSPEED, 0.0f);
-					glGetFloatv (GL_MODELVIEW_MATRIX, mcam);
+					glGetFloatv (GL_MODELVIEW_MATRIX, mcam);*/
 				} else
 				if (evt.motion.state == SDL_BUTTON (SDL_BUTTON_RIGHT)) {
-					glLoadMatrixf (mcam);
+					/*glLoadMatrixf (mcam);
 					glRotatef (sqrtf(x * x + y * y) * ROTSPEED, y, -x, 0.0f);
-					glGetFloatv (GL_MODELVIEW_MATRIX, mcam);
+					glGetFloatv (GL_MODELVIEW_MATRIX, mcam);*/
 				} else
 				if (evt.motion.state == SDL_BUTTON (SDL_BUTTON_MIDDLE)) {
-					glLoadMatrixf (mcam);
+					/*glLoadMatrixf (mcam);
 					glRotatef (-x * CORKSPEED, 0.0f, 0.0f, 1.0f);
 					glTranslatef (0.0f, 0.0f, y * TRANSPEED);
-					glGetFloatv (GL_MODELVIEW_MATRIX, mcam);
+					glGetFloatv (GL_MODELVIEW_MATRIX, mcam);*/
 				}
 			} else if (evt.type == SDL_QUIT) {
 				goto end;
@@ -235,10 +236,10 @@ int main (int argc, char * argv []) {
 			planetmatrix (&item->planet, time, mcam, mmodel);
 
 			float matrix [4 * 4];
-			glLoadMatrixf (mproj);
-			glMultMatrixf (mview);
-			glMultMatrixf (mmodel);
-			glGetFloatv (GL_MODELVIEW_MATRIX, matrix);
+			memcpy (matrix, mproj, sizeof (matrix));
+			multiplymatrix (matrix, mview);
+			multiplymatrix (matrix, mmodel);
+
 			glUniformMatrix4fv (uniform_mvp, 1, GL_FALSE, matrix);
 			glUniform3fv (uniform_color, 1, (float const *) item->planet.color);
 
