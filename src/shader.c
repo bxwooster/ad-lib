@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include "shader.h"
+#include "platform.h"
 
 void logshader (GLuint sh)
 {
@@ -41,7 +42,7 @@ int loadshader (struct shader_t * info, char const * file) {
 	GLint code = GL_FALSE;
 	sh = glCreateShader (info->type);
 	
-	char const * const version = "#version 120\n";
+	char const * const version = GL_SHADER_PREFIX;
 	char const * srcs [] = {version, src};
 	glShaderSource (sh, 2, srcs, NULL);
 	glCompileShader (sh);

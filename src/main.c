@@ -1,23 +1,22 @@
 #include <stdio.h>
 #include <assert.h>
 #include <dirent.h>
-#include <GL/glew.h>
-#include <SDL2/SDL.h>
+#include "haveGL.h"
+#include "haveSDL.h"
 #include <math.h>
 #include "sys/queue.h"
+#include "log.h"
 #include "hot.h"
 #include "shader.h"
 #include "planet.h"
 #include "matrix.h"
+#include "platform.h"
 
-static float const WIDTH = 960.0f;
-static float const HEIGHT = 960.0f;
 static float const ROTSPEED = 128.0f;
 static float const TRANSPEED = 2.0f;
 static float const CORKSPEED = 16.0f;
 static float const FOV = 60.0f;
 static float const NEAR_PLANE = 0.0001f;
-static const char * const SYSDIR = "sys";
 
 struct sysplanet {
 	struct planet planet;
@@ -27,6 +26,8 @@ struct sysplanet {
 
 int main (int argc, char * argv []) {
 	int error = 0;
+
+	logi ("Revving up.");
 
 	GLuint prog = GL_FALSE;
 	GLuint vbo = GL_FALSE;
@@ -49,35 +50,37 @@ int main (int argc, char * argv []) {
 	}
 
 	SDL_Window * window = SDL_CreateWindow ("Cosmos",
-		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-		(int) WIDTH, (int) HEIGHT,
+		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+		WIDTH, HEIGHT,
 		SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 
 	if (window == NULL) {
 		error = __LINE__;
 		goto end;
-	}
+	}	
 
 	SDL_GLContext context = SDL_GL_CreateContext (window);
 
-	if (context == 0) {
+	if (context == NULL) {
 		error = __LINE__;
 		goto end;
 	}
 
+#ifndef ANDROID
 	if (glewInit () != GLEW_OK) {
 		printf ("GLEW error: %s\n", glewGetString(glewInit ()));
 		error = __LINE__;
 		goto end;
 	}
+#endif
 
 	prog = glCreateProgram ();
 
-	if (hotload (&vss, "shd/draw.vert", (hot_loader_t) loadshader) == NULL) {
+	if (hotload (&vss, SHDDIR "/draw.vert", (hot_loader_t) loadshader) == NULL) {
 		error = __LINE__;
 		goto end;
 	}
-	if (hotload (&fss, "shd/draw.frag", (hot_loader_t) loadshader) == NULL) {
+	if (hotload (&fss, SHDDIR "/draw.frag", (hot_loader_t) loadshader) == NULL) {
 		error = __LINE__;
 		goto end;
 	}
@@ -109,7 +112,7 @@ int main (int argc, char * argv []) {
 	glGenBuffers (1, &vbo);
 	glBindBuffer (GL_ARRAY_BUFFER, vbo);
 	glBufferData (GL_ARRAY_BUFFER, sizeof (tris), tris, GL_STATIC_DRAW);
-	
+
 	glEnable(GL_DEPTH_TEST);
 
 	GLuint const attribute_pos = (GLuint) glGetAttribLocation (prog, "pos");
@@ -134,7 +137,7 @@ int main (int argc, char * argv []) {
 	}
 
 	float mproj  [4 * 4];
-	float aspect = WIDTH / HEIGHT;
+	float aspect = ((float) WIDTH) / HEIGHT;
 	projectionmatrix (FOV, aspect, NEAR_PLANE, mproj);
 
 	/* rotate one-eighty around Y */
@@ -155,7 +158,7 @@ int main (int argc, char * argv []) {
 	struct dirent * dirent = NULL;
 	while ((dirent = readdir (sysdir)) != NULL) {
 		if (dirent->d_type == DT_REG) {
-			size_t len = strlen (SYSDIR) + 1 + strlen(dirent->d_name) + 1;
+			size_t len = strlen (SYSDIR) + 1 + strlen (dirent->d_name) + 1;
 			struct sysplanet * item = (struct sysplanet *) malloc (sizeof (*item));
 			assert (item != NULL);
 			item->file = (char *) malloc (len);
@@ -174,6 +177,7 @@ int main (int argc, char * argv []) {
 	for (;;) {
 		GLuint glerror = glGetError ();
 		if (glerror != 0) {
+			logi ("GL error # %d.", glerror);
 			error = __LINE__;
 			goto end;
 		}
@@ -186,24 +190,27 @@ int main (int argc, char * argv []) {
 					goto end;
 				}
 			} else if (evt.type == SDL_MOUSEMOTION) {
-				float x = -evt.motion.xrel / WIDTH;
-				float y = evt.motion.yrel / HEIGHT;
+				float x = -evt.motion.xrel / ((float) WIDTH);
+				float y = evt.motion.yrel / ((float) HEIGHT);
 
 				if (evt.motion.state == SDL_BUTTON (SDL_BUTTON_LEFT)) {
-					/*glLoadMatrixf (mcam);
-					glTranslatef (x * TRANSPEED, y * TRANSPEED, 0.0f);
-					glGetFloatv (GL_MODELVIEW_MATRIX, mcam);*/
+					mcam[12] += x * TRANSPEED;
+					mcam[13] += y * TRANSPEED;
 				} else
 				if (evt.motion.state == SDL_BUTTON (SDL_BUTTON_RIGHT)) {
-					/*glLoadMatrixf (mcam);
+					/*XXX
+					glLoadMatrixf (mcam);
 					glRotatef (sqrtf(x * x + y * y) * ROTSPEED, y, -x, 0.0f);
-					glGetFloatv (GL_MODELVIEW_MATRIX, mcam);*/
+					glGetFloatv (GL_MODELVIEW_MATRIX, mcam);
+					*/
 				} else
 				if (evt.motion.state == SDL_BUTTON (SDL_BUTTON_MIDDLE)) {
-					/*glLoadMatrixf (mcam);
+					/*XXX
+					glLoadMatrixf (mcam);
 					glRotatef (-x * CORKSPEED, 0.0f, 0.0f, 1.0f);
 					glTranslatef (0.0f, 0.0f, y * TRANSPEED);
-					glGetFloatv (GL_MODELVIEW_MATRIX, mcam);*/
+					glGetFloatv (GL_MODELVIEW_MATRIX, mcam);
+					*/
 				}
 			} else if (evt.type == SDL_QUIT) {
 				goto end;
@@ -272,10 +279,7 @@ int main (int argc, char * argv []) {
 	SDL_Quit ();
 
 	if (error) {
-		fprintf (stderr, "Something went wrong! "
-			"If anyone asks, reply '%d'.\n"
-			"Press the 'Any' key to exit.\n", error);
-		getchar ();
+		logi ("Error # %d.", error);
 		return (EXIT_FAILURE);
 	}
 

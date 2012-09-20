@@ -19,7 +19,7 @@ void projectionmatrix (
 	matrix[3] = 0.0f;
 
 	matrix[4] = 0.0f;
-	matrix[5] = e / aspect;
+	matrix[5] = e * aspect;
 	matrix[6] = 0.0f;
 	matrix[7] = 0.0f;
 	
