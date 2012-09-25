@@ -1,2 +1,2 @@
 all:
-	gcc -std=gnu99 src/*.c -DMINGW -L/usr/lib -L/usr/local/lib -I/usr/local/include -I/usr/include -lopengl32 -lglew32 -lSDL2 -lm -g -o Cosmos
+	gcc -std=gnu99 src/*.c -DMINGW -lopengl32 -lglew32 -lmingw32 -lSDL2main -lSDL2 -lm -g -o Cosmos

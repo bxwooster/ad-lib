@@ -24,10 +24,6 @@ struct sysplanet {
 	TAILQ_ENTRY(sysplanet) _;
 };
 
-int WinMain () {
-	main (0, 0);
-}
-
 int main (int argc, char * argv []) {
 	int error = 0;
 
