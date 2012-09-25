@@ -70,7 +70,7 @@ int main (int argc, char * argv []) {
 
 	GLenum glew = glewInit();
 	if (glew != GLEW_OK) {
-		logi ("GLEW error: %s.", glewGetString(glew));
+		logi ("GLEW error: %s.", glewGetErrorString (glew));
 		error = __LINE__;
 		goto end;
 	}
