@@ -1,6 +1,6 @@
 #if defined ANDROID
 	#include <SDL.h>
-#elif defined PC || defined MAC
+#elif defined LINUX || defined MAC || defined MINGW
 	#include <SDL2/SDL.h>
 #endif
 

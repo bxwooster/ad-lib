@@ -12,7 +12,7 @@ void logi(char const * fmt, ...) {
 	va_end (args);
 }
 
-#elif defined PC || defined MAC
+#elif defined LINUX || defined MAC || defined MINGW
 
 #include <stdarg.h>
 #include <stdio.h>
