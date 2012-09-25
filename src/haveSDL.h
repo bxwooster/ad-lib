@@ -1,6 +1,6 @@
-#ifdef ANDROID
-#include <SDL.h>
-#else
-#include <SDL2/SDL.h>
+#if defined ANDROID
+	#include <SDL.h>
+#elif defined PC
+	#include <SDL2/SDL.h>
 #endif
 

@@ -66,12 +66,27 @@ int main (int argc, char * argv []) {
 		goto end;
 	}
 
-#ifndef ANDROID
-	if (glewInit () != GLEW_OK) {
-		printf ("GLEW error: %s\n", glewGetString(glewInit ()));
+#if defined PC
+
+	GLenum glew = glewInit();
+	if (glew != GLEW_OK) {
+		logi ("GLEW error: %s.", glewGetString(glew));
 		error = __LINE__;
 		goto end;
 	}
+
+	if (!GLEW_VERSION_2_0) {
+		logi ("GL2 is not supported.");
+		glew = GLEW_ERROR_NO_GL_VERSION;
+		error = __LINE__;
+		goto end;
+	}
+
+#else
+
+	GLenum const GLEW_OK = 0;
+	GLenum glew = GLEW_OK;
+
 #endif
 
 	prog = glCreateProgram ();
@@ -273,8 +288,11 @@ int main (int argc, char * argv []) {
 		closedir (sysdir);
 	}
 
-	glDeleteBuffers (1, &vbo);
-	glDeleteProgram (prog);
+	if (glew == GLEW_OK) {
+		glDeleteBuffers (1, &vbo);
+		glDeleteProgram (prog);
+	}
+
 	SDL_GL_DeleteContext (context);
 	SDL_Quit ();
 
