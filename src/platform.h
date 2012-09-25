@@ -6,7 +6,7 @@
 #define WIDTH 480
 #define HEIGHT 724
 
-#elif defined PC
+#elif defined PC || defined MAC
 
 #define SYSDIR "sys"
 #define SHDDIR "shd"

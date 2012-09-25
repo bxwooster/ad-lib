@@ -1,0 +1,2 @@
+all:
+	gcc -std=gnu99 src/*.c -DMAC -lSDL2 -lm -framework OpenGL -g -o Cosmos
