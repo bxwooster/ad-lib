@@ -6,6 +6,14 @@
 #define WIDTH 480
 #define HEIGHT 724
 
+#elif defined IOS
+
+#define SYSDIR "sys"
+#define SHDDIR "shd"
+#define GL_SHADER_PREFIX "#version 100\nprecision mediump float;\n"
+#define WIDTH 768
+#define HEIGHT 1024
+
 #elif defined LINUX || defined MAC || defined MINGW
 
 #define SYSDIR "sys"

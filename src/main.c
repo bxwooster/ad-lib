@@ -51,14 +51,21 @@ int main (int argc, char * argv []) {
 
 	SDL_Window * window = SDL_CreateWindow ("Cosmos",
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		WIDTH, HEIGHT,
-		SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+		WIDTH, HEIGHT, 
+		SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS);
 
 	if (window == NULL) {
 		error = __LINE__;
 		goto end;
-	}	
-
+	}
+    
+	if (SDL_GL_SetAttribute (SDL_GL_CONTEXT_MAJOR_VERSION, 2) != 0 ||
+	    SDL_GL_SetAttribute (SDL_GL_CONTEXT_MINOR_VERSION, 0) != 0)
+	{
+		error = __LINE__;
+		goto end;
+	}
+    
 	SDL_GLContext context = SDL_GL_CreateContext (window);
 
 	if (context == NULL) {
@@ -128,8 +135,9 @@ int main (int argc, char * argv []) {
 	glBindBuffer (GL_ARRAY_BUFFER, vbo);
 	glBufferData (GL_ARRAY_BUFFER, sizeof (tris), tris, GL_STATIC_DRAW);
 
-	glEnable(GL_DEPTH_TEST);
-
+	glEnable (GL_DEPTH_TEST);
+	glViewport (0 ,0, WIDTH, HEIGHT);
+    
 	GLuint const attribute_pos = (GLuint) glGetAttribLocation (prog, "pos");
 	if (attribute_pos == -1 ) {
 		error = __LINE__;
@@ -161,7 +169,7 @@ int main (int argc, char * argv []) {
 		 0.0f, 1.0f, 0.0f, 0.0f,
 		 0.0f, 0.0f,-1.0f, 0.0f,
 		 0.0f, 0.0f, 0.0f, 1.0f };
-	/* remember the reverse order */
+	/* note that the order is reversed */
 	mcam[14] += 20.0f;
 
 	sysdir = opendir (SYSDIR);
