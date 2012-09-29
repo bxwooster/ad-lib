@@ -90,7 +90,7 @@ int loadshader (struct shader_t * info, char const * file) {
 	*info->shader = sh;
 	sh = GL_FALSE;
 
-  end:
+	end:
 	if (sh != GL_FALSE) {
 		glDeleteShader (sh);
 	}

@@ -60,12 +60,12 @@ int main (int argc, char * argv []) {
 	}
 
 	if (SDL_GL_SetAttribute (SDL_GL_CONTEXT_MAJOR_VERSION, 2) != 0 ||
-	    SDL_GL_SetAttribute (SDL_GL_CONTEXT_MINOR_VERSION, 0) != 0)
+		SDL_GL_SetAttribute (SDL_GL_CONTEXT_MINOR_VERSION, 0) != 0)
 	{
 		error = __LINE__;
 		goto end;
 	}
-    
+
 	SDL_GLContext context = SDL_GL_CreateContext (window);
 
 	if (context == NULL) {
@@ -122,12 +122,12 @@ int main (int argc, char * argv []) {
 		float x;
 		float y;
 	} const tris [] = {
-		{-1.0, -1.0},
-		{ 1.0, -1.0},
-		{-1.0,  1.0},
-		{-1.0,  1.0},
-		{ 1.0, -1.0},
-		{ 1.0,  1.0}
+		{-1.0,-1.0},
+		{ 1.0,-1.0},
+		{-1.0, 1.0},
+		{-1.0, 1.0},
+		{ 1.0,-1.0},
+		{ 1.0, 1.0}
 	};
 	int const vertices = sizeof (tris) / sizeof (tris[0]);
 	
@@ -137,7 +137,7 @@ int main (int argc, char * argv []) {
 
 	glEnable (GL_DEPTH_TEST);
 	glViewport (0 ,0, WIDTH, HEIGHT);
-    
+
 	GLuint const attribute_pos = (GLuint) glGetAttribLocation (prog, "pos");
 	if (attribute_pos == -1 ) {
 		error = __LINE__;
@@ -159,12 +159,12 @@ int main (int argc, char * argv []) {
 		goto end;
 	}
 
-	float mproj  [4 * 4];
+	float mproj [4 * 4];
 	float aspect = ((float) WIDTH) / HEIGHT;
 	projectionmatrix (FOV, aspect, NEAR_PLANE, mproj);
 
 	/* rotate one-eighty around Y */
-	float mcam  [4 * 4] = {
+	float mcam [4 * 4] = {
 		-1.0f, 0.0f, 0.0f, 0.0f,
 		 0.0f, 1.0f, 0.0f, 0.0f,
 		 0.0f, 0.0f,-1.0f, 0.0f,
@@ -283,7 +283,7 @@ int main (int argc, char * argv []) {
 		SDL_GL_SwapWindow (window);
 	}
  
-  end:
+	end:
 
 	hotfin ();
 

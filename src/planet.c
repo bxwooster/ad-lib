@@ -12,7 +12,10 @@ int loadplanet (struct planet * planet, char const * file) {
 
 	if ((fp = fopen (file, "rb")) == 0 ||
 		fscanf (fp, "size: %f", &read.size) != 1 ||
-		fscanf (fp, "\ncolor: %f, %f, %f", read.color, read.color + 1, read.color + 2) != 3 ||
+		fscanf (fp, "\ncolor: %f, %f, %f",
+			read.color,
+			read.color + 1,
+			read.color + 2) != 3 ||
 		fscanf (fp, "\nmajor: %f", &read.orbit.major) != 1 ||
 		fscanf (fp, "\nminor: %f", &read.orbit.minor) != 1 ||
 		fscanf (fp, "\nperiod: %f", &read.orbit.period) != 1
@@ -31,7 +34,8 @@ int loadplanet (struct planet * planet, char const * file) {
 
 	*planet = read;
 
-  end:
+	end:
+
 	if (fp != NULL) {
 		fclose (fp);
 	}
@@ -62,7 +66,7 @@ void planetmatrix (
 	float unity [3] = {0.0f, 1.0f, 0.0f};
 
 	float second [3];
-	float third  [3];
+	float third [3];
 
 	if (first[0] < first[1]) {
 		vectorproduct (first, unitx, second);
