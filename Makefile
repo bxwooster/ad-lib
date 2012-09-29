@@ -22,7 +22,7 @@ MAIN = Main$(EXE)
 .PHONY: all clean
 all: $(MAIN)
 
-$(MAIN):
+$(MAIN): src/*.c
 	gcc \
 		-std=gnu99 \
 		src/*.c \
