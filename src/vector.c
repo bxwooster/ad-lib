@@ -34,12 +34,12 @@ void vectorproduct (
 	out[2] = a[0] * b[1] - a[1] * b[0];
 }
 
-float vectorlen (float const v [3]) {
+float vectorlength (float const v [3]) {
 	return sqrtf (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
 }
 
 void vectornormalize (float v [3]) {
-	float len = vectorlen(v);
+	float len = vectorlength(v);
 
 	v[0] /= len;
 	v[1] /= len;

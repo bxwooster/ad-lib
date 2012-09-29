@@ -12,9 +12,8 @@
 #include "matrix.h"
 #include "platform.h"
 
-static float const ROTSPEED = 1.0f;
-static float const TRANSPEED = 8.0f;
-static float const CORKSPEED = 1.0f;
+static float const ROTATION_SPEED = 1.0f;
+static float const TRANSLATION_SPEED = 8.0f;
 static float const FOV = 60.0f;
 static float const NEAR_PLANE = 0.0001f;
 
@@ -78,13 +77,6 @@ int main (int argc, char * argv []) {
 		goto end;
 	}
 	
-	if (SDL_SetRelativeMouseMode (SDL_TRUE) != 0)
-	{
-		sdlerror = 1;
-		error = __LINE__;
-		goto end;
-	}
-
 #if defined NEED_GLEW
 
 	GLenum glew = glewInit();
@@ -180,7 +172,7 @@ int main (int argc, char * argv []) {
 		-1.0f, 0.0f, 0.0f, 0.0f,
 		 0.0f, 1.0f, 0.0f, 0.0f,
 		 0.0f, 0.0f,-1.0f, 0.0f,
-		 0.0f, 0.0f, 0.0f, 1.0f };
+		 0.0f, 0.0f, 0.0f, 1.0f};
 	/* note that the order is reversed */
 	mcam[14] += 20.0f;
 
@@ -213,6 +205,7 @@ int main (int argc, char * argv []) {
 		}
 	}
 
+	int mouselock = 0;
 	for (;;) {
 		GLuint glerror = glGetError ();
 		if (glerror != 0) {
@@ -228,43 +221,47 @@ int main (int argc, char * argv []) {
 				if (key == SDLK_ESCAPE) {
 					goto end;
 				}
-			} else if (evt.type == SDL_MOUSEMOTION) {
-				float x = evt.motion.xrel / ((float) WIDTH);
-				float y = evt.motion.yrel / ((float) HEIGHT);
-
-				if (evt.motion.state == SDL_BUTTON (SDL_BUTTON_LEFT)) {
-					//XXX need to pre-, not post-translate
-					mcam[12] += x * TRANSPEED;
-					mcam[13] += y * TRANSPEED;
-				} else
-				if (evt.motion.state == SDL_BUTTON (SDL_BUTTON_RIGHT)) {
-					float axis [3];
-					axis[0] = -y;
-					axis[1] = -x;
-					axis[2] = 0.0f;
-					float angle = sqrtf (x * x + y * y) * ROTSPEED;
-					rotatematrix (mcam, angle, axis);
-				} else
-				if (evt.motion.state == SDL_BUTTON (SDL_BUTTON_MIDDLE)) {
-					float axis [3];
-					axis[0] = 0.0f;
-					axis[1] = 0.0f;
-					axis[2] = 1.0f;
-					float angle = -x * CORKSPEED;
-					rotatematrix (mcam, angle, axis);
-					mcam[14] += y * TRANSPEED;
-				}
 			} else if (evt.type == SDL_QUIT) {
 				goto end;
 			}
 		}
 
-		if (SDL_GetMouseState(NULL, NULL) != 0) {
+		int ix, iy;
+		Uint8 mousebuttons = SDL_GetMouseState(&ix, &iy);
+
+		float x = 0;
+		float y = 0;
+		if (mouselock == 1) {
+			x = ix / ((float) WIDTH) - 0.5f;
+			y = iy / ((float) HEIGHT) - 0.5f;
+		}
+
+		if ((mousebuttons & SDL_BUTTON(1)) != 0) {
+			//XXX need to pre-, not post-translate
+			mcam[12] += x * TRANSLATION_SPEED;
+			mcam[13] += y * TRANSLATION_SPEED;
+		}
+		if ((mousebuttons & SDL_BUTTON(3)) != 0) {
+			float axis [3] = {-y, -x, 0.0f};
+			float angle = sqrtf (x * x + y * y) * ROTATION_SPEED;
+			rotatematrix (mcam, angle, axis);
+		}
+		if ((mousebuttons & SDL_BUTTON(2)) != 0) {
+			float axis [3] = {0.0f, 0.0f, 1.0f};
+			float angle = -x * ROTATION_SPEED;
+			rotatematrix (mcam, angle, axis);
+			mcam[14] += y * TRANSLATION_SPEED; /* see above */
+		}
+
+		if (mousebuttons != 0) {
 			SDL_ShowCursor (0);
 			SDL_SetWindowGrab (window, SDL_TRUE);
+			SDL_WarpMouseInWindow (window, WIDTH / 2, HEIGHT / 2);
+			mouselock = 1;
 		} else {
 			SDL_ShowCursor (1);
 			SDL_SetWindowGrab (window, SDL_FALSE);
+			mouselock = 0;
 		}
 
 		hotcheck ();

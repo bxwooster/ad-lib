@@ -13,7 +13,7 @@ void vectorproduct (
 	float const b [3],
 	float out [3]);
 
-float vectorlen (float const v [3]);
+float vectorlength (float const v [3]);
 
 void vectorscale (float v[3], float scale); 
 void vectornormalize (float v [3]);

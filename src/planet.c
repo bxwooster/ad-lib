@@ -57,7 +57,7 @@ void planetmatrix (
 	float first [3];
 	vectordiff (&matrix[12], &mcam[12], first);
 
-	float p = vectorlen (first);
+	float p = vectorlength (first);
 	float r = planet->size;
 	float apparent = sqrtf (p * p - r * r) * r / p;
 	float offset = (r * r) / p;
