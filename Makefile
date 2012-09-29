@@ -24,6 +24,7 @@ all: $(MAIN)
 
 $(MAIN): src/*.c
 	gcc \
+	-Wall \
 	-std=gnu99 \
 	src/*.c \
 	-DPLATFORM_$(PLATFORM) \
