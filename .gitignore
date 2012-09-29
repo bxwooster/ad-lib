@@ -1,9 +1,0 @@
-bin
-msvs/ipch
-*.opensdf
-*.sdf
-*.suo
-*.vcxproj.user
-*.exe
-*.dll
-*.rar
