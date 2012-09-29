@@ -6,4 +6,4 @@ void projectionmatrix (
 	float matrix [4 * 4]);
 void invertspecialmatrix (float matrix [4 * 4]);
 void multiplymatrix (float matrix [4 * 4], float another [4 * 4]);
-
+void scalematrix (float matrix [4 * 4], float scale);

@@ -83,6 +83,6 @@ void planetmatrix (
 
 	//multiplymatrix (matrix, rotation);
 	matrix[14] -= offset;
-	//scalematrix (matrix, apparent);
+	scalematrix (matrix, apparent);
 }
 
