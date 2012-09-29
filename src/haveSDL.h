@@ -2,7 +2,7 @@
 	#include <SDL.h>
 #elif \
 		defined PLATFORM_LINUX || \
-		defined PLATFROM_DARWIN || \
+		defined PLATFORM_DARWIN || \
 		defined PLATFORM_WINDOWS
 	#include <SDL2/SDL.h>
 #endif
