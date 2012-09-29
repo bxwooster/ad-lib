@@ -1,4 +1,4 @@
-#if defined ANDROID
+#if defined PLATFORM_ANDROID
 
 #define SYSDIR "/sdcard/cosmos/sys"
 #define SHDDIR "/sdcard/cosmos/shd"
@@ -6,7 +6,7 @@
 #define WIDTH 480
 #define HEIGHT 724
 
-#elif defined IOS
+#elif defined PLATFORM_IOS
 
 #define SYSDIR "sys"
 #define SHDDIR "shd"
@@ -14,7 +14,7 @@
 #define WIDTH 768
 #define HEIGHT 1024
 
-#elif defined LINUX || defined MAC || defined MINGW
+#elif defined PLATFORM_LINUX || defined PLATFORM_DARWIN || defined PLATFORM_WINDOWS
 
 #define SYSDIR "sys"
 #define SHDDIR "shd"

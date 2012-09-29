@@ -5,11 +5,11 @@ ifeq ($(shell uname),Linux)
 	LINK_FLAGS = -lGL -lGLEW
 endif
 ifeq ($(shell uname),Darwin)
-	PLATFORM = MAC
+	PLATFORM = DARWIN
 	LINK_FLAGS = -framework OpenGL
 endif
 ifeq ($(shell uname -o),Msys)
-	PLATFORM = MINGW
+	PLATFORM = WINDOWS
 	LINK_FLAGS = -lopengl32 -lglew32 -lmingw32 -lSDL2main
 	EXE = .exe
 endif
@@ -26,7 +26,7 @@ $(MAIN):
 	gcc \
 		-std=gnu99 \
 		src/*.c \
-		-D$(PLATFORM) \
+		-DPLATFORM_$(PLATFORM) \
 		$(LINK_FLAGS) \
 		-lSDL2 \
 		-lm \

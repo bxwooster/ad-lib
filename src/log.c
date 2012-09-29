@@ -1,4 +1,4 @@
-#if defined ANDROID
+#if defined PLATFORM_ANDROID
 
 #include <android/log.h>
 #define LOG_TAG "Cosmos"
@@ -12,7 +12,7 @@ void logi(char const * fmt, ...) {
 	va_end (args);
 }
 
-#elif defined LINUX || defined MAC || defined MINGW || defined IOS
+#else
 
 #include <stdarg.h>
 #include <stdio.h>

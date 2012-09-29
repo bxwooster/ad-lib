@@ -1,10 +1,11 @@
-#if defined ANDROID
+#if defined PLATFORM_ANDROID
 	#include <GLES2/gl2.h>
-#elif defined IOS
+#elif defined PLATFORM_IOS
     #include <OpenGLES/ES2/gl.h>
-#elif defined LINUX || defined MINGW
+#elif defined PLATFORM_LINUX || defined PLATFORM_WINDOWS
 	#include <GL/glew.h>
-#elif defined MAC
+	#define NEED_GLEW
+#elif defined PLATFORM_DARWIN
 	#include <OpenGL/gl.h>
 #endif 
 

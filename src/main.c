@@ -73,7 +73,7 @@ int main (int argc, char * argv []) {
 		goto end;
 	}
 
-#if defined LINUX || defined MINGW
+#if defined NEED_GLEW
 
 	GLenum glew = glewInit();
 	if (glew != GLEW_OK) {
@@ -180,7 +180,7 @@ int main (int argc, char * argv []) {
 
 	struct dirent * dirent = NULL;
 	while ((dirent = readdir (sysdir)) != NULL) {
-#if defined MINGW
+#if defined PLATFORM_WINDOWS
 		if (dirent->d_name[0] != '.') {
 #else
 		if (dirent->d_type == DT_REG) {
