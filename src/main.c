@@ -13,7 +13,7 @@
 #include "platform.h"
 
 static float const ROTSPEED = 1.0f;
-static float const TRANSPEED = 2.0f;
+static float const TRANSPEED = 8.0f;
 static float const CORKSPEED = 1.0f;
 static float const FOV = 60.0f;
 static float const NEAR_PLANE = 0.0001f;
@@ -26,6 +26,7 @@ struct sysplanet {
 
 int main (int argc, char * argv []) {
 	int error = 0;
+	int sdlerror = 0;
 
 	logi ("Revving up.");
 
@@ -45,6 +46,7 @@ int main (int argc, char * argv []) {
 	hotinit ();
 
 	if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
+		sdlerror = 1;
 		error = __LINE__;
 		goto end;
 	}
@@ -55,6 +57,7 @@ int main (int argc, char * argv []) {
 		SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 
 	if (window == NULL) {
+		sdlerror = 1;
 		error = __LINE__;
 		goto end;
 	}
@@ -62,6 +65,7 @@ int main (int argc, char * argv []) {
 	if (SDL_GL_SetAttribute (SDL_GL_CONTEXT_MAJOR_VERSION, 2) != 0 ||
 		SDL_GL_SetAttribute (SDL_GL_CONTEXT_MINOR_VERSION, 0) != 0)
 	{
+		sdlerror = 1;
 		error = __LINE__;
 		goto end;
 	}
@@ -69,6 +73,14 @@ int main (int argc, char * argv []) {
 	SDL_GLContext context = SDL_GL_CreateContext (window);
 
 	if (context == NULL) {
+		sdlerror = 1;
+		error = __LINE__;
+		goto end;
+	}
+	
+	if (SDL_SetRelativeMouseMode (SDL_TRUE) != 0)
+	{
+		sdlerror = 1;
 		error = __LINE__;
 		goto end;
 	}
@@ -217,16 +229,17 @@ int main (int argc, char * argv []) {
 					goto end;
 				}
 			} else if (evt.type == SDL_MOUSEMOTION) {
-				float x = -evt.motion.xrel / ((float) WIDTH);
+				float x = evt.motion.xrel / ((float) WIDTH);
 				float y = evt.motion.yrel / ((float) HEIGHT);
 
 				if (evt.motion.state == SDL_BUTTON (SDL_BUTTON_LEFT)) {
+					//XXX need to pre-, not post-translate
 					mcam[12] += x * TRANSPEED;
 					mcam[13] += y * TRANSPEED;
 				} else
 				if (evt.motion.state == SDL_BUTTON (SDL_BUTTON_RIGHT)) {
 					float axis [3];
-					axis[0] = y;
+					axis[0] = -y;
 					axis[1] = -x;
 					axis[2] = 0.0f;
 					float angle = sqrtf (x * x + y * y) * ROTSPEED;
@@ -307,7 +320,13 @@ int main (int argc, char * argv []) {
 		glDeleteProgram (prog);
 	}
 
-	SDL_GL_DeleteContext (context);
+	if (sdlerror != 0) {
+		logi ("SDL error: %s.", SDL_GetError ());
+	}
+
+	if (context != NULL) {
+		SDL_GL_DeleteContext (context);
+	}
 	SDL_Quit ();
 
 	if (error) {
