@@ -85,8 +85,9 @@ void planetmatrix (
 	memcpy (&rotation[4], third, sizeof (third));
 	rotation[15] = 1.0f;
 
+	float move [3] = {0.0f, 0.0f, -offset};
 	multiplymatrix (matrix, rotation);
-	matrix[14] += offset;
+	translatematrix (matrix, move);
 	scalematrix (matrix, apparent);
 }
 

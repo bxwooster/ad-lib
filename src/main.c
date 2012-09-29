@@ -237,9 +237,8 @@ int main (int argc, char * argv []) {
 		}
 
 		if ((mousebuttons & SDL_BUTTON(1)) != 0) {
-			//XXX need to pre-, not post-translate
-			mcam[12] += x * TRANSLATION_SPEED;
-			mcam[13] += y * TRANSLATION_SPEED;
+			float move [3] = {-x * TRANSLATION_SPEED, y * TRANSLATION_SPEED, 0.0f};
+			translatematrix (mcam, move);
 		}
 		if ((mousebuttons & SDL_BUTTON(3)) != 0) {
 			float axis [3] = {-y, -x, 0.0f};
@@ -250,7 +249,9 @@ int main (int argc, char * argv []) {
 			float axis [3] = {0.0f, 0.0f, 1.0f};
 			float angle = -x * ROTATION_SPEED;
 			rotatematrix (mcam, angle, axis);
-			mcam[14] += y * TRANSLATION_SPEED; /* see above */
+
+			float move [3] = {0.0f, 0.0f, y * TRANSLATION_SPEED};
+			translatematrix (mcam, move);
 		}
 
 		if (mousebuttons != 0) {
