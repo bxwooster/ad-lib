@@ -75,9 +75,9 @@ void planetmatrix (
 	}
 	vectorproduct (first, second, third);
 
-	vectornorm (first);
-	vectornorm (second);
-	vectornorm (third);
+	vectornormalize (first);
+	vectornormalize (second);
+	vectornormalize (third);
 
 	float rotation [4 * 4] = {0};
 	memcpy (&rotation[8], first, sizeof (first));

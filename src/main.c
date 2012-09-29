@@ -12,9 +12,9 @@
 #include "matrix.h"
 #include "platform.h"
 
-static float const ROTSPEED = 128.0f;
+static float const ROTSPEED = 1.0f;
 static float const TRANSPEED = 2.0f;
-static float const CORKSPEED = 16.0f;
+static float const CORKSPEED = 1.0f;
 static float const FOV = 60.0f;
 static float const NEAR_PLANE = 0.0001f;
 
@@ -225,19 +225,21 @@ int main (int argc, char * argv []) {
 					mcam[13] += y * TRANSPEED;
 				} else
 				if (evt.motion.state == SDL_BUTTON (SDL_BUTTON_RIGHT)) {
-					/*XXX
-					glLoadMatrixf (mcam);
-					glRotatef (sqrtf(x * x + y * y) * ROTSPEED, y, -x, 0.0f);
-					glGetFloatv (GL_MODELVIEW_MATRIX, mcam);
-					*/
+					float axis [3];
+					axis[0] = y;
+					axis[1] = -x;
+					axis[2] = 0.0f;
+					float angle = sqrtf (x * x + y * y) * ROTSPEED;
+					rotatematrix (mcam, angle, axis);
 				} else
 				if (evt.motion.state == SDL_BUTTON (SDL_BUTTON_MIDDLE)) {
-					/*XXX
-					glLoadMatrixf (mcam);
-					glRotatef (-x * CORKSPEED, 0.0f, 0.0f, 1.0f);
-					glTranslatef (0.0f, 0.0f, y * TRANSPEED);
-					glGetFloatv (GL_MODELVIEW_MATRIX, mcam);
-					*/
+					float axis [3];
+					axis[0] = 0.0f;
+					axis[1] = 0.0f;
+					axis[2] = 1.0f;
+					float angle = -x * CORKSPEED;
+					rotatematrix (mcam, angle, axis);
+					mcam[14] += y * TRANSPEED;
 				}
 			} else if (evt.type == SDL_QUIT) {
 				goto end;

@@ -38,7 +38,7 @@ float vectorlen (float const v [3]) {
 	return sqrtf (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
 }
 
-void vectornorm (float v [3]) {
+void vectornormalize (float v [3]) {
 	float len = vectorlen(v);
 
 	v[0] /= len;

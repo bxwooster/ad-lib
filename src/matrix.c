@@ -1,4 +1,6 @@
 #include <math.h>
+#include <string.h>
+#include "vector.h"
 
 void identitymatrix (float matrix [4 * 4]) {
 	for (int i = 0; i < 4; ++i)
@@ -84,3 +86,43 @@ void scalematrix (float matrix [4 * 4], float scale) {
 		matrix[e] *= scale;
 	}
 }
+
+void rotatematrix (float matrix [4 * 4], float angle, float axis [3]) {
+	float naxis [3];
+	memcpy (naxis, axis, sizeof (naxis));
+	vectornormalize (naxis);
+
+	float x = naxis[0];
+	float y = naxis[1];
+	float z = naxis[2];
+
+	float c = cosf (angle);
+	float s = sinf (angle);
+
+	float cc = 1 - c;
+	float xs = x * s;
+	float ys = y * s;
+	float zs = z * s;
+
+	float mrot [16] = {
+		x*x * cc + c,
+		y*x * cc + zs,
+		z*x * cc - ys,
+		0,
+
+		x*y * cc - zs,
+		y*y * cc + c,
+		z*y * cc + xs,
+		0,
+
+		x*z * cc + ys,
+		y*z * cc - xs,
+		z*z * cc + c,
+		0,
+
+		0, 0, 0, 1
+	};
+
+	multiplymatrix (matrix, mrot);
+}
+
