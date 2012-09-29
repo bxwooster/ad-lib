@@ -24,14 +24,14 @@ all: $(MAIN)
 
 $(MAIN): src/*.c
 	gcc \
-		-std=gnu99 \
-		src/*.c \
-		-DPLATFORM_$(PLATFORM) \
-		$(LINK_FLAGS) \
-		-lSDL2 \
-		-lm \
-		-g \
-		-o $(MAIN)
+	-std=gnu99 \
+	src/*.c \
+	-DPLATFORM_$(PLATFORM) \
+	$(LINK_FLAGS) \
+	-lSDL2 \
+	-lm \
+	-g \
+	-o $(MAIN)
 
 clean:
 	rm $(MAIN)
