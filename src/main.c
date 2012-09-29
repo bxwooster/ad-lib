@@ -24,6 +24,9 @@ struct sysplanet {
 };
 
 int main (int argc, char * argv []) {
+	(void) argc;
+	(void) argv; /* silence warnings */
+
 	int error = 0;
 	int sdlerror = 0;
 
@@ -143,7 +146,7 @@ int main (int argc, char * argv []) {
 	glViewport (0 ,0, WIDTH, HEIGHT);
 
 	GLuint const attribute_pos = (GLuint) glGetAttribLocation (prog, "pos");
-	if (attribute_pos == -1 ) {
+	if (attribute_pos == (GLuint)-1 ) {
 		error = __LINE__;
 		goto end;
 	}
