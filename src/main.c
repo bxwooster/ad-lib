@@ -52,13 +52,13 @@ int main (int argc, char * argv []) {
 	SDL_Window * window = SDL_CreateWindow ("Cosmos",
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		WIDTH, HEIGHT, 
-		SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS);
+		SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 
 	if (window == NULL) {
 		error = __LINE__;
 		goto end;
 	}
-    
+
 	if (SDL_GL_SetAttribute (SDL_GL_CONTEXT_MAJOR_VERSION, 2) != 0 ||
 	    SDL_GL_SetAttribute (SDL_GL_CONTEXT_MINOR_VERSION, 0) != 0)
 	{
