@@ -19,7 +19,7 @@ endif
 
 MAIN = Main$(EXE)
 
-.PHONY: all clean
+.PHONY: all clean run
 all: $(MAIN)
 
 $(MAIN): src/*.c
@@ -37,3 +37,6 @@ $(MAIN): src/*.c
 
 clean:
 	rm $(MAIN)
+
+run: $(MAIN)
+	./$(MAIN)
