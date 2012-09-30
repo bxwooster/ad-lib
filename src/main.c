@@ -16,7 +16,6 @@
 static float const ROTATION_SPEED = 1.0f;
 static float const TRANSLATION_SPEED = 8.0f;
 static float const FOV = 60.0f;
-static float const NEAR_PLANE = FLT_EPSILON / 2;
 
 struct sysplanet {
 	struct planet planet;
