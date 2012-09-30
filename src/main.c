@@ -12,10 +12,10 @@
 #include "planet.h"
 #include "matrix.h"
 #include "platform.h"
+#include "settings.h"
 
 static float const ROTATION_SPEED = 1.0f;
 static float const TRANSLATION_SPEED = 8.0f;
-static float const FOV = 60.0f;
 
 struct sysplanet {
 	struct planet planet;
@@ -46,6 +46,12 @@ int main (int argc, char * argv []) {
 	struct shader_t fss = {GL_FRAGMENT_SHADER, &fs, &prog};
 
 	hotinit ();
+
+	struct settings settings;
+	if (loadsettings(&settings, "settings")) {
+		error = __LINE__;
+		goto end;
+	}
 
 	if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
 		sdlerror = 1;
@@ -289,7 +295,7 @@ int main (int argc, char * argv []) {
 
 			float matrix [4 * 4];
 			float const aspect = ((float) WIDTH) / HEIGHT;
-			projectionmatrix (FOV, aspect, 0.0f, matrix);
+			projectionmatrix (settings.fov, aspect, 0.0f, matrix);
 
 			multiplymatrix (matrix, mview);
 			multiplymatrix (matrix, mmodel);
