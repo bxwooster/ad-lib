@@ -11,7 +11,7 @@ struct planet {
 
 int loadplanet (struct planet * planet, char const * file);
 
-void planetmatrix(
+float/*hack*/ planetmatrix(
 	struct planet const * planet,
 	double time,
 	float const mview [4 * 4],

@@ -43,7 +43,7 @@ int loadplanet (struct planet * planet, char const * file) {
 	return (error);
 }
 
-void planetmatrix (
+float/*hack*/ planetmatrix (
 		struct planet const * planet,
 		double time,
 		float const mcam [4 * 4],
@@ -89,5 +89,7 @@ void planetmatrix (
 	multiplymatrix (matrix, rotation);
 	translatematrix (matrix, move);
 	scalematrix (matrix, apparent);
+
+	return p - r;
 }
 

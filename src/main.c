@@ -4,6 +4,7 @@
 #include "haveGL.h"
 #include "haveSDL.h"
 #include <math.h>
+#include <float.h>
 #include "sys/queue.h"
 #include "log.h"
 #include "hot.h"
@@ -15,7 +16,7 @@
 static float const ROTATION_SPEED = 1.0f;
 static float const TRANSLATION_SPEED = 8.0f;
 static float const FOV = 60.0f;
-static float const NEAR_PLANE = 0.0001f;
+static float const NEAR_PLANE = FLT_EPSILON / 2;
 
 struct sysplanet {
 	struct planet planet;
@@ -154,6 +155,12 @@ int main (int argc, char * argv []) {
 	glVertexAttribPointer (attribute_pos, 2, GL_FLOAT, GL_FALSE, 0,	0);
 	glEnableVertexAttribArray (attribute_pos);
 
+	GLint const uniform_depth = glGetUniformLocation (prog, "depth");
+	if (uniform_depth == -1) {
+		error = __LINE__;
+		goto end;
+	}
+
 	GLint const uniform_mvp = glGetUniformLocation (prog, "mvp");
 	if (uniform_mvp == -1) {
 		error = __LINE__;
@@ -166,18 +173,12 @@ int main (int argc, char * argv []) {
 		goto end;
 	}
 
-	float mproj [4 * 4];
-	float aspect = ((float) WIDTH) / HEIGHT;
-	projectionmatrix (FOV, aspect, NEAR_PLANE, mproj);
-
-	/* rotate one-eighty around Y */
-	float mcam [4 * 4] = {
-		-1.0f, 0.0f, 0.0f, 0.0f,
-		 0.0f, 1.0f, 0.0f, 0.0f,
-		 0.0f, 0.0f,-1.0f, 0.0f,
-		 0.0f, 0.0f, 0.0f, 1.0f};
-	/* note that the order is reversed */
-	mcam[14] += 20.0f;
+	float mcam [4 * 4];
+    identitymatrix (mcam);
+	float move [3] = {0.0f, 1.8f + FLT_EPSILON, FLT_EPSILON /* ? */};
+	translatematrix (mcam, move);
+	float axisy [3] = {0.0f, 1.0f, 0.0f};
+	rotatematrix (mcam, M_PI / 2.0f, axisy);
 
 	sysdir = opendir (SYSDIR);
 	if (sysdir == NULL) {
@@ -239,22 +240,24 @@ int main (int argc, char * argv []) {
 			y = iy / ((float) HEIGHT) - 0.5f;
 		}
 
-		if ((mousebuttons & SDL_BUTTON(1)) != 0) {
+		if (mousebuttons == SDL_BUTTON(1)) {
 			float move [3] = {-x * TRANSLATION_SPEED, y * TRANSLATION_SPEED, 0.0f};
 			translatematrix (mcam, move);
 		}
-		if ((mousebuttons & SDL_BUTTON(3)) != 0) {
+		if (mousebuttons == SDL_BUTTON(3)) {
 			float axis [3] = {-y, -x, 0.0f};
 			float angle = sqrtf (x * x + y * y) * ROTATION_SPEED;
 			rotatematrix (mcam, angle, axis);
 		}
 		if ((mousebuttons & SDL_BUTTON(2)) != 0) {
-			float axis [3] = {0.0f, 0.0f, 1.0f};
-			float angle = -x * ROTATION_SPEED;
-			rotatematrix (mcam, angle, axis);
-
-			float move [3] = {0.0f, 0.0f, y * TRANSLATION_SPEED};
-			translatematrix (mcam, move);
+			if ((mousebuttons & SDL_BUTTON(1)) == 0) {
+				float axis [3] = {0.0f, 0.0f, 1.0f};
+				float angle = -x * ROTATION_SPEED;
+				rotatematrix (mcam, angle, axis);
+			} else {
+				float move [3] = {0.0f, 0.0f, y * TRANSLATION_SPEED};
+				translatematrix (mcam, move);
+			}
 		}
 
 		if (mousebuttons != 0) {
@@ -283,13 +286,18 @@ int main (int argc, char * argv []) {
 		struct sysplanet * item;
 		TAILQ_FOREACH(item, &list, _) {
 			float mmodel [4 * 4];
-			planetmatrix (&item->planet, time, mcam, mmodel);
+			float hack = planetmatrix (&item->planet, time, mcam, mmodel);
 
 			float matrix [4 * 4];
-			memcpy (matrix, mproj, sizeof (matrix));
+			float const aspect = ((float) WIDTH) / HEIGHT;
+			projectionmatrix (FOV, aspect, hack / 2.0f, matrix);
+
 			multiplymatrix (matrix, mview);
 			multiplymatrix (matrix, mmodel);
 
+			float const depth = logf (hack) / 1000.0f;
+			printf("# %f, %f \n", hack, depth);
+			glUniform1f (uniform_depth, depth);
 			glUniformMatrix4fv (uniform_mvp, 1, GL_FALSE, matrix);
 			glUniform3fv (uniform_color, 1, (float const *) item->planet.color);
 
