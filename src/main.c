@@ -289,7 +289,7 @@ int main (int argc, char * argv []) {
 
 			float matrix [4 * 4];
 			float const aspect = ((float) WIDTH) / HEIGHT;
-			projectionmatrix (FOV, aspect, hack / 2.0f, matrix);
+			projectionmatrix (FOV, aspect, 0.0f, matrix);
 
 			multiplymatrix (matrix, mview);
 			multiplymatrix (matrix, mmodel);
