@@ -296,7 +296,6 @@ int main (int argc, char * argv []) {
 			multiplymatrix (matrix, mmodel);
 
 			float const depth = logf (hack) / 1000.0f;
-			printf("# %f, %f \n", hack, depth);
 			glUniform1f (uniform_depth, depth);
 			glUniformMatrix4fv (uniform_mvp, 1, GL_FALSE, matrix);
 			glUniform3fv (uniform_color, 1, (float const *) item->planet.color);
