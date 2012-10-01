@@ -43,19 +43,23 @@ int loadplanet (struct planet * planet, char const * file) {
 	return (error);
 }
 
-float/*hack*/ planetmatrix (
+void planetmatrix (
 		struct planet const * planet,
 		double time,
 		float const mcam [4 * 4],
-		float matrix [4 * 4]) {
+		float mmodel [4 * 4],
+		float mrot [4 * 4],
+		float * tosurface,
+		float * apparentratio) {
 	float phi = (float) ((time / planet->orbit.period) * M_PI * 2.0);
 
-	memcpy (matrix, planet->orbit.matrix, sizeof (float) * 16);
-	matrix[12] += planet->orbit.major * cosf (phi);
-	matrix[13] += planet->orbit.minor * sinf (phi);
+	memcpy (mmodel, planet->orbit.matrix, sizeof (float) * 16);
+	identitymatrix (mmodel);
+	mmodel[12] += planet->orbit.major * cosf (phi);
+	mmodel[13] += planet->orbit.minor * sinf (phi);
 
 	float first [3];
-	vectordiff (&matrix[12], &mcam[12], first);
+	vectordiff (&mmodel[12], &mcam[12], first);
 
 	float p = vectorlength (first);
 	float r = planet->size;
@@ -84,12 +88,17 @@ float/*hack*/ planetmatrix (
 	memcpy (&rotation[0], second, sizeof (second));
 	memcpy (&rotation[4], third, sizeof (third));
 	rotation[15] = 1.0f;
+	multiplymatrix (mmodel, rotation);
+
+	memcpy (mrot, mmodel, sizeof (float) * 16);
+	mrot[12] = mrot[13] = mrot[14] = 0.0f;
 
 	float move [3] = {0.0f, 0.0f, -offset};
-	multiplymatrix (matrix, rotation);
-	translatematrix (matrix, move);
-	scalematrix (matrix, apparent);
+	translatematrix (mmodel, move);
 
-	return p - r;
+	scalematrix (mmodel, apparent);
+
+	*tosurface = p - r;
+	*apparentratio = apparent / r;
 }
 

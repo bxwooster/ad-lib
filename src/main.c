@@ -131,6 +131,8 @@ int main (int argc, char * argv []) {
 		goto end;
 	}
 
+	glUseProgram (prog);
+
 	struct {
 		float x;
 		float y;
@@ -162,28 +164,35 @@ int main (int argc, char * argv []) {
 
 	GLint const uniform_depth = glGetUniformLocation (prog, "depth");
 	if (uniform_depth == -1) {
-		error = __LINE__;
-		goto end;
+		logi ("GL uniform 'depth' not found");
 	}
 
 	GLint const uniform_mvp = glGetUniformLocation (prog, "mvp");
 	if (uniform_mvp == -1) {
-		error = __LINE__;
-		goto end;
+		logi ("GL uniform 'mvp' not found");
+	}
+
+	GLint const uniform_mv = glGetUniformLocation (prog, "mv");
+	if (uniform_mv == -1) {
+		logi ("GL uniform 'mv' not found");
 	}
 
 	GLint const uniform_color = glGetUniformLocation (prog, "color");
-	if (uniform_mvp == -1) {
-		error = __LINE__;
-		goto end;
+	if (uniform_color == -1) {
+		logi ("GL uniform 'color' not found");
+	}
+
+	GLint const uniform_uvscale = glGetUniformLocation (prog, "uvscale");
+	if (uniform_uvscale == -1) {
+		logi ("GL uniform 'uvscale' not found");
 	}
 
 	float mcam [4 * 4];
     identitymatrix (mcam);
-	float move [3] = {0.0f, 1.8f + FLT_EPSILON, FLT_EPSILON /* ? */};
+	float move [3] = {0.0f, 0.0f, -20.0f};
 	translatematrix (mcam, move);
-	float axisy [3] = {0.0f, 1.0f, 0.0f};
-	rotatematrix (mcam, M_PI / 2.0f, axisy);
+	float axisz [3] = {0.0f, 0.0f, 1.0f};
+	rotatematrix (mcam, M_PI, axisz);
 
 	sysdir = opendir (SYSDIR);
 	if (sysdir == NULL) {
@@ -245,6 +254,7 @@ int main (int argc, char * argv []) {
 			y = iy / ((float) HEIGHT) - 0.5f;
 		}
 
+		/*
 		if (mousebuttons == SDL_BUTTON(1)) {
 			float move [3] = {-x * TRANSLATION_SPEED, y * TRANSLATION_SPEED, 0.0f};
 			translatematrix (mcam, move);
@@ -263,6 +273,25 @@ int main (int argc, char * argv []) {
 				float move [3] = {0.0f, 0.0f, y * TRANSLATION_SPEED};
 				translatematrix (mcam, move);
 			}
+		}*/
+		float axis [3] = {-y, -x, 0.0f};
+		float angle = sqrtf (x * x + y * y) * ROTATION_SPEED;
+		float move [3] = {0.0f, 0.0f, y * TRANSLATION_SPEED};
+
+		if (mousebuttons == SDL_BUTTON(1)) {
+			float matrix [4 * 4];
+			identitymatrix (matrix);
+			rotatematrix (matrix, angle, axis);
+			multiplymatrix (matrix, mcam);
+			memcpy (mcam, matrix, sizeof (float) * 16);
+		}
+		if (mousebuttons == SDL_BUTTON(3)) {
+			float axis [3] = {-y, -x, 0.0f};
+			float angle = sqrtf (x * x + y * y) * ROTATION_SPEED;
+			rotatematrix (mcam, angle, axis);
+		}
+		if (mousebuttons == SDL_BUTTON(2)) {
+			translatematrix (mcam, move);
 		}
 
 		if (mousebuttons != 0) {
@@ -276,8 +305,8 @@ int main (int argc, char * argv []) {
 			mouselock = 0;
 		}
 
-		hotcheck ();
-		glUseProgram (prog);
+		/*hotcheck ();
+		glUseProgram (prog);*/
 
 		double time = (double) SDL_GetTicks () / 1000;
 
@@ -290,20 +319,32 @@ int main (int argc, char * argv []) {
 
 		struct sysplanet * item;
 		TAILQ_FOREACH(item, &list, _) {
+			float tosurface;
+			float apparentratio;
 			float mmodel [4 * 4];
-			float hack = planetmatrix (&item->planet, time, mcam, mmodel);
+			float mrot [4 * 4];
+			planetmatrix (&item->planet, time, mcam, mmodel, mrot,
+				&tosurface, &apparentratio);
 
 			float matrix [4 * 4];
+
 			float const aspect = ((float) WIDTH) / HEIGHT;
 			projectionmatrix (settings.fov, aspect, 0.0f, matrix);
-
 			multiplymatrix (matrix, mview);
 			multiplymatrix (matrix, mmodel);
-
-			float const depth = logf (hack) / 1000.0f;
-			glUniform1f (uniform_depth, depth);
 			glUniformMatrix4fv (uniform_mvp, 1, GL_FALSE, matrix);
-			glUniform3fv (uniform_color, 1, (float const *) item->planet.color);
+
+			float mtmp [4 * 4];
+			memcpy (mtmp, mview, sizeof (float) * 16);
+			multiplymatrix (mtmp, mview);
+			multiplymatrix (mtmp, mrot);
+			glUniformMatrix4fv (uniform_mv, 1, GL_FALSE, mtmp);
+
+			float const hack = logf (tosurface) / 1000.0f;
+			glUniform1f (uniform_depth, hack);
+
+			glUniform1f (uniform_uvscale, apparentratio);
+			glUniform3fv (uniform_color, 1, item->planet.color);
 
 			glDrawArrays (GL_TRIANGLES, 0, vertices);
 		}
