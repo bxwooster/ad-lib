@@ -1,1 +1,5 @@
-map <F5> :!make run<CR>
+function! CosmosMakeRun()
+  execute '!cls; make -s -C' . expand('%:p:h') . '/.. run'
+endfunction
+
+map <F5> :call CosmosMakeRun()<CR>
