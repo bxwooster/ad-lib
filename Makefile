@@ -10,7 +10,13 @@ ifeq ($(shell uname),Darwin)
 endif
 ifeq ($(shell uname -o),Msys)
 	PLATFORM = WINDOWS
-	LINK_FLAGS = -lopengl32 -lglew32 -lmingw32 -lSDL2main
+	LINK_FLAGS = \
+		-lmingw32 \
+		-lopengl32 \
+		-lglew32 \
+		-lSDL2main \
+		-I/usr/local/include \
+		-L/usr/local/lib
 	EXE = .exe
 endif
 ifeq ($(PLATFORM),)
@@ -19,8 +25,9 @@ endif
 
 MAIN = Main$(EXE)
 
-.PHONY: all clean run package
-all: $(MAIN)
+.PHONY: \
+  clean run package \
+  it a the
 
 $(MAIN): src/*.c
 	gcc \
@@ -31,15 +38,19 @@ $(MAIN): src/*.c
 	-DPLATFORM_$(PLATFORM) \
 	$(LINK_FLAGS) \
 	-lSDL2 \
+	-lSDL2_image \
 	-lm \
 	-g \
 	-o $(MAIN)
+
+it a the:
+	@:
 
 clean:
 	rm $(MAIN)
 
 run: $(MAIN)
-	./$(MAIN)
+	@./$(MAIN)
 
 package: $(MAIN)
 	rm -rf pkg
