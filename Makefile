@@ -19,7 +19,7 @@ endif
 
 MAIN = Main$(EXE)
 
-.PHONY: all clean run
+.PHONY: all clean run package
 all: $(MAIN)
 
 $(MAIN): src/*.c
@@ -40,3 +40,13 @@ clean:
 
 run: $(MAIN)
 	./$(MAIN)
+
+package: $(MAIN)
+	rm -rf pkg
+	mkdir pkg
+	cp -r \
+		$(MAIN) sys shd settings \
+		`which glew32.dll` \
+		`which libSDL2-2-0-0.dll` \
+		pkg
+	tar -cj pkg -f Cosmos.pkg.tar.gz
