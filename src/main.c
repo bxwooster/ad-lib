@@ -3,6 +3,7 @@
 #include <dirent.h>
 #include "haveGL.h"
 #include "haveSDL.h"
+#include <SDL2/SDL_image.h>
 #include <math.h>
 #include <float.h>
 #include "sys/queue.h"
@@ -48,6 +49,15 @@ int main (int argc, char * argv []) {
 
 	struct settings settings;
 	if (loadsettings(&settings, "settings")) {
+		error = __LINE__;
+		goto end;
+	}
+
+	int img_require = IMG_INIT_JPG;
+	int img_initted = IMG_Init (img_require);
+
+	if ((img_require & img_initted) != img_require) {
+		logi ("SDL_image error: %s", IMG_GetError ());
 		error = __LINE__;
 		goto end;
 	}
@@ -428,7 +438,9 @@ int main (int argc, char * argv []) {
 	if (context != NULL) {
 		SDL_GL_DeleteContext (context);
 	}
+
 	SDL_Quit ();
+	IMG_Quit ();
 
 	if (error) {
 		logi ("Error # %d.", error);

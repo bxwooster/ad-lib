@@ -14,9 +14,7 @@ ifeq ($(shell uname -o),Msys)
 		-lmingw32 \
 		-lopengl32 \
 		-lglew32 \
-		-lSDL2main \
-		-I/usr/local/include \
-		-L/usr/local/lib
+		-lSDL2main
 	EXE = .exe
 endif
 ifeq ($(PLATFORM),)
