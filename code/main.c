@@ -48,7 +48,7 @@ int main (int argc, char * argv []) {
 	hotinit ();
 
 	struct settings settings;
-	if (loadsettings(&settings, "settings")) {
+	if (loadsettings(&settings, "data/settings")) {
 		error = __LINE__;
 		goto end;
 	}

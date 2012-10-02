@@ -16,8 +16,8 @@
 
 #elif defined PLATFORM_LINUX || defined PLATFORM_DARWIN || defined PLATFORM_WINDOWS
 
-#define SYSDIR "sys"
-#define SHDDIR "shd"
+#define SYSDIR "data/spawn"
+#define SHDDIR "data/shade"
 #define GL_SHADER_PREFIX "#version 120\n"
 #define WIDTH 960
 #define HEIGHT 960
