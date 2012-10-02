@@ -33,7 +33,6 @@ int main (int argc, char * argv []) {
 	logi ("Revving up.");
 
 	GLuint prog = GL_FALSE;
-	GLuint vbo = GL_FALSE;
 	GLuint vs = GL_FALSE;
 	GLuint fs = GL_FALSE;
 
@@ -146,15 +145,55 @@ int main (int argc, char * argv []) {
 	};
 	int const vertices = sizeof (tris) / sizeof (tris[0]);
 	
+	GLuint vbo = GL_FALSE;
 	glGenBuffers (1, &vbo);
 	glBindBuffer (GL_ARRAY_BUFFER, vbo);
 	glBufferData (GL_ARRAY_BUFFER, sizeof (tris), tris, GL_STATIC_DRAW);
 
+	GLubyte pixels[6][3] = {
+		{255, 0, 0},
+		{255, 0, 255},
+		{0, 255, 255},
+		{0, 0, 255},
+		{255, 255, 0},
+		{0, 255, 0}, 
+	};
+
+	GLuint tex = GL_FALSE;
+	glGenTextures (1, &tex);
+	glBindTexture (GL_TEXTURE_CUBE_MAP, tex);
+
+	GLenum targets [6] = {
+		GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+		GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+		GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+		GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+		GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
+		GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
+	};
+
+	for (int i = 0; i < 6; ++i) {
+		glTexImage2D
+		(targets[i], 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels[i]);
+	}
+
+	glTexParameteri
+		(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+	glTexParameteri
+		(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	/*glTexParameteri
+		(GL_TEXTURE_CUBE_MAP, GL_GENERATE_MIPMAP, GL_TRUE);*/
+
+	glActiveTexture (GL_TEXTURE0);
+	glBindTexture (GL_TEXTURE_CUBE_MAP, tex);
+
 	glEnable (GL_DEPTH_TEST);
-	glViewport (0 ,0, WIDTH, HEIGHT);
+	glViewport (0, 0, WIDTH, HEIGHT);
 
 	GLuint const attribute_pos = (GLuint) glGetAttribLocation (prog, "pos");
-	if (attribute_pos == (GLuint)-1 ) {
+	if (attribute_pos == (GLuint) -1) {
 		error = __LINE__;
 		goto end;
 	}
@@ -185,6 +224,11 @@ int main (int argc, char * argv []) {
 	GLint const uniform_uvscale = glGetUniformLocation (prog, "uvscale");
 	if (uniform_uvscale == -1) {
 		logi ("GL uniform 'uvscale' not found");
+	}
+
+	GLint const uniform_texture = glGetUniformLocation (prog, "texture");
+	if (uniform_texture== -1) {
+		logi ("GL uniform 'texture' not found");
 	}
 
 	float mcam [4 * 4];
@@ -346,6 +390,8 @@ int main (int argc, char * argv []) {
 			glUniform1f (uniform_uvscale, apparentratio);
 			glUniform3fv (uniform_color, 1, item->planet.color);
 
+			glUniform1i (uniform_texture, 0);
+
 			glDrawArrays (GL_TRIANGLES, 0, vertices);
 		}
  
@@ -371,6 +417,7 @@ int main (int argc, char * argv []) {
 
 	if (glew == GLEW_OK) {
 		glDeleteBuffers (1, &vbo);
+		glDeleteTextures (1, &tex);
 		glDeleteProgram (prog);
 	}
 
