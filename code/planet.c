@@ -32,6 +32,9 @@ int loadplanet (struct planet * planet, char const * file) {
 
 	identitymatrix (read.orbit.matrix);
 
+	float axisz [3] = {0.0f, 0.0f, 1.0f};
+//	rotatematrix (read.orbit.matrix, M_PI, axisz);
+
 	*planet = read;
 
 	end:
@@ -54,7 +57,6 @@ void planetmatrix (
 	float phi = (float) ((time / planet->orbit.period) * M_PI * 2.0);
 
 	memcpy (mmodel, planet->orbit.matrix, sizeof (float) * 16);
-	identitymatrix (mmodel);
 	mmodel[12] += planet->orbit.major * cosf (phi);
 	mmodel[13] += planet->orbit.minor * sinf (phi);
 

@@ -19,8 +19,8 @@ void main (void) {
 	//result = step (0.0, normal);
 	result = textureCube(texture, normal).rgb;
 
-	float brightness = 0.5;
-	result += color;
+	float brightness = 1.5;
+	result *= color;
 	result *= light * brightness;
 
 	gl_FragColor = vec4 (result, 0.0);

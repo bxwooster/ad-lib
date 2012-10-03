@@ -160,14 +160,24 @@ int main (int argc, char * argv []) {
 	glBindBuffer (GL_ARRAY_BUFFER, vbo);
 	glBufferData (GL_ARRAY_BUFFER, sizeof (tris), tris, GL_STATIC_DRAW);
 
-	GLubyte pixels[6][3] = {
-		{255, 0, 0},
-		{255, 0, 255},
-		{0, 255, 255},
-		{0, 0, 255},
-		{255, 255, 0},
-		{0, 255, 0}, 
+	char const * const earthimg [6] = {
+		"art/earth/posx.jpg",
+		"art/earth/negx.jpg",
+		"art/earth/posy.jpg",
+		"art/earth/negy.jpg",
+		"art/earth/posz.jpg",
+		"art/earth/negz.jpg",
 	};
+
+	SDL_Surface * earth [6];
+	for (int i = 0; i < 6; ++i) {
+		earth[i] = IMG_Load (earthimg[i]);
+		if (earth[i] == NULL) {
+			logi ("SDL_image error: %s", IMG_GetError ());
+			error = __LINE__;
+			goto end;
+		}
+	}
 
 	GLuint tex = GL_FALSE;
 	glGenTextures (1, &tex);
@@ -183,18 +193,23 @@ int main (int argc, char * argv []) {
 	};
 
 	for (int i = 0; i < 6; ++i) {
-		glTexImage2D
-		(targets[i], 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels[i]);
+		glTexImage2D (targets[i], 0, GL_RGB, earth[i]->w, earth[i]->h,
+			0, GL_RGB, GL_UNSIGNED_BYTE, earth[i]->pixels);
 	}
 
-	glTexParameteri
-		(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-
-	glTexParameteri
-		(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (earth[0]->format->format != (Uint32) SDL_PIXELFORMAT_RGB24) {
+		error = __LINE__;
+		goto end;
+	}
 
 	/*glTexParameteri
 		(GL_TEXTURE_CUBE_MAP, GL_GENERATE_MIPMAP, GL_TRUE);*/
+
+	glTexParameteri
+		(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR/*_MIPMAP_LINEAR*/);
+
+	glTexParameteri
+		(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	glActiveTexture (GL_TEXTURE0);
 	glBindTexture (GL_TEXTURE_CUBE_MAP, tex);
