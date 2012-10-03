@@ -441,8 +441,11 @@ int main (int argc, char * argv []) {
 	}
 
 	if (glew == GLEW_OK) {
-		glDeleteBuffers (1, &vbo);
 		glDeleteTextures (1, &tex);
+		for (int i = 0; i < 6; i++) {
+			SDL_FreeSurface (earth[i]);
+		}
+		glDeleteBuffers (1, &vbo);
 		glDeleteProgram (prog);
 	}
 
