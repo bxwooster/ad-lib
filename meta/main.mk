@@ -1,49 +1,49 @@
-PLATFORM =
-EXE =
+platform =
+exe-suffix =
 ifeq ($(shell uname),Linux)
-	PLATFORM = Linux
-	LINK_FLAGS = -lGL -lGLEW
+	platform = Linux
+	link-flags = -lGL -lGLEW
 endif
 ifeq ($(shell uname),Darwin)
-	PLATFORM = Darwin
-	LINK_FLAGS = -framework OpenGL
+	platform = Darwin
+	link-flags = -framework OpenGL
 endif
 ifeq ($(shell uname -o),Msys)
-	PLATFORM = Windows
-	LINK_FLAGS = \
+	platform = Windows
+	link-flags = \
 		-lmingw32 \
 		-lopengl32 \
 		-lglew32 \
 		-lSDL2main
-	EXE = .exe
+	exe-suffix = .exe
 endif
-ifeq ($(PLATFORM),)
+ifeq ($(platform),)
 	$(error Could not determine platform.)
 endif
 
-UPPERCASE_PLATFORM = $(shell echo $(PLATFORM) | tr '[a-z]' '[A-Z]')
-MAIN = +/$(PLATFORM)/Main$(EXE)
+uppercase-platform = $(shell echo $(platform) | tr '[a-z]' '[A-Z]')
+main = +/$(platform)/Main$(exe-suffix)
 
-$(shell mkdir -p +/$(PLATFORM))
+$(shell mkdir -p +/$(platform))
 # what a hack, really
 
 .PHONY: \
   clean run package \
   it a the
 
-$(MAIN): code/*.c code/*.h
+$(main): code/*.c code/*.h
 	gcc \
 	-Wall \
 	-Wextra \
 	-std=gnu99 \
 	code/*.c \
-	-DPLATFORM_$(UPPERCASE_PLATFORM) \
-	$(LINK_FLAGS) \
+	-DPLATFORM_$(uppercase-platform) \
+	$(link-flags) \
 	-lSDL2 \
 	-lSDL2_image \
 	-lm \
 	-g \
-	-o $(MAIN)
+	-o $(main)
 
 it a the:
 	@:
@@ -51,15 +51,16 @@ it a the:
 clean:
 	rm -rf +
 
-run: $(MAIN)
-	@./$(MAIN)
+run: $(main)
+	@./$(main)
 
-package: $(MAIN)
-	rm -rf +/$(PLATFORM)/package
-	mkdir +/$(PLATFORM)/package
+package: $(main)
+	rm -rf +/$(platform)/package
+	mkdir +/$(platform)/package
 	cp -r \
-		$(MAIN) data \
+		$(main) data \
 		`which glew32.dll` \
 		`which libSDL2-2-0-0.dll` \
-		+/$(PLATFORM)/package
-	tar -cj +/$(PLATFORM)/package -f +/$(PLATFORM)/package.tar.bz2
+		+/$(platform)/package
+	tar -cj +/$(platform)/package -f +/$(platform)/package.tar.bz2
+
