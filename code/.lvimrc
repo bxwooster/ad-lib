@@ -1,5 +1,26 @@
+let s:thispath = expand('<afile>:p:h')
+
 function! CosmosMakeRun()
-  execute '!cls; make -s -C' . expand('%:p:h') . '/.. run'
+  execute '!cls; make -s -C' . s:thispath . '/.. run'
 endfunction
 
+function! CosmosUpdateTags()
+  let filefull = expand('%:p')
+  if match(filefull, s:thispath) == -1
+    return
+  endif
+  let file = substitute(filefull, s:thispath . '/', '', '')
+  let efile = escape(file, './')
+
+  let cmd = 'cd ' . s:thispath . '; sed -i "/' . efile . '/d" tags; cd -'
+  let ret = system(cmd)
+  "echo cmd
+
+  let cmd = 'cd ' . s:thispath . '; ctags -a "' . file . '"; cd -'
+  let ret = system(cmd)
+  "echo cmd
+endfunction
+
+autocmd BufWritePost *.h,*.c call CosmosUpdateTags()
 map <F5> :call CosmosMakeRun()<CR>
+
