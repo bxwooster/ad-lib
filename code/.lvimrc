@@ -1,26 +1,46 @@
-let s:thispath = expand('<afile>:p:h')
+if exists('s:guard') == 0 " guard
 
-function! CosmosMakeRun()
+let s:guard = 1
+let s:thispath = expand('<afile>:p:h')
+let s:flags = '--c-kinds=fgstuv'
+
+function s:sys(cmd)
+  let pref = 'cd ' . s:thispath . '; '
+  let postf = '; cd -'
+
+  call system(pref . a:cmd . postf)
+  echo a:cmd
+endfunction
+
+function CosmosMakeRun()
   execute '!cls; make -s -C' . s:thispath . '/.. run'
 endfunction
 
-function! CosmosUpdateTags()
+function CosmosUpdateTags()
   let filefull = expand('%:p')
-  if match(filefull, s:thispath) == -1
+  if match(filefull, s:thispath) != 0
     return
   endif
-  let file = substitute(filefull, s:thispath . '/', '', '')
-  let efile = escape(file, './')
 
-  let cmd = 'cd ' . s:thispath . '; sed -i "/' . efile . '/d" tags; cd -'
-  let ret = system(cmd)
-  "echo cmd
+    let file = substitute(filefull, s:thispath . '/', '', '')
+    let efile = escape(file, './')
 
-  let cmd = 'cd ' . s:thispath . '; ctags -a "' . file . '"; cd -'
-  let ret = system(cmd)
-  "echo cmd
+    let cmd = 'sed -i "/' . efile . '/d" tags'
+    call s:sys(cmd)
+
+    let cmd = 'ctags -a ' . s:flags . ' "' . file . '"'
+    call s:sys(cmd)
 endfunction
 
+function CosmosDoTags()
+  if filereadable(s:thispath . '/ctags') == 0
+    let cmd = 'ctags ' . s:flags . ' *'
+    call s:sys(cmd)
+  endif
+endfunction
+
+call CosmosDoTags()
 autocmd BufWritePost *.h,*.c call CosmosUpdateTags()
 map <F5> :call CosmosMakeRun()<CR>
 
+endif " end of guard
