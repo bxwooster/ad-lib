@@ -1,28 +1,28 @@
-platform =
-exe-suffix =
+platform :=
+exe-suffix :=
 ifeq ($(shell uname),Linux)
-	platform = Linux
-	link-flags = -lGL -lGLEW
+	platform := Linux
+	link-flags := -lGL -lGLEW
 endif
 ifeq ($(shell uname),Darwin)
-	platform = Darwin
-	link-flags = -framework OpenGL
+	platform := Darwin
+	link-flags := -framework OpenGL
 endif
 ifeq ($(shell uname -o),Msys)
-	platform = Windows
-	link-flags = \
+	platform := Windows
+	link-flags := \
 		-lmingw32 \
 		-lopengl32 \
 		-lglew32 \
 		-lSDL2main
-	exe-suffix = .exe
+	exe-suffix := .exe
 endif
 ifeq ($(platform),)
 	$(error Could not determine platform.)
 endif
 
-uppercase-platform = $(shell echo $(platform) | tr '[a-z]' '[A-Z]')
-main = +/$(platform)/Main$(exe-suffix)
+uppercase-platform := $(shell echo $(platform) | tr '[a-z]' '[A-Z]')
+main := +/$(platform)/Main$(exe-suffix)
 
 $(shell mkdir -p +/$(platform))
 # what a hack, really
@@ -45,9 +45,6 @@ $(main): code/*.c code/*.h
 	-g \
 	-o $(main)
 
-it a the:
-	@:
-
 clean:
 	rm -rf +
 
@@ -63,4 +60,7 @@ package: $(main)
 		`which libSDL2-2-0-0.dll` \
 		+/$(platform)/package
 	tar -cj +/$(platform)/package -f +/$(platform)/package.tar.bz2
+
+it a the:
+	@:
 
