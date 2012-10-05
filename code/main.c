@@ -70,7 +70,7 @@ int main (int argc, char * argv []) {
 
 	SDL_Window * window = SDL_CreateWindow ("Cosmos",
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		WIDTH, HEIGHT, 
+		settings.width, settings.height, 
 		SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 
 	if (window == NULL) {
@@ -215,7 +215,7 @@ int main (int argc, char * argv []) {
 	glBindTexture (GL_TEXTURE_CUBE_MAP, tex);
 
 	glEnable (GL_DEPTH_TEST);
-	glViewport (0, 0, WIDTH, HEIGHT);
+	glViewport (0, 0, settings.width, settings.height);
 
 	GLuint const attribute_pos = (GLuint) glGetAttribLocation (prog, "pos");
 	if (attribute_pos == (GLuint) -1) {
@@ -319,8 +319,8 @@ int main (int argc, char * argv []) {
 		float x = 0;
 		float y = 0;
 		if (mouselock == 1) {
-			x = ix / ((float) WIDTH) - 0.5f;
-			y = iy / ((float) HEIGHT) - 0.5f;
+			x = ix / ((float) settings.width) - 0.5f;
+			y = iy / ((float) settings.height) - 0.5f;
 		}
 
 		/*
@@ -366,7 +366,7 @@ int main (int argc, char * argv []) {
 		if (mousebuttons != 0) {
 			SDL_ShowCursor (0);
 			SDL_SetWindowGrab (window, SDL_TRUE);
-			SDL_WarpMouseInWindow (window, WIDTH / 2, HEIGHT / 2);
+			SDL_WarpMouseInWindow (window, settings.width / 2, settings.height / 2);
 			mouselock = 1;
 		} else {
 			SDL_ShowCursor (1);
@@ -397,7 +397,7 @@ int main (int argc, char * argv []) {
 
 			float matrix [4 * 4];
 
-			float const aspect = ((float) WIDTH) / HEIGHT;
+			float const aspect = ((float) settings.width) / settings.height;
 			projectionmatrix (settings.fov, aspect, 0.0f, matrix);
 			multiplymatrix (matrix, mview);
 			multiplymatrix (matrix, mmodel);
