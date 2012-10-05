@@ -13,11 +13,11 @@ void main (void) {
 	float light = sqrt (1.0 - radius);
 
 	float w = -sqrt (1.0 - dot (uv, uv));
-	vec3 normal = mat3(mv) * vec3 (uv, w);
+ 	vec3 normal = mat3 (mv) * vec3 (uv, w);
 
 	//result = 0.5 * normal + 0.5;
 	//result = step (0.0, normal);
-	result = textureCube(texture, normal).rgb;
+	result = textureCube (texture, normal).rgb;
 
 	float brightness = 1.5;
 	result *= color;
