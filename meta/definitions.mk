@@ -29,5 +29,6 @@ package-dir := $(platform-dir)/package
 
 main-exe := $(build-dir)/main$(exe-suffix)
 all-c := $(build-dir)/all.c
+all-h := $(build-dir)/all.h
 package-archive := $(platform-dir)/package.tar.bz2
 

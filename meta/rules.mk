@@ -1,4 +1,4 @@
-$(main-exe): code/*.c code/*.h $(all-c) | $(build-dir)
+$(main-exe): code/*.c code/*.h $(all-c) $(all-h) | $(build-dir)
 	gcc \
 	-Wall \
 	-Wextra \
@@ -13,11 +13,22 @@ $(main-exe): code/*.c code/*.h $(all-c) | $(build-dir)
 	-g \
 	-o $(main-exe)
 
+$(all-h): code code/*.c | $(build-dir)
+	rm -f $(all-h).tmp
+	rm -f $(all-h)
+	for file in `echo code/*.c`; do \
+	  awk 'BEGIN{RS="{"} {print $$0, ";"; exit}' $$file >> $(all-h).tmp ; \
+	done
+	mv $(all-h).tmp $(all-h)
+
 $(all-c): code | $(build-dir)
 	rm -f $(all-c).tmp
 	rm -f $(all-c)
-	echo "#include <code/include.h>" >> $(all-c).tmp
-	for file in `echo code/*.h` `echo code/*.c`; do \
+	for file in `echo code/*.h`; do \
+	  echo "#include <$$file>" >> $(all-c).tmp ; \
+	done
+	echo "#include <$(all-h)>" >> $(all-c).tmp
+	for file in `echo code/*.c`; do \
 	  echo "#include <$$file>" >> $(all-c).tmp ; \
 	done
 	mv $(all-c).tmp $(all-c)

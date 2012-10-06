@@ -1,5 +1,4 @@
-void logshader (GLuint sh)
-{
+void logshader (GLuint sh) {
 	GLint size = 0;
 	glGetShaderiv (sh, GL_INFO_LOG_LENGTH, &size);
 	assert (size > 0);
