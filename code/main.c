@@ -1,19 +1,3 @@
-#include <stdio.h>
-#include <assert.h>
-#include <dirent.h>
-#include "haveGL.h"
-#include "haveSDL.h"
-#include <SDL2/SDL_image.h>
-#include <math.h>
-#include <float.h>
-#include "sys/queue.h"
-#include "log.h"
-#include "shader.h"
-#include "planet.h"
-#include "matrix.h"
-#include "platform.h"
-#include "settings.h"
-
 static float const ROTATION_SPEED = 1.0f;
 static float const TRANSLATION_SPEED = 8.0f;
 
@@ -25,7 +9,7 @@ struct sysplanet {
 
 int main (int argc, char * argv []) {
 	(void) argc;
-	(void) argv; /* silence warnings */
+	(void) argv; /* silence the warnings */
 
 	int error = 0;
 	int sdlerror = 0;
@@ -35,6 +19,7 @@ int main (int argc, char * argv []) {
 	GLuint prog = GL_FALSE;
 	GLuint vs = GL_FALSE;
 	GLuint fs = GL_FALSE;
+	int gl_initted = 0;
 
 	DIR * sysdir = NULL;
 
@@ -92,36 +77,15 @@ int main (int argc, char * argv []) {
 		goto end;
 	}
 	
-#if defined NEED_GLEW
-
-	GLenum glew = glewInit();
-	if (glew != GLEW_OK) {
-		logi ("GLEW error: %s.", glewGetErrorString (glew));
-		error = __LINE__;
-		goto end;
-	}
-
-	if (!GLEW_VERSION_2_0) {
-		logi ("GL2 is not supported.");
-		glew = GLEW_ERROR_NO_GL_VERSION;
-		error = __LINE__;
-		goto end;
-	}
-
-#else
-
-	GLenum const GLEW_OK = 0;
-	GLenum glew = GLEW_OK;
-
-#endif
+	gl_initted = gl_init ();
 
 	prog = glCreateProgram ();
 
-	if (loadshader (&vss, SHDDIR "/draw.vert") != 0) {
+	if (loadshader (&vss, "data/shade/draw.vert") != 0) {
 		error = __LINE__;
 		goto end;
 	}
-	if (loadshader (&fss, SHDDIR "/draw.frag") != 0) {
+	if (loadshader (&fss, "data/shade/draw.frag") != 0) {
 		error = __LINE__;
 		goto end;
 	}
@@ -264,7 +228,8 @@ int main (int argc, char * argv []) {
 	float axisz [3] = {0.0f, 0.0f, 1.0f};
 	rotatematrix (mcam, M_PI, axisz);
 
-	sysdir = opendir (SYSDIR);
+	char const * const dirname = "data/spawn";
+	sysdir = opendir (dirname);
 	if (sysdir == NULL) {
 		error = __LINE__;
 		goto end;
@@ -272,18 +237,14 @@ int main (int argc, char * argv []) {
 
 	struct dirent * dirent = NULL;
 	while ((dirent = readdir (sysdir)) != NULL) {
-#if defined PLATFORM_WINDOWS
 		if (dirent->d_name[0] != '.') {
-#else
-		if (dirent->d_type == DT_REG) {
-#endif
-			size_t len = strlen (SYSDIR) + 1 + strlen (dirent->d_name) + 1;
+			size_t len = strlen (dirname) + 1 + strlen (dirent->d_name) + 1;
 			struct sysplanet * item = (struct sysplanet *) malloc (sizeof (*item));
 			assert (item != NULL);
 			item->file = (char *) malloc (len);
 			assert (item->file != NULL);
 			
-			snprintf (item->file, len, "%s/%s", SYSDIR, dirent->d_name);
+			snprintf (item->file, len, "%s/%s", dirname, dirent->d_name);
 			TAILQ_INSERT_TAIL (&list, item, _);
 
 			if (loadplanet (&item->planet, item->file) != 0) {
@@ -421,22 +382,24 @@ int main (int argc, char * argv []) {
 		SDL_GL_SwapWindow (window);
 	}
  
-	struct sysplanet * item;
-	struct sysplanet * tvar;
-
 	end:
 
-	TAILQ_FOREACH_SAFE(item, &list, _, tvar) {
-		free ((void *) item->file);
-		TAILQ_REMOVE (&list, item, _);
-		free ((void *) item);
+	{
+		struct sysplanet * item;
+		struct sysplanet * tvar;
+
+		TAILQ_FOREACH_SAFE(item, &list, _, tvar) {
+			free ((void *) item->file);
+			TAILQ_REMOVE (&list, item, _);
+			free ((void *) item);
+		}
 	}
 
 	if (sysdir != NULL) {
 		closedir (sysdir);
 	}
 
-	if (glew == GLEW_OK) {
+	if (gl_initted != 0) {
 		glDeleteBuffers (1, &vbo);
 		glDeleteTextures (1, &tex);
 		glDeleteProgram (prog);

@@ -1,6 +1,3 @@
-#include <math.h>
-#include "vector.h"
-
 void vectorsum (
 		float const a [3],
 		float const b [3],

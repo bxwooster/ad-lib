@@ -1,22 +1,3 @@
-#if defined PLATFORM_ANDROID
-
-#include <android/log.h>
-#define LOG_TAG "Cosmos"
-
-static const char * const TAG = "Cosmos";
-
-void logi(char const * fmt, ...) {
-	va_list args;
-	va_start (args, fmt);
-	__android_log_vprint (ANDROID_LOG_INFO, TAG, fmt, args);
-	va_end (args);
-}
-
-#else
-
-#include <stdarg.h>
-#include <stdio.h>
-
 void logi(char const * fmt, ...) {
 	va_list args;
 	va_start (args, fmt);
@@ -25,4 +6,3 @@ void logi(char const * fmt, ...) {
 	va_end (args);
 }
 
-#endif
