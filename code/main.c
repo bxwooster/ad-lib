@@ -1,6 +1,3 @@
-static float const ROTATION_SPEED = 1.0f;
-static float const TRANSLATION_SPEED = 8.0f;
-
 struct sysplanet {
 	struct planet planet;
 	char * file;
@@ -81,11 +78,11 @@ int main (int argc, char * argv []) {
 
 	prog = glCreateProgram ();
 
-	if (loadshader (&vss, "data/shade/draw.vert") != 0) {
+	if (loadshader (&vss, "data/shade/planet.vert") != 0) {
 		error = __LINE__;
 		goto end;
 	}
-	if (loadshader (&fss, "data/shade/draw.frag") != 0) {
+	if (loadshader (&fss, "data/shade/planet.frag") != 0) {
 		error = __LINE__;
 		goto end;
 	}
@@ -285,26 +282,9 @@ int main (int argc, char * argv []) {
 			y = iy / ((float) settings.height) - 0.5f;
 		}
 
-		/*
-		if (mousebuttons == SDL_BUTTON(1)) {
-			float move [3] = {-x * TRANSLATION_SPEED, y * TRANSLATION_SPEED, 0.0f};
-			translatematrix (mcam, move);
-		}
-		if (mousebuttons == SDL_BUTTON(3)) {
-			float axis [3] = {-y, -x, 0.0f};
-			float angle = sqrtf (x * x + y * y) * ROTATION_SPEED;
-			rotatematrix (mcam, angle, axis);
-		}
-		if ((mousebuttons & SDL_BUTTON(2)) != 0) {
-			if ((mousebuttons & SDL_BUTTON(1)) == 0) {
-				float axis [3] = {0.0f, 0.0f, 1.0f};
-				float angle = -x * ROTATION_SPEED;
-				rotatematrix (mcam, angle, axis);
-			} else {
-				float move [3] = {0.0f, 0.0f, y * TRANSLATION_SPEED};
-				translatematrix (mcam, move);
-			}
-		}*/
+		float const ROTATION_SPEED = 1.0f;
+		float const TRANSLATION_SPEED = 8.0f;
+
 		float axis [3] = {-y, -x, 0.0f};
 		float angle = sqrtf (x * x + y * y) * ROTATION_SPEED;
 		float move [3] = {0.0f, 0.0f, y * TRANSLATION_SPEED};
