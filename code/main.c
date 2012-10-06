@@ -8,7 +8,6 @@
 #include <float.h>
 #include "sys/queue.h"
 #include "log.h"
-#include "hot.h"
 #include "shader.h"
 #include "planet.h"
 #include "matrix.h"
@@ -45,10 +44,8 @@ int main (int argc, char * argv []) {
 	struct shader_t vss = {GL_VERTEX_SHADER, &vs, &prog};
 	struct shader_t fss = {GL_FRAGMENT_SHADER, &fs, &prog};
 
-	hotinit ();
-
 	struct settings settings;
-	if (loadsettings(&settings, "data/settings")) {
+	if (loadsettings (&settings, "data/settings") != 0) {
 		error = __LINE__;
 		goto end;
 	}
@@ -120,11 +117,11 @@ int main (int argc, char * argv []) {
 
 	prog = glCreateProgram ();
 
-	if (hotload (&vss, SHDDIR "/draw.vert", (hot_loader_t) loadshader) == NULL) {
+	if (loadshader (&vss, SHDDIR "/draw.vert") != 0) {
 		error = __LINE__;
 		goto end;
 	}
-	if (hotload (&fss, SHDDIR "/draw.frag", (hot_loader_t) loadshader) == NULL) {
+	if (loadshader (&fss, SHDDIR "/draw.frag") != 0) {
 		error = __LINE__;
 		goto end;
 	}
@@ -179,6 +176,11 @@ int main (int argc, char * argv []) {
 		}
 	}
 
+	if (earth[0]->format->format != (Uint32) SDL_PIXELFORMAT_RGB24) {
+		error = __LINE__;
+		goto end;
+	}
+
 	GLuint tex = GL_FALSE;
 	glGenTextures (1, &tex);
 	glBindTexture (GL_TEXTURE_CUBE_MAP, tex);
@@ -197,9 +199,8 @@ int main (int argc, char * argv []) {
 			0, GL_RGB, GL_UNSIGNED_BYTE, earth[i]->pixels);
 	}
 
-	if (earth[0]->format->format != (Uint32) SDL_PIXELFORMAT_RGB24) {
-		error = __LINE__;
-		goto end;
+	for (int i = 0; i < 6; i++) {
+		SDL_FreeSurface (earth[i]);
 	}
 
 	/*glTexParameteri
@@ -252,7 +253,7 @@ int main (int argc, char * argv []) {
 	}
 
 	GLint const uniform_texture = glGetUniformLocation (prog, "texture");
-	if (uniform_texture== -1) {
+	if (uniform_texture == -1) {
 		logi ("GL uniform 'texture' not found");
 	}
 
@@ -285,7 +286,7 @@ int main (int argc, char * argv []) {
 			snprintf (item->file, len, "%s/%s", SYSDIR, dirent->d_name);
 			TAILQ_INSERT_TAIL (&list, item, _);
 
-			if (hotload (&item->planet, item->file, (hot_loader_t) loadplanet) == NULL) {
+			if (loadplanet (&item->planet, item->file) != 0) {
 				error = __LINE__;
 				goto end;
 			}
@@ -374,9 +375,6 @@ int main (int argc, char * argv []) {
 			mouselock = 0;
 		}
 
-		/*hotcheck ();
-		glUseProgram (prog);*/
-
 		double time = (double) SDL_GetTicks () / 1000;
 
 		glClearColor (0.0, 0.0, 0.0, 0.0);
@@ -423,12 +421,10 @@ int main (int argc, char * argv []) {
 		SDL_GL_SwapWindow (window);
 	}
  
-	end:
-
-	hotfin ();
-
 	struct sysplanet * item;
 	struct sysplanet * tvar;
+
+	end:
 
 	TAILQ_FOREACH_SAFE(item, &list, _, tvar) {
 		free ((void *) item->file);
@@ -441,11 +437,8 @@ int main (int argc, char * argv []) {
 	}
 
 	if (glew == GLEW_OK) {
-		glDeleteTextures (1, &tex);
-		for (int i = 0; i < 6; i++) {
-			SDL_FreeSurface (earth[i]);
-		}
 		glDeleteBuffers (1, &vbo);
+		glDeleteTextures (1, &tex);
 		glDeleteProgram (prog);
 	}
 
@@ -455,6 +448,10 @@ int main (int argc, char * argv []) {
 
 	if (context != NULL) {
 		SDL_GL_DeleteContext (context);
+	}
+
+	if (window != NULL) {
+		SDL_DestroyWindow (window);
 	}
 
 	SDL_Quit ();

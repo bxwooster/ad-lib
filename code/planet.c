@@ -32,9 +32,6 @@ int loadplanet (struct planet * planet, char const * file) {
 
 	identitymatrix (read.orbit.matrix);
 
-	float axisz [3] = {0.0f, 0.0f, 1.0f};
-//	rotatematrix (read.orbit.matrix, M_PI, axisz);
-
 	*planet = read;
 
 	end:
