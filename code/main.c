@@ -1,9 +1,3 @@
-struct sysplanet {
-	struct planet planet;
-	char * file;
-	TAILQ_ENTRY(sysplanet) _;
-};
-
 int main (int argc, char * argv []) {
 	(void) argc;
 	(void) argv; /* silence the warnings */

@@ -4,5 +4,3 @@ struct settings {
 	unsigned int height;
 };
 
-int loadsettings (struct settings * settings, char const * file);
-

@@ -4,5 +4,3 @@ struct shader_t {
 	GLuint* program;
 };
 
-int loadshader (struct shader_t * shader, char const * file);
-
