@@ -1,7 +1,7 @@
 if exists('s:guard') == 0 " guard
 
 let s:guard = 1
-let s:thispath = expand('<afile>:p:h')
+let s:thispath = expand('<sfile>:p:h')
 let s:flags = '--c-kinds=fgstuv'
 
 function s:sys(cmd)
@@ -9,7 +9,7 @@ function s:sys(cmd)
   let postf = '; cd -'
 
   call system(pref . a:cmd . postf)
-  echo a:cmd
+  "echo a:cmd
 endfunction
 
 function CosmosMakeRun()
