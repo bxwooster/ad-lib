@@ -67,7 +67,7 @@ int main (int argc, char * argv []) {
 		error = __LINE__;
 		goto end;
 	}
-	
+
 	gl_initted = gl_init ();
 	if (gl_initted != 0) {
 		sdlerror = 1;
@@ -85,7 +85,7 @@ int main (int argc, char * argv []) {
 		error = __LINE__;
 		goto end;
 	}
-	
+
 	glDeleteShader (vs);
 	glDeleteShader (fs);
 
@@ -111,7 +111,7 @@ int main (int argc, char * argv []) {
 		{ 1.0, 1.0}
 	};
 	int const vertices = sizeof (tris) / sizeof (tris[0]);
-	
+
 	GLuint vbo = GL_FALSE;
 	glGenBuffers (1, &vbo);
 	glBindBuffer (GL_ARRAY_BUFFER, vbo);
@@ -136,9 +136,9 @@ int main (int argc, char * argv []) {
 		}
 	}
 
-	if (earth[0]->format->format != (Uint32) SDL_PIXELFORMAT_RGB24) {
+	if (earth[0]->format->format != (Uint32) SDL_PIXELFORMAT_RGB888) {
 		error = __LINE__;
-		//goto end;
+		goto end;
 	}
 
 	GLuint tex = GL_FALSE;
@@ -155,8 +155,8 @@ int main (int argc, char * argv []) {
 	};
 
 	for (int i = 0; i < 6; ++i) {
-		glTexImage2D (targets[i], 0, GL_RGB, earth[i]->w, earth[i]->h,
-			0, GL_RGB, GL_UNSIGNED_BYTE, earth[i]->pixels);
+		glTexImage2D (targets[i], 0, GL_RGBA, earth[i]->w, earth[i]->h,
+			0, GL_BGRA, GL_UNSIGNED_BYTE, earth[i]->pixels);
 	}
 
 	for (int i = 0; i < 6; i++) {
