@@ -1,4 +1,4 @@
-$(main-exe): code/*.c code/*/*.c code/*.h code/*/*.h prepare | $(output-dir)
+$(main-exe): $(all-source) $(all-headers) $(all-c) $(all-h) | $(output-dir)
 	$(cc) \
 	-Wall \
 	-Wextra \
@@ -14,7 +14,7 @@ $(main-exe): code/*.c code/*/*.c code/*.h code/*/*.h prepare | $(output-dir)
 	-g \
 	-o $(main-exe)
 
-$(all-h): code code/*.c code/*/*.c | $(output-dir)
+$(all-h): code $(all-headers) | $(output-dir)
 	rm -f $(all-h).tmp
 	rm -f $(all-h)
 	for feature in . $(features); do \
@@ -24,7 +24,7 @@ $(all-h): code code/*.c code/*/*.c | $(output-dir)
     done ;
 	mv $(all-h).tmp $(all-h)
 
-$(all-c): code | $(output-dir)
+$(all-c): code $(all-headers) | $(output-dir)
 	rm -f $(all-c).tmp
 	rm -f $(all-c)
 	for feature in . $(features); do \

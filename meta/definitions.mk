@@ -31,6 +31,8 @@ platform-dir := $(base-dir)/$(platform)
 output-dir := $(platform-dir)/output
 package-dir := $(platform-dir)/package
 
+all-source = $(shell shopt -s nullglob; echo code/*.c code/*/*.c)
+all-headers = $(shell shopt -s nullglob; echo code/*.h code/*/*.h)
 main-exe := $(output-dir)/main$(exe-suffix)
 all-c := $(output-dir)/all.c
 all-h := $(output-dir)/all.h
