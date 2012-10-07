@@ -217,6 +217,9 @@ int main (int argc, char * argv []) {
 		logi ("GL uniform 'texture' not found");
 	}
 
+	float mori [4 * 4];
+	identitymatrix (mori);
+
 	float mcam [4 * 4];
 	identitymatrix (mcam);
 	float axisx [3] = {1.0f, 0.0f, 0.0f};
@@ -296,18 +299,11 @@ int main (int argc, char * argv []) {
 
 		mouselock = mousebuttons;
 
-		float const ROTATION_SPEED = 1.0f;
+		float const ROTATION_SPEED = 4.0f;
 		float angle = sqrtf (dx * dx + dy * dy) * ROTATION_SPEED;
-		float axis [3] = {dy, dx, 0.0f};
+		float axis [3] = {dy, 0.0f, dx};
 
-		/*float matrix [4 * 4];
-		identitymatrix (matrix);
-		rotatematrix (matrix, angle, axis);
-		multiplymatrix (matrix, mcam);
-		memcpy (mcam, matrix, sizeof (float) * 16);
-		*/
-		
-		rotatematrix (mcam, angle, axis);
+		rotatematrix (mori, angle, axis);
 
 		double time = (double) SDL_GetTicks () / 1000;
 
@@ -315,8 +311,13 @@ int main (int argc, char * argv []) {
 		glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		float mview [4 * 4];
-		memcpy (mview, mcam, sizeof (mview));
+		memcpy (mview, mori, sizeof (mview));
+		multiplymatrix (mview, mcam);
 		invertspecialmatrix (mview);
+
+		float mviewi [4 * 4];
+		memcpy (mviewi, mview, sizeof (mview));
+		invertspecialmatrix (mviewi);
 
 		struct sysplanet * item;
 		TAILQ_FOREACH(item, &list, _) {
@@ -324,7 +325,7 @@ int main (int argc, char * argv []) {
 			float apparentratio;
 			float mmodel [4 * 4];
 			float mrot [4 * 4];
-			planetmatrix (&item->planet, time, mcam, mmodel, mrot,
+			planetmatrix (&item->planet, time, mviewi, mmodel, mrot,
 				&tosurface, &apparentratio);
 
 			float matrix [4 * 4];
