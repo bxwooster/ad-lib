@@ -1,13 +1,16 @@
 platform :=
 link-flags :=
 exe-suffix :=
+features :=
 ifeq ($(shell uname),Linux)
 	platform := Linux
 	link-flags := -lGL -lGLEW
+	features += glew
 endif
 ifeq ($(shell uname),Darwin)
 	platform := Darwin
 	link-flags := -framework OpenGL
+	features += no-glew
 endif
 ifeq ($(shell uname -o),Msys)
 	platform := Windows
@@ -17,18 +20,20 @@ ifeq ($(shell uname -o),Msys)
 		-lglew32 \
 		-lSDL2main
 	exe-suffix := .exe
+	features += glew
 endif
 ifeq ($(platform),)
 	$(error Could not determine platform.)
 endif
 uppercase-platform := $(shell echo $(platform) | tr '[a-z]' '[A-Z]')
 
-platform-dir := _/$(platform)
-build-dir := $(platform-dir)/build
+base-dir := .build
+platform-dir := $(base-dir)/$(platform)
+output-dir := $(platform-dir)/output
 package-dir := $(platform-dir)/package
 
-main-exe := $(build-dir)/main$(exe-suffix)
-all-c := $(build-dir)/all.c
-all-h := $(build-dir)/all.h
+main-exe := $(output-dir)/main$(exe-suffix)
+all-c := $(output-dir)/all.c
+all-h := $(output-dir)/all.h
 package-archive := $(platform-dir)/package.tar.bz2
 

@@ -69,6 +69,11 @@ int main (int argc, char * argv []) {
 	}
 	
 	gl_initted = gl_init ();
+	if (gl_initted != 0) {
+		sdlerror = 1;
+		error = __LINE__;
+		goto end;
+	}
 
 	prog = glCreateProgram ();
 

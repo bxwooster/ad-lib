@@ -1,0 +1,2 @@
+int gl_init () {
+}
