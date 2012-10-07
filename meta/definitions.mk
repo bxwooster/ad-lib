@@ -1,6 +1,6 @@
 ifeq ($(platform),ios)
 	cc := false
-	features += no-glew gles
+	features += no-glew gles ios
 else ifeq ($(shell uname),Linux)
 	cc := gcc
 	platform := linux
@@ -10,7 +10,7 @@ else ifeq ($(shell uname),Darwin)
 	cc := gcc
 	platform := darwin
 	link-flags := -framework OpenGL
-	features += no-glew gl
+	features += no-glew gl darwin
 else ifeq ($(shell uname -o),Msys)
 	cc := gcc
 	platform := windows

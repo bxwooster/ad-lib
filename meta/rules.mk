@@ -17,7 +17,7 @@ $(main-exe): $(all-source) $(all-headers) $(all-c) $(all-h) | $(output-dir)
 $(all-h): code $(all-headers) | $(output-dir)
 	rm -f $(all-h).tmp
 	rm -f $(all-h)
-	for feature in . $(features); do \
+	for feature in $(features) .; do \
 	  for file in `shopt -s nullglob; echo code/$$feature/*.c`; do \
 	    awk 'BEGIN{RS="{"} {print $$0, ";"; exit}' $$file >> $(all-h).tmp ; \
 	  done ; \
@@ -27,13 +27,13 @@ $(all-h): code $(all-headers) | $(output-dir)
 $(all-c): code $(all-headers) | $(output-dir)
 	rm -f $(all-c).tmp
 	rm -f $(all-c)
-	for feature in . $(features); do \
+	for feature in $(features) .; do \
 	  for file in `shopt -s nullglob; echo code/$$feature/*.h`; do \
 	    echo "#include <$$file>" >> $(all-c).tmp ; \
 	  done ; \
 	done
 	echo "#include <$(all-h)>" >> $(all-c).tmp
-	for feature in . $(features); do \
+	for feature in $(features) .; do \
 	  for file in `shopt -s nullglob; echo code/$$feature/*.c`; do \
 	    echo "#include <$$file>" >> $(all-c).tmp ; \
 	  done ; \
