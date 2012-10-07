@@ -1,6 +1,4 @@
-.PHONY: \
-	all clean run package \
-	it a the
+.PHONY: all clean run package prepare
 
 all: $(main-exe)
 
@@ -12,6 +10,5 @@ clean:
 run: $(main-exe)
 	@./$(main-exe)
 
-it a the:
-	@:
+prepare: $(all-c) $(all-h)
 

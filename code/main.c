@@ -138,7 +138,7 @@ int main (int argc, char * argv []) {
 
 	if (earth[0]->format->format != (Uint32) SDL_PIXELFORMAT_RGB24) {
 		error = __LINE__;
-		goto end;
+		//goto end;
 	}
 
 	GLuint tex = GL_FALSE;

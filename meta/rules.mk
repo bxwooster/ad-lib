@@ -1,5 +1,5 @@
-$(main-exe): code/*.c code/*.h $(all-c) $(all-h) | $(output-dir)
-	gcc \
+$(main-exe): code/*.c code/*/*.c code/*.h code/*/*.h prepare | $(output-dir)
+	$(cc) \
 	-Wall \
 	-Wextra \
 	-std=gnu99 \
@@ -9,16 +9,16 @@ $(main-exe): code/*.c code/*.h $(all-c) $(all-h) | $(output-dir)
 	-lSDL2 \
 	-lSDL2_image \
 	-I. \
-	-I.config/include \
+	-I.config/$(platform)/include \
 	-lm \
 	-g \
 	-o $(main-exe)
 
-$(all-h): code code/*.c | $(output-dir)
+$(all-h): code code/*.c code/*/*.c | $(output-dir)
 	rm -f $(all-h).tmp
 	rm -f $(all-h)
 	for feature in . $(features); do \
-	  for file in `echo code/$$feature/*.c`; do \
+	  for file in `shopt -s nullglob; echo code/$$feature/*.c`; do \
 	    awk 'BEGIN{RS="{"} {print $$0, ";"; exit}' $$file >> $(all-h).tmp ; \
 	  done ; \
     done ;
@@ -34,7 +34,7 @@ $(all-c): code | $(output-dir)
 	done
 	echo "#include <$(all-h)>" >> $(all-c).tmp
 	for feature in . $(features); do \
-	  for file in `echo code/$$feature/*.c`; do \
+	  for file in `shopt -s nullglob; echo code/$$feature/*.c`; do \
 	    echo "#include <$$file>" >> $(all-c).tmp ; \
 	  done ; \
 	done

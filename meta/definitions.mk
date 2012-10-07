@@ -1,28 +1,27 @@
-platform :=
-link-flags :=
-exe-suffix :=
-features :=
-ifeq ($(shell uname),Linux)
-	platform := Linux
+ifeq ($(platform),ios)
+	cc := false
+	features += no-glew gles
+else ifeq ($(shell uname),Linux)
+	cc := gcc
+	platform := linux
 	link-flags := -lGL -lGLEW
-	features += glew
-endif
-ifeq ($(shell uname),Darwin)
-	platform := Darwin
+	features += glew gl
+else ifeq ($(shell uname),Darwin)
+	cc := gcc
+	platform := darwin
 	link-flags := -framework OpenGL
-	features += no-glew
-endif
-ifeq ($(shell uname -o),Msys)
-	platform := Windows
+	features += no-glew gl
+else ifeq ($(shell uname -o),Msys)
+	cc := gcc
+	platform := windows
 	link-flags := \
 		-lmingw32 \
 		-lopengl32 \
 		-lglew32 \
 		-lSDL2main
 	exe-suffix := .exe
-	features += glew
-endif
-ifeq ($(platform),)
+	features += glew gl
+else
 	$(error Could not determine platform.)
 endif
 uppercase-platform := $(shell echo $(platform) | tr '[a-z]' '[A-Z]')

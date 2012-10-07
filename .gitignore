@@ -2,3 +2,6 @@ tags
 /.build/
 /art/
 /.config/
+.DS_Store
+project.xcworkspace/
+xcuserdata/
