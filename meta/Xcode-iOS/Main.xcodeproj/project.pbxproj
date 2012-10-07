@@ -24,6 +24,16 @@
 		CE7E723E1621928F00FEB6CD /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE7E723D1621928F00FEB6CD /* MobileCoreServices.framework */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		CE7E724D1621AD4B00FEB6CD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CE71488216124003002C92ED /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CE7E72491621AD3000FEB6CD;
+			remoteInfo = Prepare;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		CE15228716132F5C0051ACBD /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		CE1523AD161334250051ACBD /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
@@ -136,6 +146,23 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXLegacyTarget section */
+		CE7E72491621AD3000FEB6CD /* Prepare */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "prepare platform=ios";
+			buildConfigurationList = CE7E724A1621AD3000FEB6CD /* Build configuration list for PBXLegacyTarget "Prepare" */;
+			buildPhases = (
+			);
+			buildToolPath = /usr/bin/make;
+			buildWorkingDirectory = ../..;
+			dependencies = (
+			);
+			name = Prepare;
+			passBuildSettingsInEnvironment = 0;
+			productName = Prepare;
+		};
+/* End PBXLegacyTarget section */
+
 /* Begin PBXNativeTarget section */
 		CE71488A16124003002C92ED /* Main */ = {
 			isa = PBXNativeTarget;
@@ -148,6 +175,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				CE7E724E1621AD4B00FEB6CD /* PBXTargetDependency */,
 			);
 			name = Main;
 			productName = Cosmos;
@@ -176,6 +204,7 @@
 			projectRoot = "";
 			targets = (
 				CE71488A16124003002C92ED /* Main */,
+				CE7E72491621AD3000FEB6CD /* Prepare */,
 			);
 		};
 /* End PBXProject section */
@@ -202,6 +231,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		CE7E724E1621AD4B00FEB6CD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CE7E72491621AD3000FEB6CD /* Prepare */;
+			targetProxy = CE7E724D1621AD4B00FEB6CD /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		CE7148A716124003002C92ED /* Debug */ = {
@@ -311,6 +348,45 @@
 			};
 			name = Release;
 		};
+		CE7E724B1621AD3000FEB6CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				DEBUGGING_SYMBOLS = YES;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		CE7E724C1621AD3000FEB6CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -331,6 +407,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		CE7E724A1621AD3000FEB6CD /* Build configuration list for PBXLegacyTarget "Prepare" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CE7E724B1621AD3000FEB6CD /* Debug */,
+				CE7E724C1621AD3000FEB6CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};
