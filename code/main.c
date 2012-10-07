@@ -341,11 +341,7 @@ int main (int argc, char * argv []) {
 			multiplymatrix (matrix, mmodel);
 			glUniformMatrix4fv (uniform_mvp, 1, GL_FALSE, matrix);
 
-			float mtmp [4 * 4];
-			memcpy (mtmp, mview, sizeof (float) * 16);
-			multiplymatrix (mtmp, mview);
-			multiplymatrix (mtmp, mrot);
-			glUniformMatrix4fv (uniform_mv, 1, GL_FALSE, mtmp);
+			glUniformMatrix4fv (uniform_mv, 1, GL_FALSE, mrot);
 
 			float const hack = logf (tosurface) / 1000.0f;
 			glUniform1f (uniform_depth, hack);
