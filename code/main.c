@@ -252,6 +252,8 @@ int main (int argc, char * argv []) {
 		}
 	}
 
+	float x = 0;
+	float y = 0;
 	int mouselock = 0;
 	for (;;) {
 		GLuint glerror = glGetError ();
@@ -276,46 +278,36 @@ int main (int argc, char * argv []) {
 		int ix, iy;
 		Uint8 mousebuttons = SDL_GetMouseState(&ix, &iy);
 
-		float x = 0;
-		float y = 0;
-		if (mouselock == 1) {
-			x = ix / ((float) settings.width) - 0.5f;
-			y = iy / ((float) settings.height) - 0.5f;
+		float norm = settings.width > settings.height ?
+			settings.width : settings.height;
+		float nx = ix / norm;
+		float ny = iy / norm;
+		float dx;
+		float dy;
+		if (mouselock != 0) {
+			dx = x - nx;
+			dy = y - ny;
+		} else {
+			dx = 0;
+			dy = 0;
 		}
+		x = nx;
+		y = ny;
+
+		mouselock = mousebuttons;
 
 		float const ROTATION_SPEED = 1.0f;
-		float const TRANSLATION_SPEED = 8.0f;
+		float angle = sqrtf (dx * dx + dy * dy) * ROTATION_SPEED;
+		float axis [3] = {dy, dx, 0.0f};
 
-		float axis [3] = {-y, -x, 0.0f};
-		float angle = sqrtf (x * x + y * y) * ROTATION_SPEED;
-		float move [3] = {0.0f, 0.0f, y * TRANSLATION_SPEED};
-
-		if (mousebuttons == SDL_BUTTON(1)) {
-			float matrix [4 * 4];
-			identitymatrix (matrix);
-			rotatematrix (matrix, angle, axis);
-			multiplymatrix (matrix, mcam);
-			memcpy (mcam, matrix, sizeof (float) * 16);
-		}
-		if (mousebuttons == SDL_BUTTON(3)) {
-			float axis [3] = {-y, -x, 0.0f};
-			float angle = sqrtf (x * x + y * y) * ROTATION_SPEED;
-			rotatematrix (mcam, angle, axis);
-		}
-		if (mousebuttons == SDL_BUTTON(2)) {
-			translatematrix (mcam, move);
-		}
-
-		if (mousebuttons != 0) {
-			SDL_ShowCursor (0);
-			SDL_SetWindowGrab (window, SDL_TRUE);
-			SDL_WarpMouseInWindow (window, settings.width / 2, settings.height / 2);
-			mouselock = 1;
-		} else {
-			SDL_ShowCursor (1);
-			SDL_SetWindowGrab (window, SDL_FALSE);
-			mouselock = 0;
-		}
+		/*float matrix [4 * 4];
+		identitymatrix (matrix);
+		rotatematrix (matrix, angle, axis);
+		multiplymatrix (matrix, mcam);
+		memcpy (mcam, matrix, sizeof (float) * 16);
+		*/
+		
+		rotatematrix (mcam, angle, axis);
 
 		double time = (double) SDL_GetTicks () / 1000;
 
