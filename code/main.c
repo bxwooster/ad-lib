@@ -218,8 +218,10 @@ int main (int argc, char * argv []) {
 	}
 
 	float mcam [4 * 4];
-    identitymatrix (mcam);
-	float move [3] = {0.0f, 0.0f, -20.0f};
+	identitymatrix (mcam);
+	float axisx [3] = {1.0f, 0.0f, 0.0f};
+	rotatematrix (mcam, M_PI / 2.4f, axisx);
+	float move [3] = {0.0f, 0.0f, -13.0f};
 	translatematrix (mcam, move);
 	float axisz [3] = {0.0f, 0.0f, 1.0f};
 	rotatematrix (mcam, M_PI, axisz);
