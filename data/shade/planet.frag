@@ -10,7 +10,7 @@ void main (void) {
 	float radius = length (ixy);
 	if (radius > 1.0) discard;
 
-	float light = sqrt (1.0 - radius);
+	float effect = sqrt (1.0 - radius);
 
 	float w = -sqrt (1.0 - dot (uv, uv));
  	vec3 normal = mat3 (mv) * vec3 (uv, w);
@@ -19,9 +19,15 @@ void main (void) {
 	//result = step (0.0, normal);
 	result = textureCube (texture, normal).rgb;
 
+	vec3 lightdir = vec3 (0.0, 1.0, 0.0);
+	float ambient = 0.3;
+	float light = ambient + clamp (dot (normal, lightdir), 0.0, 1.0);
+
 	float brightness = 1.5;
+	result *= brightness;
 	result *= color;
-	result *= light * brightness;
+	result *= effect;
+	result *= light;
 
 	gl_FragColor = vec4 (result, 0.0);
 }
