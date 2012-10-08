@@ -24,7 +24,6 @@ else ifeq ($(shell uname -o),Msys)
 else
   $(error Could not determine platform.)
 endif
-uppercase-platform := $(shell echo $(platform) | tr '[a-z]' '[A-Z]')
 
 base-dir := .build
 platform-dir := $(base-dir)/$(platform)
