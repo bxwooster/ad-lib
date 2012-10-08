@@ -1,26 +1,26 @@
 ifeq ($(platform),ios)
   cc := false
-  features += no-glew gles ios
+  features += gles ios
 else ifeq ($(shell uname),Linux)
   cc := gcc
   platform := linux
   link-flags := -lGL -lGLEW
-  features += glew gl
+  features += glew linux
 else ifeq ($(shell uname),Darwin)
-  cc := gcc
   platform := darwin
-  link-flags := -framework OpenGL
-  features += no-glew gl darwin
-else ifeq ($(shell uname -o),Msys)
   cc := gcc
+  link-flags := -framework OpenGL
+  features += gl darwin
+else ifeq ($(shell uname -o),Msys)
   platform := windows
+  cc := gcc
   link-flags := \
     -lmingw32 \
     -lopengl32 \
     -lglew32 \
     -lSDL2main
   exe-suffix := .exe
-  features += glew gl
+  features += glew windows
 else
   $(error Could not determine platform.)
 endif
