@@ -1,28 +1,28 @@
 ifeq ($(platform),ios)
-	cc := false
-	features += no-glew gles ios
+  cc := false
+  features += no-glew gles ios
 else ifeq ($(shell uname),Linux)
-	cc := gcc
-	platform := linux
-	link-flags := -lGL -lGLEW
-	features += glew gl
+  cc := gcc
+  platform := linux
+  link-flags := -lGL -lGLEW
+  features += glew gl
 else ifeq ($(shell uname),Darwin)
-	cc := gcc
-	platform := darwin
-	link-flags := -framework OpenGL
-	features += no-glew gl darwin
+  cc := gcc
+  platform := darwin
+  link-flags := -framework OpenGL
+  features += no-glew gl darwin
 else ifeq ($(shell uname -o),Msys)
-	cc := gcc
-	platform := windows
-	link-flags := \
-		-lmingw32 \
-		-lopengl32 \
-		-lglew32 \
-		-lSDL2main
-	exe-suffix := .exe
-	features += glew gl
+  cc := gcc
+  platform := windows
+  link-flags := \
+    -lmingw32 \
+    -lopengl32 \
+    -lglew32 \
+    -lSDL2main
+  exe-suffix := .exe
+  features += glew gl
 else
-	$(error Could not determine platform.)
+  $(error Could not determine platform.)
 endif
 uppercase-platform := $(shell echo $(platform) | tr '[a-z]' '[A-Z]')
 

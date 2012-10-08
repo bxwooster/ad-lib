@@ -1,18 +1,18 @@
 $(main-exe): $(all-source) $(all-headers) $(all-c) $(all-h) | $(output-dir)
 	$(cc) \
-	-Wall \
-	-Wextra \
-	-std=gnu99 \
-	$(all-c) \
-	-DPLATFORM_$(uppercase-platform) \
-	$(link-flags) \
-	-lSDL2 \
-	-lSDL2_image \
-	-I. \
-	-I.config/$(platform)/include \
-	-lm \
-	-g \
-	-o $(main-exe)
+	  -Wall \
+	  -Wextra \
+	  -std=gnu99 \
+	  $(all-c) \
+	  -DPLATFORM_$(uppercase-platform) \
+	  $(link-flags) \
+	  -lSDL2 \
+	  -lSDL2_image \
+	  -I. \
+	  -I.config/$(platform)/include \
+	  -lm \
+	  -g \
+	  -o $(main-exe)
 
 $(all-h): code $(all-headers) | $(output-dir)
 	rm -f $(all-h).tmp
@@ -21,7 +21,7 @@ $(all-h): code $(all-headers) | $(output-dir)
 	  for file in `shopt -s nullglob; echo code/$$feature/*.c`; do \
 	    awk 'BEGIN{RS="{"} {print $$0, ";"; exit}' $$file >> $(all-h).tmp ; \
 	  done ; \
-    done ;
+	  done ;
 	mv $(all-h).tmp $(all-h)
 
 $(all-c): code $(all-headers) | $(output-dir)
@@ -43,9 +43,9 @@ $(all-c): code $(all-headers) | $(output-dir)
 $(package-archive): $(main-exe) | $(package-dir)
 	false #disabled at the moment
 	cp -r \
-		$(main-exe) \
-		data \
-		$(package-dir)
+	  $(main-exe) \
+	  data \
+	  $(package-dir)
 	# art ?
 	# dlls ?
 	tar -cj $(package-dir) -f $(package-archive)
