@@ -145,6 +145,19 @@ int main (int argc, char * argv []) {
 	glGenTextures (1, &tex);
 	glBindTexture (GL_TEXTURE_CUBE_MAP, tex);
 
+	glTexEnvf(GL_TEXTURE_FILTER_CONTROL, GL_TEXTURE_LOD_BIAS, -1.75f);
+
+	glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_GENERATE_MIPMAP, GL_TRUE);
+
+	glTexParameteri
+		(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+
+	glTexParameteri
+		(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
 	GLenum targets [6] = {
 		GL_TEXTURE_CUBE_MAP_POSITIVE_X,
 		GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
@@ -163,17 +176,7 @@ int main (int argc, char * argv []) {
 		SDL_FreeSurface (earth[i]);
 	}
 
-	/*glTexParameteri
-		(GL_TEXTURE_CUBE_MAP, GL_GENERATE_MIPMAP, GL_TRUE);*/
-
-	glTexParameteri
-		(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR/*_MIPMAP_LINEAR*/);
-
-	glTexParameteri
-		(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
 	glActiveTexture (GL_TEXTURE0);
-	glBindTexture (GL_TEXTURE_CUBE_MAP, tex);
 
 	glEnable (GL_DEPTH_TEST);
 	glViewport (0, 0, settings.width, settings.height);
