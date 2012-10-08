@@ -14,10 +14,11 @@ void main (void) {
 
 	float w = -sqrt (1.0 - dot (uv, uv));
  	vec3 normal = mat3 (mv) * vec3 (uv, w);
+	vec3 signflip = vec3 (1.0, 1.0, -1.0);
 
 	//result = 0.5 * normal + 0.5;
 	//result = step (0.0, normal);
-	result = textureCube (texture, normal).rgb;
+	result = textureCube (texture, normal * signflip).rgb;
 
 	vec3 lightdir = vec3 (0.0, 1.0, 0.0);
 	float ambient = 0.3;
