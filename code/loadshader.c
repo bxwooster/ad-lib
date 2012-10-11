@@ -28,7 +28,10 @@ int loadshader (struct shader_t * info, char const * file) {
     glGetShaderiv (sh, GL_COMPILE_STATUS, &code);
 
     if (code == GL_FALSE) {
-        logshader (sh);
+        struct mem ory [] = {mallocmem (4096)};
+        char * log = getshaderlog (sh, ory);
+        logi ("%s", log);
+        freemem (ory);
         error = __LINE__;
         goto end;
     }
