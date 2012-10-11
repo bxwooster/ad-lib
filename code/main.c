@@ -136,7 +136,15 @@ int main (int argc, char * argv []) {
         }
     }
 
-    if (earth[0]->format->format != (Uint32) SDL_PIXELFORMAT_RGB888) {
+    Uint32 sdlformat = earth[0]->format->format;
+    GLenum glformat = GL_FALSE;
+    if (sdlformat == (Uint32) SDL_PIXELFORMAT_RGB24) {
+        glformat = GL_RGB;
+    } else if (sdlformat == (Uint32) SDL_PIXELFORMAT_RGB888) {
+        glformat = GL_BGRA;
+    } else {
+        logi ("Unexpected texture format: %s",
+            SDL_GetPixelFormatName (sdlformat)); 
         error = __LINE__;
         goto end;
     }
@@ -169,7 +177,7 @@ int main (int argc, char * argv []) {
 
     for (int i = 0; i < 6; ++i) {
         glTexImage2D (targets[i], 0, GL_RGBA, earth[i]->w, earth[i]->h,
-            0, GL_BGRA, GL_UNSIGNED_BYTE, earth[i]->pixels);
+            0, glformat, GL_UNSIGNED_BYTE, earth[i]->pixels);
     }
 
     for (int i = 0; i < 6; i++) {
