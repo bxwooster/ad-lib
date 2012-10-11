@@ -1,5 +1,6 @@
 struct mem {
-    char * ptr;
-    char * end;
+    char * head;
+    char * const buf;
+    char * const end;
 };
 

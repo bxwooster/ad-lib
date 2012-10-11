@@ -1,3 +1,3 @@
 void freemem (struct mem * ory) {
-    free (ory ->ptr);
+    free (ory->buf);
 }
