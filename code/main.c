@@ -233,12 +233,12 @@ int main (int argc, char * argv []) {
 
     float mcam [4 * 4];
     identitymatrix (mcam);
-    float axisx [3] = {1.0f, 0.0f, 0.0f};
-    rotatematrix (mcam, M_PI / 2.4f, axisx);
+    vec3 axisx = {1.0f, 0.0f, 0.0f};
+    rotatematrix (mcam, M_PI / 2.4f, & axisx);
     float move [3] = {0.0f, 0.0f, -13.0f};
     translatematrix (mcam, move);
-    float axisz [3] = {0.0f, 0.0f, 1.0f};
-    rotatematrix (mcam, M_PI, axisz);
+    vec3 axisz = {0.0f, 0.0f, 1.0f};
+    rotatematrix (mcam, M_PI, & axisz);
 
     char const * const dirname = "data/spawn";
     sysdir = opendir (dirname);
@@ -312,9 +312,9 @@ int main (int argc, char * argv []) {
 
         float const ROTATION_SPEED = 4.0f;
         float angle = sqrtf (dx * dx + dy * dy) * ROTATION_SPEED;
-        float axis [3] = {dy, 0.0f, dx};
+        vec3 axis = {dy, 0.0f, dx};
 
-        rotatematrix (mori, angle, axis);
+        rotatematrix (mori, angle, & axis);
 
         double time = (double) SDL_GetTicks () / 1000;
 

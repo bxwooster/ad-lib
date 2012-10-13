@@ -12,35 +12,35 @@ void planetmatrix (
     mmodel[12] += planet->orbit.major * cosf (phi);
     mmodel[13] += planet->orbit.minor * sinf (phi);
 
-    float first [3];
-    vectordiff (&mmodel[12], &mcam[12], first);
+    vec3 first;
+    vec3_diff ((vec3 *) & mmodel[12], (vec3 *) & mcam[12], & first);
 
-    float p = vectorlength (first);
+    float p = vec3_length (& first);
     float r = planet->size;
     float apparent = sqrtf (p * p - r * r) * r / p;
     float offset = (r * r) / p;
 
-    float unitx [3] = {1.0f, 0.0f, 0.0f};
-    float unity [3] = {0.0f, 1.0f, 0.0f};
+    vec3 unitx = {1.0f, 0.0f, 0.0f};
+    vec3 unity = {0.0f, 1.0f, 0.0f};
 
-    float second [3];
-    float third [3];
+    vec3 second;
+    vec3 third;
 
-    if (first[0] < first[1]) {
-        vectorproduct (first, unitx, second);
+    if (first.x < first.y) {
+        vec3_product (& first, & unitx, & second);
     } else {
-        vectorproduct (first, unity, second);
+        vec3_product (& first, & unity, & second);
     }
-    vectorproduct (first, second, third);
+    vec3_product (& first, & second, & third);
 
-    vectornormalize (first);
-    vectornormalize (second);
-    vectornormalize (third);
+    vec3_normalize (& first);
+    vec3_normalize (& second);
+    vec3_normalize (& third);
 
     float rotation [4 * 4] = {0};
-    memcpy (&rotation[8], first, sizeof (first));
-    memcpy (&rotation[0], second, sizeof (second));
-    memcpy (&rotation[4], third, sizeof (third));
+    memcpy (& rotation [8], & first, sizeof (first));
+    memcpy (& rotation [0], & second, sizeof (second));
+    memcpy (& rotation [4], & third, sizeof (third));
     rotation[15] = 1.0f;
     multiplymatrix (mmodel, rotation);
 

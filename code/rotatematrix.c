@@ -1,10 +1,10 @@
-void rotatematrix (float matrix [4 * 4], float angle, float axis [3]) {
-	float len = vectorlength (axis);
+void rotatematrix (float matrix [4 * 4], float angle, vec3 * axis) {
+	float len = vec3_length (axis);
 	if (len == 0.0f) return;
 
-	float x = axis[0] / len;
-	float y = axis[1] / len;
-	float z = axis[2] / len;
+	float x = axis->x / len;
+	float y = axis->y / len;
+	float z = axis->z / len;
 
 	float c = cosf (angle);
 	float s = sinf (angle);
