@@ -1,5 +1,5 @@
 void multiplymatrix (float matrix [4 * 4], float another [4 * 4]) {
-    /* note: breaks when matrix == another */
+    assert (matrix != another);
     float * a = matrix;
     float * b = another;
     float c [4 * 4]; /* transposed copy of A */

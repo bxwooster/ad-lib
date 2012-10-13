@@ -28,10 +28,21 @@ int loadshader (struct shader_t * info, char const * file) {
     glGetShaderiv (sh, GL_COMPILE_STATUS, &code);
 
     if (code == GL_FALSE) {
-        struct mem ory [] = {mallocmem (4096)};
-        char * log = getshaderlog (sh, ory);
-        logi ("%s", log);
-        freemem (ory);
+        GLint size = 0;
+        glGetShaderiv (sh, GL_INFO_LOG_LENGTH, &size);
+        char * log;
+        if (size > 0) {
+            log = malloc (size);
+            if (log) {
+                glGetShaderInfoLog (sh, size, NULL, log);
+                logi ("%s", log);
+                free (log);
+            } else {
+                logi ("No memory to display shader log!");
+            }
+        } else {
+            logi ("No shader log available.");
+        }
         error = __LINE__;
         goto end;
     }
