@@ -1,4 +1,4 @@
-.PHONY: all clean run package prepare
+.PHONY: all clean run debug package prepare
 
 all: $(main-exe)
 
@@ -9,6 +9,9 @@ clean:
 
 run: $(main-exe)
 	@./$(main-exe)
+
+debug: $(main-exe)
+	@gdb $(main-exe)
 
 prepare: $(all-c) $(all-h)
 
