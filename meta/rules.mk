@@ -1,7 +1,8 @@
-$(exe): $(all-source) $(all-headers) $(all-c) $(all-h) | $(output-dir)
+$(exe): $(all-source) $(all-headers) \
+  $(source-c) $(source-h) $(source-ext-h) | $(output-dir)
 	$(cc) \
 	  -o $(exe) \
-	  $(all-c) \
+	  $(source-c) \
 	  -Wall \
 	  -Wextra \
 	  -std=gnu99 \
@@ -13,8 +14,15 @@ $(exe): $(all-source) $(all-headers) $(all-c) $(all-h) | $(output-dir)
 	  -I.config/$(platform)/include \
 	  -g
 
-$(all-h): code $(all-headers) | $(output-dir)
-	rm -f $(all-h).tmp
+$(source-ext-h): | $(output-dir)
+	cp meta/$(program).ext.h $(source-ext-h).tmp
+	for include in $(includes); do \
+	  echo "$$include" >> $(source-ext-h).tmp ; \
+	done ;
+	mv $(source-ext-h).tmp $(source-ext-h)
+
+$(source-h): code $(all-headers) | $(output-dir)
+	rm -f $(source-h).tmp
 	for feature in . $(features); do \
 	  for file in \
 	   `shopt -s nullglob; \
@@ -22,31 +30,32 @@ $(all-h): code $(all-headers) | $(output-dir)
 	  do \
 	    awk \
 		  'BEGIN{RS="{"} {print $$0, ";"; exit}' \
-	    $$file >> $(all-h).tmp ; \
+	    $$file >> $(source-h).tmp ; \
 	  done ; \
 	done ;
-	mv $(all-h).tmp $(all-h)
+	mv $(source-h).tmp $(source-h)
 
-$(all-c): code $(all-headers) | $(output-dir)
-	rm -f $(all-c).tmp
+$(source-c): code $(all-headers) | $(output-dir)
+	rm -f $(source-c).tmp
+	echo "#include <$(source-ext-h)>" >> $(source-c).tmp
 	for feature in . $(features); do \
 	  for file in \
 	   `shopt -s nullglob; \
 	    echo code/$$feature/*.h`; \
 	  do \
-	    echo "#include <$$file>" >> $(all-c).tmp ; \
+	    echo "#include <$$file>" >> $(source-c).tmp ; \
 	  done ; \
 	done
-	echo "#include <$(all-h)>" >> $(all-c).tmp
+	echo "#include <$(source-h)>" >> $(source-c).tmp
 	for feature in . $(features); do \
 	  for file in \
 	   `shopt -s nullglob; \
 	    echo code/$$feature/*.c`; \
 	  do \
-	    echo "#include <$$file>" >> $(all-c).tmp ; \
+	    echo "#include <$$file>" >> $(source-c).tmp ; \
 	  done ; \
 	done
-	mv $(all-c).tmp $(all-c)
+	mv $(source-c).tmp $(source-c)
 
 $(package-archive): $(exe) | $(package-dir)
 	false #disabled at the moment
