@@ -4,6 +4,8 @@ let s:guard = 1
 let s:thispath = expand('<sfile>:p:h')
 let s:flags = '--c-kinds=fgstuv'
 
+set tags=./.tags;
+
 function s:sys(cmd)
   let pref = 'cd ' . s:thispath . '; '
   let postf = '; cd -'
@@ -28,13 +30,13 @@ function CosmosUpdateTags()
     let cmd = 'sed -i "/' . efile . '/d" tags'
     call s:sys(cmd)
 
-    let cmd = 'ctags -a ' . s:flags . ' "' . file . '"'
+    let cmd = 'ctags -f .tags -a ' . s:flags . ' "' . file . '"'
     call s:sys(cmd)
 endfunction
 
 function CosmosDoTags()
   if filereadable(s:thispath . '/ctags') == 0
-    let cmd = 'ctags -R ' . s:flags . ' *'
+    let cmd = 'ctags -f .tags -R ' . s:flags . ' *'
     call s:sys(cmd)
   endif
 endfunction

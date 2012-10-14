@@ -5,7 +5,7 @@ int SDL_main (int argc, char * argv []) {
     int error = 0;
     int sdlerror = 0;
 
-    logi ("Revving up.");
+    log_info ("Revving up.");
 
     GLuint prog = GL_FALSE;
     GLuint vs = GL_FALSE;
@@ -30,7 +30,7 @@ int SDL_main (int argc, char * argv []) {
     int img_initted = IMG_Init (img_require);
 
     if ((img_require & img_initted) != img_require) {
-        logi ("SDL_image error: %s", IMG_GetError ());
+        log_info ("SDL_image error: %s", IMG_GetError ());
         error = __LINE__;
         goto end;
     }
@@ -130,7 +130,7 @@ int SDL_main (int argc, char * argv []) {
     for (int i = 0; i < 6; ++i) {
         earth[i] = IMG_Load (earthimg[i]);
         if (earth[i] == NULL) {
-            logi ("SDL_image error: %s", IMG_GetError ());
+            log_info ("SDL_image error: %s", IMG_GetError ());
             error = __LINE__;
             goto end;
         }
@@ -143,7 +143,7 @@ int SDL_main (int argc, char * argv []) {
     } else if (sdlformat == (Uint32) SDL_PIXELFORMAT_RGB888) {
         glformat = GL_BGRA;
     } else {
-        logi ("Unexpected texture format: %s",
+        log_info ("Unexpected texture format: %s",
             SDL_GetPixelFormatName (sdlformat)); 
         error = __LINE__;
         goto end;
@@ -200,32 +200,32 @@ int SDL_main (int argc, char * argv []) {
 
     GLint const uniform_depth = glGetUniformLocation (prog, "depth");
     if (uniform_depth == -1) {
-        logi ("GL uniform 'depth' not found");
+        log_info ("GL uniform 'depth' not found");
     }
 
     GLint const uniform_mvp = glGetUniformLocation (prog, "mvp");
     if (uniform_mvp == -1) {
-        logi ("GL uniform 'mvp' not found");
+        log_info ("GL uniform 'mvp' not found");
     }
 
     GLint const uniform_mv = glGetUniformLocation (prog, "mv");
     if (uniform_mv == -1) {
-        logi ("GL uniform 'mv' not found");
+        log_info ("GL uniform 'mv' not found");
     }
 
     GLint const uniform_color = glGetUniformLocation (prog, "color");
     if (uniform_color == -1) {
-        logi ("GL uniform 'color' not found");
+        log_info ("GL uniform 'color' not found");
     }
 
     GLint const uniform_uvscale = glGetUniformLocation (prog, "uvscale");
     if (uniform_uvscale == -1) {
-        logi ("GL uniform 'uvscale' not found");
+        log_info ("GL uniform 'uvscale' not found");
     }
 
     GLint const uniform_texture = glGetUniformLocation (prog, "texture");
     if (uniform_texture == -1) {
-        logi ("GL uniform 'texture' not found");
+        log_info ("GL uniform 'texture' not found");
     }
 
     mat4 mori [1];
@@ -272,7 +272,7 @@ int SDL_main (int argc, char * argv []) {
     for (;;) {
         GLuint glerror = glGetError ();
         if (glerror != 0) {
-            logi ("GL error # %d.", glerror);
+            log_info ("GL error # %d.", glerror);
             error = __LINE__;
             goto end;
         }
@@ -387,7 +387,7 @@ int SDL_main (int argc, char * argv []) {
     }
 
     if (sdlerror != 0) {
-        logi ("SDL error: %s.", SDL_GetError ());
+        log_info ("SDL error: %s.", SDL_GetError ());
     }
 
     if (context != NULL) {
@@ -402,7 +402,7 @@ int SDL_main (int argc, char * argv []) {
     IMG_Quit ();
 
     if (error) {
-        logi ("Error # %d.", error);
+        log_info ("Error # %d.", error);
         return EXIT_FAILURE;
     }
 

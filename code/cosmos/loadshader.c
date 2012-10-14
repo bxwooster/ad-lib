@@ -35,13 +35,13 @@ int loadshader (struct shader_t * info, char const * file) {
             log = malloc (size);
             if (log) {
                 glGetShaderInfoLog (sh, size, NULL, log);
-                logi ("%s", log);
+                log_info ("%s", log);
                 free (log);
             } else {
-                logi ("No memory to display shader log!");
+                log_info ("No memory to display shader log!");
             }
         } else {
-            logi ("No shader log available.");
+            log_info ("No shader log available.");
         }
         error = __LINE__;
         goto end;
