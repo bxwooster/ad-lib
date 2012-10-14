@@ -1,16 +1,16 @@
 ifeq ($(platform),ios)
   cc := false
-  features += gles ios
+  features += gles
 else ifeq ($(shell uname),Linux)
   cc := gcc
   platform := linux
   link-flags := -lGL -lGLEW
-  features += glew linux
+  features += glew
 else ifeq ($(shell uname),Darwin)
   platform := darwin
   cc := gcc
   link-flags := -framework OpenGL
-  features += gl darwin
+  features += gl
 else ifeq ($(shell uname -o),Msys)
   platform := windows
   cc := gcc
@@ -20,12 +20,15 @@ else ifeq ($(shell uname -o),Msys)
     -lglew32 \
     -lSDL2main
   exe-suffix := .exe
-  features += glew windows
+  features += glew
 else
   $(error Could not determine platform.)
 endif
 
-features += cosmos
+program := cosmos
+
+features += $(platform)
+features += $(program)
 
 base-dir := .build
 platform-dir := $(base-dir)/$(platform)
@@ -34,7 +37,7 @@ package-dir := $(platform-dir)/package
 
 all-source = $(shell shopt -s nullglob; echo code/*.c code/*/*.c)
 all-headers = $(shell shopt -s nullglob; echo code/*.h code/*/*.h)
-main-exe := $(output-dir)/main$(exe-suffix)
+exe := $(output-dir)/$(program)$(exe-suffix)
 all-c := $(output-dir)/all.c
 all-h := $(output-dir)/all.h
 package-archive := $(platform-dir)/package.tar.bz2

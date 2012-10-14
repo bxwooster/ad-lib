@@ -1,6 +1,6 @@
-$(main-exe): $(all-source) $(all-headers) $(all-c) $(all-h) | $(output-dir)
+$(exe): $(all-source) $(all-headers) $(all-c) $(all-h) | $(output-dir)
 	$(cc) \
-	  -o $(main-exe) \
+	  -o $(exe) \
 	  $(all-c) \
 	  -Wall \
 	  -Wextra \
@@ -48,10 +48,10 @@ $(all-c): code $(all-headers) | $(output-dir)
 	done
 	mv $(all-c).tmp $(all-c)
 
-$(package-archive): $(main-exe) | $(package-dir)
+$(package-archive): $(exe) | $(package-dir)
 	false #disabled at the moment
 	cp -r \
-	  $(main-exe) \
+	  $(exe) \
 	  data \
 	  $(package-dir)
 	# art ?

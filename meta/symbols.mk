@@ -1,17 +1,17 @@
 .PHONY: all clean run debug package prepare
 
-all: $(main-exe)
+all: $(exe)
 
 package: $(package-archive)
 
 clean:
 	rm -rf $(platform-dir)
 
-run: $(main-exe)
-	@./$(main-exe)
+run: $(exe)
+	@./$(exe)
 
-debug: $(main-exe)
-	@gdb $(main-exe)
+debug: $(exe)
+	@gdb $(exe)
 
 prepare: $(all-c) $(all-h)
 
