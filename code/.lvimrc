@@ -14,11 +14,11 @@ function s:sys(cmd)
   "echo a:cmd
 endfunction
 
-function CosmosMakeRun()
-  execute '!cls; make -C' . s:thispath . '/.. run'
+function AL_make(what)
+  execute '!cls; make -C' . s:thispath . '/.. ' . a:what
 endfunction
 
-function CosmosUpdateTags()
+function AL_update_tags()
   let filefull = expand('%:p')
   if match(filefull, s:thispath) != 0
     return
@@ -34,15 +34,17 @@ function CosmosUpdateTags()
     call s:sys(cmd)
 endfunction
 
-function CosmosDoTags()
+function AL_do_tags()
   if filereadable(s:thispath . '/ctags') == 0
     let cmd = 'ctags -f .tags -R ' . s:flags . ' *'
     call s:sys(cmd)
   endif
 endfunction
 
-call CosmosDoTags()
-autocmd BufWritePost *.h,*.c call CosmosUpdateTags()
-map <F5> :call CosmosMakeRun()<CR>
+call AL_do_tags()
+autocmd BufWritePost *.h,*.c call AL_update_tags()
+
+map <F5> :call AL_make('run')<CR>
+map <F6> :call AL_make('debug')<CR>
 
 endif " end of guard
