@@ -1,41 +1,44 @@
 program := cosmos
-
 ifeq ($(program),cosmos)
-  ifeq ($(platform),ios)
+ ifeq ($(platform),ios)
     cc := false
     features += gles
-    includes += "#include <OpenGLES/ES2/gl.h>"
-    includes += "#include <OpenGLES/ES2/glext.h>"
+    includes += OpenGLES/ES2/gl.h
+    includes += OpenGLES/ES2/glext.h
   else ifeq ($(platform),android)
     cc := false
     features += gles
-    includes += "#include <GLES2/gl2.h>"
+    includes += GLES2/gl2.h
   else ifeq ($(shell uname),Linux)
     cc := gcc
     platform := linux
-    link_flags := _lGL _lGLEW
+    link_flags += -lGL -lGLEW
     features += glew
-    includes += "#include <GL/glew.h>"
+    includes += GL/glew.h
   else ifeq ($(shell uname),Darwin)
     platform := darwin
     cc := gcc
-    link_flags := _framework OpenGL
+    link_flags += -framework OpenGL
     features += gl
-    includes += "#include <OpenGL/gl.h>"
+    includes += OpenGL/gl.h
   else ifeq ($(shell uname -o),Msys)
     platform := windows
     cc := gcc
-    link_flags := \
+    link_flags += \
       -lmingw32 \
       -lopengl32 \
       -lglew32 \
       -lSDL2main
     exe_suffix := .exe
     features += glew
-    includes += "\#include <GL/glew.h>"
+    includes += GL/glew.h
   else
     $(error Could not determine platform.)
   endif
+  link_flags += -lm
+  link_flags += -lSDL2
+  link_flags += -lSDL2_image
+
 endif
 
 features += $(platform)
