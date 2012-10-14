@@ -2,10 +2,10 @@
 
 all: $(exe)
 
-package: $(package-archive)
+package: $(package_archive)
 
 clean:
-	rm -rf $(platform-dir)
+	rm -rf $(platform_dir)
 
 run: $(exe)
 	@./$(exe)
@@ -13,5 +13,5 @@ run: $(exe)
 debug: $(exe)
 	@gdb $(exe)
 
-prepare: $(source-c) $(source-h)
+prepare: $(source_c) $(source_h)
 

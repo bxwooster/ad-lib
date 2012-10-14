@@ -13,24 +13,24 @@ ifeq ($(program),cosmos)
   else ifeq ($(shell uname),Linux)
     cc := gcc
     platform := linux
-    link-flags := -lGL -lGLEW
+    link_flags := _lGL _lGLEW
     features += glew
     includes += "#include <GL/glew.h>"
   else ifeq ($(shell uname),Darwin)
     platform := darwin
     cc := gcc
-    link-flags := -framework OpenGL
+    link_flags := _framework OpenGL
     features += gl
     includes += "#include <OpenGL/gl.h>"
   else ifeq ($(shell uname -o),Msys)
     platform := windows
     cc := gcc
-    link-flags := \
+    link_flags := \
       -lmingw32 \
       -lopengl32 \
       -lglew32 \
       -lSDL2main
-    exe-suffix := .exe
+    exe_suffix := .exe
     features += glew
     includes += "\#include <GL/glew.h>"
   else
@@ -41,16 +41,16 @@ endif
 features += $(platform)
 features += $(program)
 
-base-dir := .build
-platform-dir := $(base-dir)/$(platform)
-output-dir := $(platform-dir)/output
-package-dir := $(platform-dir)/package
+base_dir := .build
+platform_dir := $(base_dir)/$(platform)
+output_dir := $(platform_dir)/output
+package_dir := $(platform_dir)/package
 
-all-source = $(shell shopt -s nullglob; echo code/*.c code/*/*.c)
-all-headers = $(shell shopt -s nullglob; echo code/*.h code/*/*.h)
-exe := $(output-dir)/$(program)$(exe-suffix)
-source-c := $(output-dir)/$(program).c
-source-h := $(output-dir)/$(program).h
-source-ext-h := $(output-dir)/$(program).ext.h
-package-archive := $(platform-dir)/package.tar.bz2
+all_source = $(shell shopt -s nullglob; echo code/*.c code/*/*.c)
+all_headers = $(shell shopt -s nullglob; echo code/*.h code/*/*.h)
+exe := $(output_dir)/$(program)$(exe_suffix)
+source_c := $(output_dir)/$(program).c
+source_h := $(output_dir)/$(program).h
+source_ext_h := $(output_dir)/$(program).ext.h
+package_archive := $(platform_dir)/package.tar.bz2
 
