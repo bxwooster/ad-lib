@@ -23,7 +23,7 @@ int loadplanet (struct planet * planet, char const * file) {
         goto end;
     }
 
-    identitymatrix (read.orbit.matrix);
+    mat4_identity (read.orbit.matrix);
 
     *planet = read;
 

@@ -1,4 +1,4 @@
-int main (int argc, char * argv []) {
+int SDL_main (int argc, char * argv []) {
     (void) argc;
     (void) argv; /* silence the warnings */
 
@@ -228,17 +228,17 @@ int main (int argc, char * argv []) {
         logi ("GL uniform 'texture' not found");
     }
 
-    float mori [4 * 4];
-    identitymatrix (mori);
+    mat4 mori [1];
+    mat4_identity (mori);
 
-    float mcam [4 * 4];
-    identitymatrix (mcam);
-    vec3 axisx = {1.0f, 0.0f, 0.0f};
-    rotatematrix (mcam, M_PI / 2.4f, & axisx);
-    float move [3] = {0.0f, 0.0f, -13.0f};
-    translatematrix (mcam, move);
-    vec3 axisz = {0.0f, 0.0f, 1.0f};
-    rotatematrix (mcam, M_PI, & axisz);
+    mat4 mcam [1];
+    mat4_identity (mcam);
+    vec3 axisx [1] = {{1.0f, 0.0f, 0.0f}};
+    mat4_rotate_aa (mcam, axisx, M_PI / 2.4f);
+    vec3 move [1] = {{0.0f, 0.0f, -13.0f}};
+    mat4_move (mcam, move);
+    vec3 axisz [1] = {{0.0f, 0.0f, 1.0f}};
+    mat4_rotate_aa (mcam, axisz, M_PI);
 
     char const * const dirname = "data/spawn";
     sysdir = opendir (dirname);
@@ -312,42 +312,42 @@ int main (int argc, char * argv []) {
 
         float const ROTATION_SPEED = 4.0f;
         float angle = sqrtf (dx * dx + dy * dy) * ROTATION_SPEED;
-        vec3 axis = {dy, 0.0f, dx};
+        vec3 axis [1] = {{dy, 0.0f, dx}};
 
-        rotatematrix (mori, angle, & axis);
+        if (angle != 0.0f) mat4_rotate_aa (mori, axis, angle);
 
         double time = (double) SDL_GetTicks () / 1000;
 
         glClearColor (0.0, 0.0, 0.0, 0.0);
         glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        float mview [4 * 4];
-        memcpy (mview, mori, sizeof (mview));
-        multiplymatrix (mview, mcam);
-        invertspecialmatrix (mview);
+        mat4 mview [1];
+        * mview = * mori;
+        mat4_multiply (mview, mcam);
+        mat4_invert_rtonly (mview);
 
-        float mviewi [4 * 4];
-        memcpy (mviewi, mview, sizeof (mview));
-        invertspecialmatrix (mviewi);
+        mat4 mviewi [1];
+        * mviewi = * mview;
+        mat4_invert_rtonly (mviewi);
 
         struct sysplanet * item;
         TAILQ_FOREACH(item, &list, _) {
             float tosurface;
             float apparentratio;
-            float mmodel [4 * 4];
-            float mrot [4 * 4];
+            mat4 mrot [1];
+            mat4 mmodel [1];
             planetmatrix (&item->planet, time, mviewi, mmodel, mrot,
                 &tosurface, &apparentratio);
 
-            float matrix [4 * 4];
+            mat4 matrix [1];
 
             float const aspect = ((float) settings.width) / settings.height;
-            projectionmatrix (settings.fov, aspect, 0.0f, matrix);
-            multiplymatrix (matrix, mview);
-            multiplymatrix (matrix, mmodel);
-            glUniformMatrix4fv (uniform_mvp, 1, GL_FALSE, matrix);
+            projection_from_afn (aspect, settings.fov, 0.0f, matrix);
+            mat4_multiply (matrix, mview);
+            mat4_multiply (matrix, mmodel);
+            glUniformMatrix4fv (uniform_mvp, 1, GL_FALSE, (float *) matrix);
 
-            glUniformMatrix4fv (uniform_mv, 1, GL_FALSE, mrot);
+            glUniformMatrix4fv (uniform_mv, 1, GL_FALSE, (float *) mrot);
 
             float const hack = logf (tosurface) / 1000.0f;
             glUniform1f (uniform_depth, hack);
@@ -403,9 +403,9 @@ int main (int argc, char * argv []) {
 
     if (error) {
         logi ("Error # %d.", error);
-        return (EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
 
-    return (EXIT_SUCCESS);
+    return EXIT_SUCCESS;
 }
 

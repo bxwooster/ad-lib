@@ -15,7 +15,7 @@ $(main-exe): $(all-source) $(all-headers) $(all-c) $(all-h) | $(output-dir)
 
 $(all-h): code $(all-headers) | $(output-dir)
 	rm -f $(all-h).tmp
-	for feature in $(features) .; do \
+	for feature in . $(features); do \
 	  for file in \
 	   `shopt -s nullglob; \
 	    echo code/$$feature/*.c`; \
@@ -29,7 +29,7 @@ $(all-h): code $(all-headers) | $(output-dir)
 
 $(all-c): code $(all-headers) | $(output-dir)
 	rm -f $(all-c).tmp
-	for feature in $(features) .; do \
+	for feature in . $(features); do \
 	  for file in \
 	   `shopt -s nullglob; \
 	    echo code/$$feature/*.h`; \
@@ -38,7 +38,7 @@ $(all-c): code $(all-headers) | $(output-dir)
 	  done ; \
 	done
 	echo "#include <$(all-h)>" >> $(all-c).tmp
-	for feature in $(features) .; do \
+	for feature in . $(features); do \
 	  for file in \
 	   `shopt -s nullglob; \
 	    echo code/$$feature/*.c`; \

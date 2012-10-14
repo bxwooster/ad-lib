@@ -25,6 +25,8 @@ else
   $(error Could not determine platform.)
 endif
 
+features += cosmos
+
 base-dir := .build
 platform-dir := $(base-dir)/$(platform)
 output-dir := $(platform-dir)/output

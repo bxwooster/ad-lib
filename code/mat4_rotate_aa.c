@@ -1,6 +1,6 @@
-void rotatematrix (float matrix [4 * 4], float angle, vec3 * axis) {
+void mat4_rotate_aa (mat4 * m, vec3 const * axis, float angle) {
 	float len = vec3_length (axis);
-	if (len == 0.0f) return;
+	assert (len != 0.0f);
 
 	float x = axis->x / len;
 	float y = axis->y / len;
@@ -14,7 +14,7 @@ void rotatematrix (float matrix [4 * 4], float angle, vec3 * axis) {
 	float ys = y * s;
 	float zs = z * s;
 
-	float mrot [16] = {
+	mat4 mrot [1] = {{{
 		x*x * cc + c,
 		y*x * cc + zs,
 		z*x * cc - ys,
@@ -30,9 +30,12 @@ void rotatematrix (float matrix [4 * 4], float angle, vec3 * axis) {
 		z*z * cc + c,
 		0.0f,
 
-		0.0f, 0.0f, 0.0f, 1.0f
-	};
+        0.0f,
+        0.0f,
+        0.0f,
+        1.0f
+	}}};
 
-	multiplymatrix (matrix, mrot);
+	mat4_multiply (m, mrot);
 }
 

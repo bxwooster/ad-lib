@@ -34,7 +34,7 @@ endfunction
 
 function CosmosDoTags()
   if filereadable(s:thispath . '/ctags') == 0
-    let cmd = 'ctags ' . s:flags . ' *'
+    let cmd = 'ctags -R ' . s:flags . ' *'
     call s:sys(cmd)
   endif
 endfunction
