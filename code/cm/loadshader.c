@@ -22,7 +22,7 @@ int loadshader (struct shader_t * info, char const * file) {
     GLint code = GL_FALSE;
     sh = glCreateShader (info->type);
     
-    char const * srcs [] = {gl_shader_prefix (), src};
+    char const * srcs [] = {gl_shader_preamble (), src};
     glShaderSource (sh, 2, srcs, NULL);
     glCompileShader (sh);
     glGetShaderiv (sh, GL_COMPILE_STATUS, &code);

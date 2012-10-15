@@ -2,24 +2,23 @@ program := cosmos
 ifeq ($(program),cosmos)
  ifeq ($(platform),ios)
     cc := false
-    features += gles
+    defines += GLES
     includes += OpenGLES/ES2/gl.h
     includes += OpenGLES/ES2/glext.h
   else ifeq ($(platform),android)
     cc := false
-    features += gles
+    defines += GLES
     includes += GLES2/gl2.h
   else ifeq ($(shell uname),Linux)
-    cc := gcc
     platform := linux
+    cc := gcc
+    defines += GLEW
     link_flags += -lGL -lGLEW
-    features += glew
     includes += GL/glew.h
   else ifeq ($(shell uname),Darwin)
     platform := darwin
     cc := gcc
     link_flags += -framework OpenGL
-    features += gl
     includes += OpenGL/gl.h
   else ifeq ($(shell uname -o),Msys)
     platform := windows
@@ -30,7 +29,7 @@ ifeq ($(program),cosmos)
       -lglew32 \
       -lSDL2main
     exe_suffix := .exe
-    features += glew
+    defines += GLEW
     includes += GL/glew.h
   else
     $(error Could not determine platform.)
@@ -38,11 +37,8 @@ ifeq ($(program),cosmos)
   link_flags += -lm
   link_flags += -lSDL2
   link_flags += -lSDL2_image
-
+  features += cm
 endif
-
-features += $(platform)
-features += $(program)
 
 base_dir := .build
 platform_dir := $(base_dir)/$(platform)

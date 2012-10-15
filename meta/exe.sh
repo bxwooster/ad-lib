@@ -5,10 +5,11 @@ shopt -s nullglob
 $cc \
   -o $exe \
   $source_c \
-  -std=gnu99 \
+  -std=c99 \
   -Wall \
   -Wextra \
   $link_flags \
+  -D$defines \
   -I.config/$platform/include \
   -I. \
   -g \

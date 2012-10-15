@@ -3,7 +3,7 @@ void projection_from_afn (
 		float fov_horizontal_in_degrees,
 		float near_plane_distance,
 		mat4 * out) {
-	float q = 1 / tanf ((float) M_PI / 180 / 2 * fov_horizontal_in_degrees);
+	float q = 1 / tanf (pi () / 180 / 2 * fov_horizontal_in_degrees);
 
 	out->p[0] = q;
 	out->p[1] = 0.0f;

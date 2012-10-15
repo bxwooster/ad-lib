@@ -14,7 +14,7 @@ void mat4_rotate_aa (mat4 * m, vec3 const * axis, float angle) {
 	float ys = y * s;
 	float zs = z * s;
 
-	mat4 mrot [1] = {{{
+	mat4 mrot = {{
 		x*x * cc + c,
 		y*x * cc + zs,
 		z*x * cc - ys,
@@ -34,8 +34,8 @@ void mat4_rotate_aa (mat4 * m, vec3 const * axis, float angle) {
         0.0f,
         0.0f,
         1.0f
-	}}};
+	}};
 
-	mat4_multiply (m, mrot);
+	mat4_multiply (m, & mrot);
 }
 

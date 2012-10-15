@@ -6,7 +6,7 @@ void planetmatrix (
         mat4 * mrot,
         float * tosurface,
         float * apparentratio) {
-    float phi = (float) ((time / planet->orbit.period) * M_PI * 2.0);
+    float phi = (float) ((time / planet->orbit.period) * pi () * 2.0);
 
     memcpy (mmodel, planet->orbit.matrix, sizeof (float) * 16);
     mmodel->column.w.element.x += planet->orbit.major * cosf (phi);

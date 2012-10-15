@@ -1,4 +1,4 @@
-int SDL_main (int argc, char * argv []) {
+int main (int argc, char * argv []) {
     (void) argc;
     (void) argv; /* silence the warnings */
 
@@ -234,11 +234,11 @@ int SDL_main (int argc, char * argv []) {
     mat4 mcam [1];
     mat4_identity (mcam);
     vec3 axisx [1] = {{{1.0f, 0.0f, 0.0f}}};
-    mat4_rotate_aa (mcam, axisx, M_PI / 2.4f);
+    mat4_rotate_aa (mcam, axisx, pi () / 2.4f);
     vec3 move [1] = {{{0.0f, 0.0f, -13.0f}}};
     mat4_move (mcam, move);
     vec3 axisz [1] = {{{0.0f, 0.0f, 1.0f}}};
-    mat4_rotate_aa (mcam, axisz, M_PI);
+    mat4_rotate_aa (mcam, axisz, pi ());
 
     char const * const dirname = "data/spawn";
     sysdir = opendir (dirname);
