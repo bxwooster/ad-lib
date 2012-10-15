@@ -1,7 +1,6 @@
 gl_log_from_shader
 gl_shader_from_source
-projection_from_a_f_n
 
-cosmos_settings_from_cstring
-cosmos_planet_from_cstring
+cm_settings_from_cstring
+cm_planet_from_cstring
 
