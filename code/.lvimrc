@@ -41,6 +41,7 @@ function AL_do_tags()
   endif
 endfunction
 
+set expandtab
 call AL_do_tags()
 autocmd BufWritePost *.h,*.c call AL_update_tags()
 

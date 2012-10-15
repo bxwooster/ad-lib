@@ -2,8 +2,8 @@ void vec3_sum (
 		vec3 const * a,
 		vec3 const * b,
 		vec3 * out) {
-	out->x = a->x + b->x;
-	out->y = a->y + b->y;
-	out->z = a->z + b->z;
+	out->p[0] = a->p[0] + b->p[0];
+	out->p[1] = a->p[1] + b->p[1];
+	out->p[2] = a->p[2] + b->p[2];
 }
 

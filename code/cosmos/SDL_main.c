@@ -233,11 +233,11 @@ int SDL_main (int argc, char * argv []) {
 
     mat4 mcam [1];
     mat4_identity (mcam);
-    vec3 axisx [1] = {{1.0f, 0.0f, 0.0f}};
+    vec3 axisx [1] = {{{1.0f, 0.0f, 0.0f}}};
     mat4_rotate_aa (mcam, axisx, M_PI / 2.4f);
-    vec3 move [1] = {{0.0f, 0.0f, -13.0f}};
+    vec3 move [1] = {{{0.0f, 0.0f, -13.0f}}};
     mat4_move (mcam, move);
-    vec3 axisz [1] = {{0.0f, 0.0f, 1.0f}};
+    vec3 axisz [1] = {{{0.0f, 0.0f, 1.0f}}};
     mat4_rotate_aa (mcam, axisz, M_PI);
 
     char const * const dirname = "data/spawn";
@@ -312,7 +312,7 @@ int SDL_main (int argc, char * argv []) {
 
         float const ROTATION_SPEED = 4.0f;
         float angle = sqrtf (dx * dx + dy * dy) * ROTATION_SPEED;
-        vec3 axis [1] = {{dy, 0.0f, dx}};
+        vec3 axis [1] = {{{dy, 0.0f, dx}}};
 
         if (angle != 0.0f) mat4_rotate_aa (mori, axis, angle);
 

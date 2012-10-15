@@ -1,11 +1,34 @@
 typedef union {
-    float e [16]; 
+    float p [3];
 
     struct {
-        float x [4];
-        float y [4];
-        float z [4];
-        float w [4];
-    } col;
+        float x;
+        float y;
+        float z;
+    } element;
+} vec3;
+
+typedef union {
+    float p [4];
+
+    struct {
+        float x;
+        float y;
+        float z;
+        float w;
+    } element;
+
+    vec3 v3;
+} vec4;
+
+typedef union {
+    float p [16]; 
+
+    struct {
+        vec4 x;
+        vec4 y;
+        vec4 z;
+        vec4 w;
+    } column;
 } mat4;
 

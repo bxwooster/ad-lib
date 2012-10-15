@@ -5,24 +5,24 @@ void projection_from_afn (
 		mat4 * out) {
 	float q = 1 / tanf ((float) M_PI / 180 / 2 * fov_horizontal_in_degrees);
 
-	out->e [0] = q;
-	out->e [1] = 0.0f;
-	out->e [2] = 0.0f;
-	out->e [3] = 0.0f;
+	out->p[0] = q;
+	out->p[1] = 0.0f;
+	out->p[2] = 0.0f;
+	out->p[3] = 0.0f;
 
-	out->e [4] = 0.0f;
-	out->e [5] = q * aspect_ratio;
-	out->e [6] = 0.0f;
-	out->e [7] = 0.0f;
+	out->p[4] = 0.0f;
+	out->p[5] = q * aspect_ratio;
+	out->p[6] = 0.0f;
+	out->p[7] = 0.0f;
 	
-	out->e [8] = 0.0f;
-	out->e [9] = 0.0f;
-	out->e [10] = 1.0f;
-	out->e [11] = 1.0f;
+	out->p[8] = 0.0f;
+	out->p[9] = 0.0f;
+	out->p[10] = 1.0f;
+	out->p[11] = 1.0f;
 
-	out->e [12] = 0.0f;
-	out->e [13] = 0.0f;
-	out->e [14] = -2.0f * near_plane_distance;
-	out->e [15] = 0.0f;
+	out->p[12] = 0.0f;
+	out->p[13] = 0.0f;
+	out->p[14] = -2.0f * near_plane_distance;
+	out->p[15] = 0.0f;
 }
 

@@ -2,9 +2,9 @@ void mat4_rotate_aa (mat4 * m, vec3 const * axis, float angle) {
 	float len = vec3_length (axis);
 	assert (len != 0.0f);
 
-	float x = axis->x / len;
-	float y = axis->y / len;
-	float z = axis->z / len;
+	float x = axis->p[0] / len;
+	float y = axis->p[1] / len;
+	float z = axis->p[2] / len;
 
 	float c = cosf (angle);
 	float s = sinf (angle);

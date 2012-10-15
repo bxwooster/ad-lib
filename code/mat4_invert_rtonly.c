@@ -1,22 +1,22 @@
 void mat4_invert_rtonly (mat4 * m) {
-    float a = m->e [1];
-    float b = m->e [2];
-    float c = m->e [6];
+    float a = m->p[1];
+    float b = m->p[2];
+    float c = m->p[6];
 
-    m->e [1] = m->e [4];
-    m->e [2] = m->e [8];
-    m->e [6] = m->e [9];
+    m->p[1] = m->p[4];
+    m->p[2] = m->p[8];
+    m->p[6] = m->p[9];
 
-    m->e [4] = a;
-    m->e [8] = b;
-    m->e [9] = c;
+    m->p[4] = a;
+    m->p[8] = b;
+    m->p[9] = c;
 
-    float x = -m->e [12];
-    float y = -m->e [13];
-    float z = -m->e [14];
+    float x = -m->p[12];
+    float y = -m->p[13];
+    float z = -m->p[14];
 
-    m->e [12] = (m->e [0]) * x + (m->e [4]) * y + (m->e [ 8]) * z;
-    m->e [13] = (m->e [1]) * x + (m->e [5]) * y + (m->e [ 9]) * z;
-    m->e [14] = (m->e [2]) * x + (m->e [6]) * y + (m->e [10]) * z;
+    m->p[12] = (m->p[0]) * x + (m->p[4]) * y + (m->p[ 8]) * z;
+    m->p[13] = (m->p[1]) * x + (m->p[5]) * y + (m->p[ 9]) * z;
+    m->p[14] = (m->p[2]) * x + (m->p[6]) * y + (m->p[10]) * z;
 }
 
