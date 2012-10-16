@@ -1,10 +1,16 @@
-void mat4_rotate_aa (mat4 * m, vec3 const * axis, float angle) {
-	float len = vec3_length (axis);
-	assert (len != 0.0f);
+mat4 mat4_rotated_aa (mat4 const * m, vec3 const * axis, float angle) {
+/*    vec3 axis_n = vec3_normalized (axis);
 
-	float x = axis->p[0] / len;
-	float y = axis->p[1] / len;
-	float z = axis->p[2] / len;
+    float x = axis_n.p[0];
+    float y = axis_n.p[1];
+    float z = axis_n.p[2];*/
+          float len = vec3_length (axis);
+            assert (len != 0.0f);
+         
+                    float x = axis->p[0] / len;
+                float y = axis->p[1] / len;
+                 float z = axis->p[2] / len;
+               
 
 	float c = cosf (angle);
 	float s = sinf (angle);
@@ -36,6 +42,6 @@ void mat4_rotate_aa (mat4 * m, vec3 const * axis, float angle) {
         1.0f
 	}};
 
-	mat4_multiply (m, & mrot);
+	return mat4_multiply (m, & mrot);
 }
 

@@ -22,6 +22,7 @@ typedef union {
 } vec4;
 
 typedef union {
+    /* first and foremost, this is a dead simple array */
     float p [16]; 
 
     struct {

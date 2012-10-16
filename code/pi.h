@@ -1,2 +1,2 @@
-double pi () { return acos (-1.0); }
+double pi (void) { return acos (-1.0); }
 

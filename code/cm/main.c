@@ -228,17 +228,15 @@ int main (int argc, char * argv []) {
         log_info ("GL uniform 'texture' not found");
     }
 
-    mat4 mori [1];
-    mat4_identity (mori);
+    mat4 mori = mat4_identity ();
 
-    mat4 mcam [1];
-    mat4_identity (mcam);
-    vec3 axisx [1] = {{{1.0f, 0.0f, 0.0f}}};
-    mat4_rotate_aa (mcam, axisx, pi () / 2.4f);
-    vec3 move [1] = {{{0.0f, 0.0f, -13.0f}}};
-    mat4_move (mcam, move);
-    vec3 axisz [1] = {{{0.0f, 0.0f, 1.0f}}};
-    mat4_rotate_aa (mcam, axisz, pi ());
+    mat4 mcam = mat4_identity ();
+    vec3 axis_x = {{1.0f, 0.0f, 0.0f}};
+    mcam = mat4_rotated_aa (& mcam, & axis_x, pi () / 2.4f);
+    vec3 move = {{0.0f, 0.0f, -13.0f}};
+    mcam = mat4_moved (& mcam, & move);
+    vec3 axis_z = {{0.0f, 0.0f, 1.0f}};
+    mcam = mat4_rotated_aa (& mcam, & axis_z, pi ());
 
     char const * const dirname = "data/spawn";
     sysdir = opendir (dirname);
@@ -312,42 +310,36 @@ int main (int argc, char * argv []) {
 
         float const ROTATION_SPEED = 4.0f;
         float angle = sqrtf (dx * dx + dy * dy) * ROTATION_SPEED;
-        vec3 axis [1] = {{{dy, 0.0f, dx}}};
+        vec3 axis = {{dy, 0.0f, dx}};
 
-        if (angle != 0.0f) mat4_rotate_aa (mori, axis, angle);
+        if (angle != 0.0f) mori = mat4_rotated_aa (& mori, & axis, angle);
 
         double time = (double) SDL_GetTicks () / 1000;
 
         glClearColor (0.0, 0.0, 0.0, 0.0);
         glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        mat4 mview [1];
-        * mview = * mori;
-        mat4_multiply (mview, mcam);
-        mat4_invert_rtonly (mview);
-
-        mat4 mviewi [1];
-        * mviewi = * mview;
-        mat4_invert_rtonly (mviewi);
+        mat4 mviewi = mat4_multiply (& mori, & mcam);
+        mat4 mview = mat4_inverted_rtonly (& mviewi);
 
         struct sysplanet * item;
         TAILQ_FOREACH(item, &list, _) {
             float tosurface;
             float apparentratio;
-            mat4 mrot [1];
-            mat4 mmodel [1];
-            planetmatrix (&item->planet, time, mviewi, mmodel, mrot,
-                &tosurface, &apparentratio);
+            mat4 mrot;
+            mat4 mmodel;
+            planetmatrix (&item->planet, time, & mviewi, & mmodel, & mrot,
+                & tosurface, & apparentratio);
 
-            mat4 matrix [1];
+            mat4 matrix;
 
             float const aspect = ((float) settings.width) / settings.height;
-            projection_from_afn (aspect, settings.fov, 0.0f, matrix);
-            mat4_multiply (matrix, mview);
-            mat4_multiply (matrix, mmodel);
-            glUniformMatrix4fv (uniform_mvp, 1, GL_FALSE, (float *) matrix);
+            projection_from_afn (aspect, settings.fov, 0.0f, & matrix);
+            matrix = mat4_multiply (& matrix, & mview);
+            matrix = mat4_multiply (& matrix, & mmodel);
+            glUniformMatrix4fv (uniform_mvp, 1, GL_FALSE, matrix.p);
 
-            glUniformMatrix4fv (uniform_mv, 1, GL_FALSE, (float *) mrot);
+            glUniformMatrix4fv (uniform_mv, 1, GL_FALSE, mrot.p);
 
             float const hack = logf (tosurface) / 1000.0f;
             glUniform1f (uniform_depth, hack);
