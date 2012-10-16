@@ -331,10 +331,8 @@ int main (int argc, char * argv []) {
             planetmatrix (&item->planet, time, & mviewi, & mmodel, & mrot,
                 & tosurface, & apparentratio);
 
-            mat4 matrix;
-
             float const aspect = ((float) settings.width) / settings.height;
-            projection_from_afn (aspect, settings.fov, 0.0f, & matrix);
+            mat4 matrix = projection_from_afn (aspect, settings.fov, 0.0f);
             matrix = mat4_multiply (& matrix, & mview);
             matrix = mat4_multiply (& matrix, & mmodel);
             glUniformMatrix4fv (uniform_mvp, 1, GL_FALSE, matrix.p);
