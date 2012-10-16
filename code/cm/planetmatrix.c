@@ -36,7 +36,7 @@ void planetmatrix (
     second = vec3_normalized (& second);
     third = vec3_normalized (& third);
 
-    mat4 rotation = {};
+    mat4 rotation = {{0}};
     rotation.column.z.v3 = first;
     rotation.column.x.v3 = second;
     rotation.column.y.v3 = third;

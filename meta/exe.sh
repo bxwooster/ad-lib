@@ -8,6 +8,8 @@ $cc \
   -std=c99 \
   -Wall \
   -Wextra \
+  -pedantic \
+  -Werror \
   $link_flags \
   -D$defines \
   -I.config/$platform/include \
