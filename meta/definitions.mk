@@ -1,6 +1,14 @@
-program := cosmos
+profile ?= develop
+program ?= cosmos
+
+ifeq ($(profile),develop)
+  optimization := -g -O0 # -Og in a new gcc!
+else ifeq ($(profile),release)
+  optimization := -Os
+endif
+
 ifeq ($(program),cosmos)
- ifeq ($(platform),ios)
+  ifeq ($(platform),ios)
     cc := false
     defines += GLES
     includes += OpenGLES/ES2/gl.h

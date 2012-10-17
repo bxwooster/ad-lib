@@ -10,6 +10,7 @@ $cc \
   -Wextra \
   -pedantic \
   -Werror \
+  $optimization \
   $link_flags \
   -D$defines \
   -I.config/$platform/include \

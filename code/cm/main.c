@@ -13,6 +13,8 @@ int main (int argc, char * argv []) {
     int gl_initted = 0;
 
     DIR * sysdir = NULL;
+    SDL_GLContext context = NULL;
+    SDL_Window * window = NULL;
 
     TAILQ_HEAD (head, sysplanet) list;
     TAILQ_INIT (&list);
@@ -41,7 +43,7 @@ int main (int argc, char * argv []) {
         goto end;
     }
 
-    SDL_Window * window = SDL_CreateWindow ("Cosmos",
+    window = SDL_CreateWindow ("Cosmos",
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
         settings.width, settings.height, 
         SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
@@ -60,7 +62,7 @@ int main (int argc, char * argv []) {
         goto end;
     }
 
-    SDL_GLContext context = SDL_GL_CreateContext (window);
+    context = SDL_GL_CreateContext (window);
 
     if (context == NULL) {
         sdlerror = 1;
