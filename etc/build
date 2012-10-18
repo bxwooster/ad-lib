@@ -1,5 +1,5 @@
+separate/aggregate modes
 .mk deps
 flag deps
-incremental build
 precompiled header
 strip when possible

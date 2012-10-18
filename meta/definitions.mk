@@ -1,10 +1,24 @@
-profile ?= develop
 program ?= cosmos
+profile ?= develop
+platform ?= native
 
 ifeq ($(profile),develop)
-  optimization := -g -O0 # -Og in a new gcc!
+  optimization := -g
+  # -Og in gcc 4.7?
 else ifeq ($(profile),release)
   optimization := -Os
+endif
+
+ifeq ($(platform),native)
+  ifeq ($(shell uname),Linux)
+    platform := linux
+  else ifeq ($(shell uname),Darwin)
+    platform := darwin
+  else ifeq ($(shell uname -o),Msys)
+    platform := windows
+  else
+    $(error Could not determine native platform!)
+  endif
 endif
 
 ifeq ($(program),cosmos)
@@ -17,19 +31,16 @@ ifeq ($(program),cosmos)
     cc := false
     defines += GLES
     includes += GLES2/gl2.h
-  else ifeq ($(shell uname),Linux)
-    platform := linux
+  else ifeq ($(platform),linux)
     cc := gcc
     defines += GLEW
     link_flags += -lGL -lGLEW
     includes += GL/glew.h
-  else ifeq ($(shell uname),Darwin)
-    platform := darwin
+  else ifeq ($(platform),darwin)
     cc := gcc
     link_flags += -framework OpenGL
     includes += OpenGL/gl.h
-  else ifeq ($(shell uname -o),Msys)
-    platform := windows
+  else ifeq ($(platform),windows)
     cc := gcc
     link_flags += \
       -lmingw32 \
@@ -39,8 +50,6 @@ ifeq ($(program),cosmos)
     exe_suffix := .exe
     defines += GLEW
     includes += GL/glew.h
-  else
-    $(error Could not determine platform.)
   endif
   link_flags += -lm
   link_flags += -lSDL2

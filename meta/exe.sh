@@ -1,6 +1,6 @@
 #!/bin/bash
-set -e -u
 shopt -s nullglob
+set -e -u -x
 
 $cc \
   -o $exe \
@@ -14,6 +14,8 @@ $cc \
   $link_flags \
   -D$defines \
   -I.config/$platform/include \
+  -Icode \
+  -Icode/$features \
   -I. \
   -g \
 
