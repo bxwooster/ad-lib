@@ -19,9 +19,6 @@ int main (int argc, char * argv []) {
     TAILQ_HEAD (head, sysplanet) list;
     TAILQ_INIT (&list);
 
-    struct shader_t vss = {GL_VERTEX_SHADER, &vs, &prog};
-    struct shader_t fss = {GL_FRAGMENT_SHADER, &fs, &prog};
-
     struct settings settings;
     if (loadsettings (&settings, "data/settings") != 0) {
         error = __LINE__;
@@ -77,19 +74,24 @@ int main (int argc, char * argv []) {
         goto end;
     }
 
+    vs = loadshader ("data/shade/planet.vert", GL_VERTEX_SHADER);
+    if (vs == GL_FALSE) {
+        error = __LINE__;
+        goto end;
+    }
+
+    fs = loadshader ("data/shade/planet.frag", GL_FRAGMENT_SHADER);
+    if (fs == GL_FALSE) {
+        error = __LINE__;
+        goto end;
+    }
+
     prog = glCreateProgram ();
 
-    if (loadshader (&vss, "data/shade/planet.vert") != 0) {
-        error = __LINE__;
-        goto end;
-    }
-    if (loadshader (&fss, "data/shade/planet.frag") != 0) {
-        error = __LINE__;
-        goto end;
-    }
+    glAttachShader (prog, vs);
+    glAttachShader (prog, fs);
 
-    glDeleteShader (vs);
-    glDeleteShader (fs);
+    glLinkProgram (prog);
 
     GLint code = GL_FALSE;
     glGetProgramiv (prog, GL_LINK_STATUS, &code);

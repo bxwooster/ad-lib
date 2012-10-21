@@ -1,6 +1,5 @@
-int loadshader (struct shader_t * info, char const * file) {
-    int error = 0;
-    long size;
+GLuint loadshader (char const * file, GLenum type) {
+    long size = -1;
     FILE * fp = NULL;
     char * src = NULL;
     GLuint sh = GL_FALSE;
@@ -13,14 +12,13 @@ int loadshader (struct shader_t * info, char const * file) {
         (src = (char *) malloc ((size_t) size + 1)) == NULL ||
         fread(src, 1, (size_t) size, fp) != (size_t) size
     ) {
-        error = __LINE__;
         goto end;
     }
 
     src[size] = '\0';
 
     GLint code = GL_FALSE;
-    sh = glCreateShader (info->type);
+    sh = glCreateShader (type);
     
     char const * srcs [] = {gl_shader_preamble (), src};
     glShaderSource (sh, 2, srcs, NULL);
@@ -43,55 +41,16 @@ int loadshader (struct shader_t * info, char const * file) {
         } else {
             log_info ("No shader log available.");
         }
-        error = __LINE__;
         goto end;
     }
 
-    if (info->program != NULL) {
-        GLint count = 0;
-        glGetProgramiv (*info->program, GL_ATTACHED_SHADERS, &count);
-
-        GLuint * all = (GLuint *) malloc (count * sizeof (*all));
-        assert (all != NULL);
-        glGetAttachedShaders (*info->program, count, NULL, all);
-
-        GLuint prog = glCreateProgram ();
-
-        for (int i = 0; i < count; ++i) {
-            if (all [i] != *info->shader) {
-                glAttachShader (prog, all [i]);
-            }
-        }
-        glAttachShader (prog, sh);
-
-        glLinkProgram (prog);
-        glGetProgramiv (prog, GL_LINK_STATUS, &code);
-
-        if (code == GL_FALSE) {
-            glGetProgramiv (*info->program, GL_LINK_STATUS, &code);
-            if (code != GL_FALSE) {
-                error = __LINE__;
-                goto end;
-            }
-        }
-
-        glDeleteProgram (*info->program);
-        *info->program = prog;
-    }
-
-    glDeleteShader (*info->shader);
-    *info->shader = sh;
-    sh = GL_FALSE;
-
     end:
-    if (sh != GL_FALSE) {
-        glDeleteShader (sh);
-    }
+
     if (fp != NULL) {
         fclose (fp);
     }
     free (src);
 
-    return (error);
+    return sh;
 }
 
