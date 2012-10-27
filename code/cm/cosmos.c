@@ -1,4 +1,5 @@
-void cosmos(void) {
+void
+cosmos(void) {
     int error = 0;
     int sdlerror = 0;
 

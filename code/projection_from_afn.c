@@ -1,7 +1,9 @@
-mat4 projection_from_afn (
+mat4
+projection_from_afn (
 		float aspect_ratio,
 		float fov_horizontal_in_degrees,
-		float near_plane_distance) {
+		float near_plane_distance
+) {
     mat4 out;
 
 	float q = 1 / tanf (pi () / 180 / 2 * fov_horizontal_in_degrees);

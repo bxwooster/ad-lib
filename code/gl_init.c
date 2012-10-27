@@ -1,4 +1,5 @@
-int gl_init (void) {
+int
+gl_init (void) {
     #ifdef GLEW
         GLenum glew = glewInit();
         if (glew != GLEW_OK) {

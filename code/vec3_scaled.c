@@ -1,4 +1,8 @@
-vec3 vec3_scaled (vec3 const * v, float scale) {
+vec3
+vec3_scaled (
+        vec3 const * v,
+        float scale
+) {
     vec3 out;
 
 	out.p[0] = v->p[0] * scale;

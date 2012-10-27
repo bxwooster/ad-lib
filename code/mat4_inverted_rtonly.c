@@ -1,4 +1,7 @@
-mat4 mat4_inverted_rtonly (mat4 const * m) {
+mat4
+mat4_inverted_rtonly (
+        mat4 const * m
+) {
     mat4 out;
 
     out.p[0] = m->p[0];

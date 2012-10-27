@@ -1,4 +1,8 @@
-GLuint loadshader (char const * file, GLenum type) {
+GLuint
+loadshader (
+        char const * file,
+        GLenum type
+) {
     long size = -1;
     FILE * fp = NULL;
     char * src = NULL;

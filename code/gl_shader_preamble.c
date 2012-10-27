@@ -1,4 +1,5 @@
-char const * gl_shader_preamble (void) {
+char const *
+gl_shader_preamble (void) {
     int gles = 0;
     #ifdef GLES 
         gles = 1;

@@ -1,4 +1,8 @@
-mat4 mat4_multiply (mat4 const * a, mat4 const * b) {
+mat4
+mat4_multiply (
+        mat4 const * a,
+        mat4 const * b
+) {
     mat4 out;
 
     for (int i = 0; i < 4; ++i) { /* columns */

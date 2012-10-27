@@ -1,4 +1,9 @@
-mat4 mat4_rotated_aa (mat4 const * m, vec3 const * axis, float angle) {
+mat4
+mat4_rotated_aa (
+        mat4 const * m,
+        vec3 const * axis,
+        float angle
+) {
 /*    vec3 axis_n = vec3_normalized (axis);
 
     float x = axis_n.p[0];

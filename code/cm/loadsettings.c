@@ -1,4 +1,8 @@
-int loadsettings (struct settings * settings, char const * file) {
+int
+loadsettings (
+        struct settings * settings,
+        char const * file
+) {
     int error = 0;
     FILE * fp = NULL;
     struct settings read;

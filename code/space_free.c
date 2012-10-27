@@ -1,3 +1,6 @@
-void space_free (space * where) {
+void
+space_free (
+        space * where
+) {
     free (where->buf);
 }

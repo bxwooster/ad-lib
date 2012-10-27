@@ -1,6 +1,8 @@
-vec3 vec3_sum (
+vec3
+vec3_sum (
 		vec3 const * a,
-		vec3 const * b) {
+		vec3 const * b
+) {
     vec3 out;
 
 	out.p[0] = a->p[0] + b->p[0];

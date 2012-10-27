@@ -1,4 +1,8 @@
-int loadplanet (struct planet * planet, char const * file) {
+int
+loadplanet (
+        struct planet * planet,
+        char const * file
+) {
     int error = 0;
     FILE * fp = NULL;
     struct planet read;

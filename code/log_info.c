@@ -1,4 +1,8 @@
-void log_info (char const * fmt, ...) {
+void
+log_info (
+        char const * fmt,
+        ...
+) {
     va_list args;
     va_start (args, fmt);
     vfprintf (stdout, fmt, args);
