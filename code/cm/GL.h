@@ -1,0 +1,3 @@
+struct GL {
+    int ready;
+};

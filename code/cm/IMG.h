@@ -1,0 +1,3 @@
+struct IMG {
+    int ready;
+};
