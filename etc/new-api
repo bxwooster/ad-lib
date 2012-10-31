@@ -1,6 +1,0 @@
-gl_log_from_shader
-gl_shader_from_source
-
-cm_settings_from_cstring
-cm_planet_from_cstring
-

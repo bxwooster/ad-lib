@@ -1,5 +1,5 @@
 void
-cosmos (void) {
+stage_I (void) {
     log_info ("Revving up.");
 
     struct SDL sdl = {0};
@@ -17,7 +17,7 @@ cosmos (void) {
         if (!gl.ready) break;
 
         /* All systems go! */
-        go (& gl, & sdl, & img);
+        stage_II (& gl, & sdl, & img);
 
     } while (0); /* break out */
 

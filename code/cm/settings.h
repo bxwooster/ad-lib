@@ -1,4 +1,0 @@
-struct settings {
-	float fov;
-};
-

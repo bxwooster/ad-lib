@@ -1,12 +1,14 @@
 GLuint
-loadshader (
-        char const * file,
+gl_shader_from_source (
+        char const * source,
         GLenum type
 ) {
     long size = -1;
     FILE * fp = NULL;
     char * src = NULL;
     GLuint sh = GL_FALSE;
+
+    char const * file = source; //temporary hack
 
     if (
         (fp = fopen (file, "rb")) == 0 ||

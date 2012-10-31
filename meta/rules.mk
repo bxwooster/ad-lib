@@ -1,4 +1,4 @@
-$(exe): $(all_source) $(all_headers) \
+$(exe): code $(all_source) $(all_headers) \
   $(source_c) $(source_h) $(source_ext_h) | $(output_dir)
 	@echo "Making the executable..."
 	@meta/exe.sh
@@ -7,11 +7,11 @@ $(source_ext_h): | $(output_dir)
 	@echo "Making '$(source_ext_h)'..."
 	@meta/source_ext_h.sh
 
-$(source_h): code $(all_headers) | $(output_dir)
+$(source_h): code $(all_source) | $(output_dir)
 	@echo "Making '$(source_h)'..."
 	@meta/source_h.sh
 
-$(source_c): code $(all_headers) | $(output_dir)
+$(source_c): code | $(output_dir)
 	@echo "Making '$(source_c)'..."
 	@meta/source_c.sh
 
