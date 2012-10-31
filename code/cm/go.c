@@ -1,11 +1,10 @@
 void
 go (
-        struct GL const * gl,
-        struct SDL const * sdl,
-        struct IMG const * img
+        struct GL * gl,
+        struct SDL * sdl,
+        struct IMG * img
 ) {
     (void) gl;
-    (void) sdl;
     (void) img;
 
     int error = 0;
@@ -222,7 +221,7 @@ go (
     while ((dirent = readdir (sysdir)) != NULL) {
         if (dirent->d_name[0] != '.') {
             size_t len = strlen (dirname) + 1 + strlen (dirent->d_name) + 1;
-            struct sysplanet * item = (struct sysplanet *) malloc (sizeof (*item));
+            struct sysplanet * item = malloc (sizeof (*item));
             assert (item != NULL);
             item->file = (char *) malloc (len);
             assert (item->file != NULL);
