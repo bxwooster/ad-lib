@@ -65,8 +65,8 @@ package_dir := $(platform_dir)/package
 all_source = $(shell shopt -s nullglob; echo code/*.c code/*/*.c)
 all_headers = $(shell shopt -s nullglob; echo code/*.h code/*/*.h)
 exe := $(output_dir)/$(program)$(exe_suffix)
-source_c := $(output_dir)/$(program).c
-source_h := $(output_dir)/$(program).h
+source_c := $(output_dir)/source_of_$(program).c
+source_h := $(output_dir)/source_of_$(program).h
 source_ext_h := $(output_dir)/$(program).ext.h
 package_archive := $(platform_dir)/package.tar.bz2
 

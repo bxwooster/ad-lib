@@ -1,15 +1,14 @@
 void
 go (
-        struct GL * gl,
-        struct SDL * sdl,
-        struct IMG * img
+        struct GL const * gl,
+        struct SDL const * sdl,
+        struct IMG const * img
 ) {
     (void) gl;
     (void) sdl;
     (void) img;
 
     int error = 0;
-    int sdlerror = 0;
 
     GLuint prog = GL_FALSE;
     GLuint vs = GL_FALSE;
@@ -17,9 +16,10 @@ go (
     GLuint vbo = GL_FALSE;
     GLuint tex = GL_FALSE;
 
+    unsigned width = 1024; /* needs correcting */
+    unsigned height = 768;
+
     DIR * sysdir = NULL;
-    SDL_GLContext context = NULL;
-    SDL_Window * window = NULL;
 
     TAILQ_HEAD (head, sysplanet) list;
     TAILQ_INIT (&list);
@@ -28,34 +28,7 @@ go (
 
     struct settings settings;
     if (loadsettings (&settings, "data/settings") != 0) {
-        error = __LINE__;
-        break;
-    }
-
-    window = SDL_CreateWindow ("Cosmos",
-        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        settings.width, settings.height, 
-        SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-
-    if (window == NULL) {
-        sdlerror = 1;
-        error = __LINE__;
-        break;
-    }
-
-    if (SDL_GL_SetAttribute (SDL_GL_CONTEXT_MAJOR_VERSION, 2) != 0 ||
-        SDL_GL_SetAttribute (SDL_GL_CONTEXT_MINOR_VERSION, 0) != 0)
-    {
-        sdlerror = 1;
-        error = __LINE__;
-        break;
-    }
-
-    context = SDL_GL_CreateContext (window);
-
-    if (context == NULL) {
-        sdlerror = 1;
-        error = __LINE__;
+        log_info ("No settings file found.");
         break;
     }
 
@@ -142,16 +115,29 @@ go (
 
     glTexEnvf(GL_TEXTURE_FILTER_CONTROL, GL_TEXTURE_LOD_BIAS, -1.75f);
 
-    glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    glTexParameteri (GL_TEXTURE_CUBE_MAP, GL_GENERATE_MIPMAP, GL_TRUE);
+    GLenum tSTR [] = {
+        GL_TEXTURE_WRAP_S,
+        GL_TEXTURE_WRAP_T,
+        GL_TEXTURE_WRAP_R
+    };
+    for (int i = 0; i < 3; ++i) {
+        glTexParameteri (GL_TEXTURE_CUBE_MAP, tSTR[i], GL_CLAMP_TO_EDGE);
+    }
 
-    glTexParameteri
-        (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+    glTexParameteri (
+        GL_TEXTURE_CUBE_MAP,
+        GL_GENERATE_MIPMAP,
+        GL_TRUE);
 
-    glTexParameteri
-        (GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri (
+        GL_TEXTURE_CUBE_MAP,
+        GL_TEXTURE_MIN_FILTER,
+        GL_NEAREST_MIPMAP_LINEAR);
+
+    glTexParameteri (
+        GL_TEXTURE_CUBE_MAP,
+        GL_TEXTURE_MAG_FILTER,
+        GL_LINEAR);
 
     GLenum targets [6] = {
         GL_TEXTURE_CUBE_MAP_POSITIVE_X,
@@ -174,7 +160,7 @@ go (
     glActiveTexture (GL_TEXTURE0);
 
     glEnable (GL_DEPTH_TEST);
-    glViewport (0, 0, settings.width, settings.height);
+    glViewport (0, 0, width, height);
 
     GLuint const attribute_pos = (GLuint) glGetAttribLocation (prog, "pos");
     if (attribute_pos == (GLuint) -1) {
@@ -277,8 +263,7 @@ go (
         int ix, iy;
         Uint8 mousebuttons = SDL_GetMouseState(&ix, &iy);
 
-        float norm = settings.width > settings.height ?
-            settings.width : settings.height;
+        float norm = width > height ? width : height;
         float nx = ix / norm;
         float ny = iy / norm;
         float dx;
@@ -372,7 +357,7 @@ go (
                 apparentratio = apparent / r;
             }
 
-            float const aspect = ((float) settings.width) / settings.height;
+            float const aspect = ((float) width) / height;
             mat4 matrix = projection_from_afn (aspect, settings.fov, 0.0f);
             matrix = mat4_multiply (& matrix, & mview);
             matrix = mat4_multiply (& matrix, & mmodel);
@@ -391,7 +376,7 @@ go (
             glDrawArrays (GL_TRIANGLES, 0, vertices);
         }
  
-        SDL_GL_SwapWindow (window);
+        /* return value? */ SDL_GL_SwapWindow (sdl->window);
     }
 
     } while (0); /* ... */
@@ -414,18 +399,6 @@ go (
     glDeleteBuffers (1, &vbo);
     glDeleteTextures (1, &tex);
     glDeleteProgram (prog);
-
-    if (sdlerror != 0) {
-        log_info ("SDL error: %s.", SDL_GetError ());
-    }
-
-    if (context != NULL) {
-        SDL_GL_DeleteContext (context);
-    }
-
-    if (window != NULL) {
-        SDL_DestroyWindow (window);
-    }
 
     if (error) {
         log_info ("Error # %d.", error);
