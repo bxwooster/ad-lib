@@ -6,8 +6,6 @@ stage_II (
 ) {
     (void) img;
 
-    int error = 0;
-
     GLuint prog = GL_FALSE;
     GLuint vs = GL_FALSE;
     GLuint fs = GL_FALSE;
@@ -19,10 +17,10 @@ stage_II (
 
     DIR * sysdir = NULL;
 
-    TAILQ_HEAD (head, sysplanet) list;
-    TAILQ_INIT (&list);
+    struct planethead planetlist;
+    TAILQ_INIT (& planetlist);
 
-    do { /* ... */
+    do {
 
     char * kilobyte = malloc (1024);
     if (!kilobyte) {
@@ -31,14 +29,13 @@ stage_II (
     }
 
     if (load_file ("data/settings/fov", kilobyte, 1024) != 0) {
-        assert (false);
         break;
     }
 
     float fov = atof (kilobyte);
     fov = 60.0f; //hack
 
-    if (fov == 0) {
+    if (fov == 0.0f) {
         log_info ("Can't read FOV.");
         break;
     }
@@ -233,7 +230,7 @@ stage_II (
             assert (item->file != NULL);
             
             snprintf (item->file, len, "%s/%s", dirname, dirent->d_name);
-            TAILQ_INSERT_TAIL (&list, item, _);
+            TAILQ_INSERT_TAIL (&planetlist, item, _);
 
             if (loadplanet (&item->planet, item->file) != 0) {
                 log_info ("Could not load planet: %s.", item->file);
@@ -250,6 +247,13 @@ stage_II (
             & mproj,
             screen_size,
             vertices,
+            & planetlist,
+            uniform_depth,
+            uniform_mvp,
+            uniform_mv,
+            uniform_color,
+            uniform_uvscale,
+            uniform_texture,
             gl,
             sdl
     );
@@ -259,9 +263,9 @@ stage_II (
     struct sysplanet * item;
     struct sysplanet * tvar;
 
-    TAILQ_FOREACH_SAFE(item, &list, _, tvar) {
+    TAILQ_FOREACH_SAFE(item, &planetlist, _, tvar) {
         free ((void *) item->file);
-        TAILQ_REMOVE (&list, item, _);
+        TAILQ_REMOVE (&planetlist, item, _);
         free ((void *) item);
     }
 

@@ -1,3 +1,4 @@
+#pragma once
 struct sysplanet {
 	struct planet planet;
 	char * file;

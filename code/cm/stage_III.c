@@ -3,6 +3,13 @@ stage_III (
         mat4 const * mproj,
         float screen_size,
         float vertices,
+        struct planethead const * planetlist,
+        GLint const uniform_depth,
+        GLint const uniform_mvp,
+        GLint const uniform_mv,
+        GLint const uniform_color,
+        GLint const uniform_uvscale,
+        GLint const uniform_texture,
         struct GL * gl,
         struct SDL * sdl
 ) {
@@ -42,7 +49,7 @@ stage_III (
         }
 
         int ix, iy;
-        Uint8 mousebuttons = SDL_GetMouseState(&ix, &iy);
+        Uint8 mousebuttons = SDL_GetMouseState (&ix, &iy);
 
         float nx = ix / screen_size;
         float ny = iy / screen_size;
@@ -76,7 +83,7 @@ stage_III (
         mat4 mviewproj = mat4_multiply (mproj, & mview);
 
         struct sysplanet * item;
-        TAILQ_FOREACH(item, &list, _) {
+        TAILQ_FOREACH(item, planetlist, _) {
             float tosurface;
             float apparentratio;
             mat4 mrot;
