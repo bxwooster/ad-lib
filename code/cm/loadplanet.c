@@ -10,9 +10,9 @@ loadplanet (
     if ((fp = fopen (file, "rb")) == 0 ||
         fscanf (fp, "size: %f", &read.size) != 1 ||
         fscanf (fp, "\ncolor: %f, %f, %f",
-            read.color,
-            read.color + 1,
-            read.color + 2) != 3 ||
+            read.color.p,
+            read.color.p + 1,
+            read.color.p + 2) != 3 ||
         fscanf (fp, "\nmajor: %f", &read.orbit.major) != 1 ||
         fscanf (fp, "\nminor: %f", &read.orbit.minor) != 1 ||
         fscanf (fp, "\nperiod: %f", &read.orbit.period) != 1

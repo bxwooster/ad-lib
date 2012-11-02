@@ -15,11 +15,6 @@ stage_II (
     unsigned width = 1024; /* needs correcting */
     unsigned height = 768;
 
-    DIR * sysdir = NULL;
-
-    struct planethead planetlist;
-    TAILQ_INIT (& planetlist);
-
     do {
 
     char * kilobyte = malloc (1024);
@@ -183,95 +178,30 @@ stage_II (
     glVertexAttribPointer (attribute_pos, 2, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray (attribute_pos);
 
-    GLint const uniform_depth = glGetUniformLocation (prog, "depth");
-    if (uniform_depth == -1) {
-        log_info ("GL uniform 'depth' not found");
-    }
-
-    GLint const uniform_mvp = glGetUniformLocation (prog, "mvp");
-    if (uniform_mvp == -1) {
-        log_info ("GL uniform 'mvp' not found");
-    }
-
-    GLint const uniform_mv = glGetUniformLocation (prog, "mv");
-    if (uniform_mv == -1) {
-        log_info ("GL uniform 'mv' not found");
-    }
-
-    GLint const uniform_color = glGetUniformLocation (prog, "color");
-    if (uniform_color == -1) {
-        log_info ("GL uniform 'color' not found");
-    }
-
-    GLint const uniform_uvscale = glGetUniformLocation (prog, "uvscale");
-    if (uniform_uvscale == -1) {
-        log_info ("GL uniform 'uvscale' not found");
-    }
-
-    GLint const uniform_texture = glGetUniformLocation (prog, "texture");
-    if (uniform_texture == -1) {
-        log_info ("GL uniform 'texture' not found");
-    }
-
-    char const * const dirname = "data/spawn";
-    sysdir = opendir (dirname);
-    if (sysdir == NULL) {
-        log_info ("Could not open directory %s.", dirname);
-        break;
-    }
-
-    struct dirent * dirent = NULL;
-    while ((dirent = readdir (sysdir)) != NULL) {
-        if (dirent->d_name[0] != '.') {
-            size_t len = strlen (dirname) + 1 + strlen (dirent->d_name) + 1;
-            struct sysplanet * item = malloc (sizeof (*item));
-            assert (item != NULL);
-            item->file = (char *) malloc (len);
-            assert (item->file != NULL);
-            
-            snprintf (item->file, len, "%s/%s", dirname, dirent->d_name);
-            TAILQ_INSERT_TAIL (&planetlist, item, _);
-
-            if (loadplanet (&item->planet, item->file) != 0) {
-                log_info ("Could not load planet: %s.", item->file);
-                break;
-            }
-        }
-    }
-
     float const screen_aspect = ((float) width) / height;
     float const screen_size = width > height ? width : height;
     mat4 mproj = projection_from_afn (screen_aspect, fov, 0.0f);
+
+    struct planet_draw_GLdata GLdata =
+           planet_draw_GLdata_from_program (prog, gl);
+
+    struct planethead * planet_list = planet_list_from_disk ();
+    if( planet_list == NULL ) {
+        log_info ("Could not load the planets.");
+        break;
+    }
 
     stage_III (
             & mproj,
             screen_size,
             vertices,
-            & planetlist,
-            uniform_depth,
-            uniform_mvp,
-            uniform_mv,
-            uniform_color,
-            uniform_uvscale,
-            uniform_texture,
+            planet_list,
+            & GLdata,
             gl,
             sdl
     );
 
     } while (0); /* ... */
-
-    struct sysplanet * item;
-    struct sysplanet * tvar;
-
-    TAILQ_FOREACH_SAFE(item, &planetlist, _, tvar) {
-        free ((void *) item->file);
-        TAILQ_REMOVE (&planetlist, item, _);
-        free ((void *) item);
-    }
-
-    if (sysdir != NULL) {
-        closedir (sysdir);
-    }
 
     glDeleteBuffers (1, &vbo);
     glDeleteTextures (1, &tex);

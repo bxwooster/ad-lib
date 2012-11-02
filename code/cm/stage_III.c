@@ -2,27 +2,13 @@ void
 stage_III (
         mat4 const * mproj,
         float screen_size,
-        float vertices,
+        int vertices,
         struct planethead const * planetlist,
-        GLint const uniform_depth,
-        GLint const uniform_mvp,
-        GLint const uniform_mv,
-        GLint const uniform_color,
-        GLint const uniform_uvscale,
-        GLint const uniform_texture,
+        struct planet_draw_GLdata const * GLdata,
         struct GL * gl,
         struct SDL * sdl
 ) {
-    (void) gl;
-
-    mat4 mcam = mat4_identity ();
-    vec3 axis_x = {{1.0f, 0.0f, 0.0f}};
-    mcam = mat4_rotated_aa (& mcam, & axis_x, pi () / 2.4f);
-    vec3 move = {{0.0f, 0.0f, -13.0f}};
-    mcam = mat4_moved (& mcam, & move);
-    vec3 axis_z = {{0.0f, 0.0f, 1.0f}};
-    mcam = mat4_rotated_aa (& mcam, & axis_z, pi ());
-
+    mat4 mcam = camera_initial ();
     mat4 mori = mat4_identity ();
 
     float x = 0;
@@ -84,8 +70,6 @@ stage_III (
 
         struct sysplanet * item;
         TAILQ_FOREACH(item, planetlist, _) {
-            float tosurface;
-            float apparentratio;
             mat4 mrot;
             mat4 mmodel;
 
@@ -107,7 +91,10 @@ stage_III (
             float p = vec3_length (& first);
             float r = planet->size;
             float apparent = sqrtf (p * p - r * r) * r / p;
+            float apparentratio = apparent / r;
             float offset = (r * r) / p;
+            float tosurface = p - r;
+            float hack = logf (tosurface) / 1000.0f;
 
             vec3 unit_x = {{1.0f, 0.0f, 0.0f}};
             vec3 unit_y = {{0.0f, 1.0f, 0.0f}};
@@ -140,21 +127,19 @@ stage_III (
             mmodel = mat4_moved (& mmodel, & move);
             mmodel = mat4_scaled (& mmodel, apparent);
 
-            tosurface = p - r;
-            apparentratio = apparent / r;
-            //
-            mat4 matrix = mat4_multiply (& mviewproj, & mmodel);
+            mat4 mmvp = mat4_multiply (& mviewproj, & mmodel);
 
-            glUniformMatrix4fv (uniform_mvp, 1, GL_FALSE, matrix.p);
-            glUniformMatrix4fv (uniform_mv, 1, GL_FALSE, mrot.p);
+            struct planet_draw_data data = {
+                mmvp,
+                mrot,
+                hack,
+                apparentratio,
+                0, /* ? */
+                planet->color
+            };
 
-            float const hack = logf (tosurface) / 1000.0f;
-            glUniform1f (uniform_depth, hack);
-            glUniform1f (uniform_uvscale, apparentratio);
-            glUniform1i (uniform_texture, 0);
-            glUniform3fv (uniform_color, 1, item->planet.color);
+            planet_draw (vertices, & data, GLdata, gl);
 
-            glDrawArrays (GL_TRIANGLES, 0, vertices);
         }
  
         SDL_GL_SwapWindow (sdl->window);

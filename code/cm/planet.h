@@ -1,6 +1,6 @@
 struct planet {
 	float size;
-	float color [3];
+	vec3 color;
 	struct orbit {
 		mat4 matrix;
 		float period;
