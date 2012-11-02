@@ -4,13 +4,13 @@ stage_II (
         struct SDL * sdl,
         struct IMG * img
 ) {
-    (void) img;
-
     GLuint prog = GL_FALSE;
     GLuint vs = GL_FALSE;
     GLuint fs = GL_FALSE;
     GLuint vbo = GL_FALSE;
     GLuint tex = GL_FALSE;
+
+    struct planethead * planet_list = NULL;
 
     unsigned width = 1024; /* needs correcting */
     unsigned height = 768;
@@ -54,10 +54,8 @@ stage_II (
     }
 
     prog = glCreateProgram ();
-
     glAttachShader (prog, vs);
     glAttachShader (prog, fs);
-
     glLinkProgram (prog);
 
     GLint code = GL_FALSE;
@@ -98,6 +96,7 @@ stage_II (
 
     SDL_Surface * earth [6];
     for (int i = 0; i < 6; ++i) {
+        (void) img;
         earth[i] = IMG_Load (earthimg[i]);
         if (earth[i] == NULL) {
             log_info ("SDL_image error: %s", IMG_GetError ());
@@ -185,7 +184,7 @@ stage_II (
     struct planet_draw_GLdata GLdata =
            planet_draw_GLdata_from_program (prog, gl);
 
-    struct planethead * planet_list = planet_list_from_disk ();
+    planet_list = planet_list_from_disk ();
     if( planet_list == NULL ) {
         log_info ("Could not load the planets.");
         break;
@@ -202,6 +201,10 @@ stage_II (
     );
 
     } while (0); /* ... */
+
+    if (planet_list != NULL) {
+        destroy_planet_list (planet_list);
+    }
 
     glDeleteBuffers (1, &vbo);
     glDeleteTextures (1, &tex);

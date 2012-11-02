@@ -4,7 +4,6 @@ exit_GL (
         struct SDL * sdl
 ) {
     (void) sdl;
-
     if (gl->context != NULL) SDL_GL_DeleteContext (gl->context);
     gl->ready = 0;
 }

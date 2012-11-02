@@ -1,0 +1,20 @@
+#define definition load_planet
+#include <load_planet.c>
+
+-----
+
+int
+definition (void) {
+	...
+}
+
+-----
+
+struct definition {
+	...
+};
+
+
+--------
+
+but the tags won't work!
