@@ -2,6 +2,8 @@ void
 destroy_planet_list (
     struct planethead * list
 ) {
+    if (list == NULL) return;
+
     struct sysplanet * item;
     struct sysplanet * tvar;
 

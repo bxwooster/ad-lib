@@ -1,10 +1,8 @@
-int // status
+char * // contents
 load_file (
-        char const * filename,
-        char * buffer,
-        size_t size
+        char const * filename
 ) {
-    assert (size > strlen (filename));
-    strcpy (buffer, filename); //hack
-    return 0;
+    char * contents = malloc (strlen (filename) + 1);
+    strcpy (contents, filename); // temporary...
+    return contents;
 }
