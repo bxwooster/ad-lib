@@ -1,4 +1,5 @@
-void advance_framestate (
+void
+advance_framestate (
         struct framestate * state,
         float screen_size,
         int ix, int iy,

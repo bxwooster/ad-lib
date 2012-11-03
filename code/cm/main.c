@@ -1,4 +1,4 @@
-int
+int // exitcode
 main (
         int argc,
         char * argv []

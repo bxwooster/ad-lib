@@ -1,4 +1,4 @@
-int
+int // status
 loadplanet (
         struct planet * planet,
         char const * file

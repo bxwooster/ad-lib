@@ -1,4 +1,5 @@
-mat4 camera_initial (void) {
+mat4
+camera_initial (void) {
     mat4 mcam = mat4_identity ();
 
     vec3 axis_x = {{1.0f, 0.0f, 0.0f}};

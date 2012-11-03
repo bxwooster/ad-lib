@@ -1,4 +1,4 @@
-int /* quit */
+int // quit
 poll_SDLevents (struct SDL * sdl) {
     int quit = 0;
 

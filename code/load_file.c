@@ -1,4 +1,4 @@
-int
+int // status
 load_file (
         char const * filename,
         char * buffer,

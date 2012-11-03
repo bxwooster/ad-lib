@@ -2,15 +2,13 @@ struct planet_draw_data
 generate_planet_draw_data (
     double time,
     struct planet const * planet,
-struct frame_draw_data const * framedata
+    struct frame_draw_data const * framedata
 ) {
     float phi = (float) ((time / planet->orbit.period) * pi () * 2.0);
 
     mat4 mmodel = planet->orbit.matrix;
-    mmodel.column.w.element.x +=
-        planet->orbit.major * cosf (phi);
-    mmodel.column.w.element.y +=
-        planet->orbit.minor * sinf (phi);
+    mmodel.column.w.element.x += planet->orbit.major * cosf (phi);
+    mmodel.column.w.element.y += planet->orbit.minor * sinf (phi);
 
     vec3 first = vec3_diff (
         & mmodel.column.w.v3,
@@ -27,28 +25,20 @@ struct frame_draw_data const * framedata
     vec3 unit_x = {{1.0f, 0.0f, 0.0f}};
     vec3 unit_y = {{0.0f, 1.0f, 0.0f}};
 
-    vec3 second;
-    if (first.element.x < first.element.y) {
-        second = vec3_product (& first, & unit_x);
-    } else {
-        second = vec3_product (& first, & unit_y);
-    }
+    vec3 second = first.element.x < first.element.y ?
+        vec3_product (& first, & unit_x) :
+        vec3_product (& first, & unit_y) ;
 
     vec3 third = vec3_product (& first, & second);
 
-    first = vec3_normalized (& first);
-    second = vec3_normalized (& second);
-    third = vec3_normalized (& third);
-
-    mat4 rotation = {{0}};
-    rotation.column.z.v3 = first;
-    rotation.column.x.v3 = second;
-    rotation.column.y.v3 = third;
-    rotation.p[15] = 1.0f;
+    mat4 rotation = {.p[15] = 1.0f};
+    rotation.column.z.v3 = vec3_normalized (& first);
+    rotation.column.x.v3 = vec3_normalized (& second);
+    rotation.column.y.v3 = vec3_normalized (& third);
     mmodel = mat4_multiply (& mmodel, & rotation);
 
     mat4 rot = mmodel;
-    rot.p[12] = rot.p[13] = rot.p[14] = 0.0f;
+    rot.column.w.v3 = (vec3) {{0}};
 
     vec3 move = {{0.0f, 0.0f, -offset}};
     mmodel = mat4_moved (& mmodel, & move);

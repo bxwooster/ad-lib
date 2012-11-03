@@ -1,4 +1,5 @@
-void planet_draw (
+void
+planet_draw (
         int vertices,
         struct planet_draw_data const * data,
         struct planet_draw_GLdata const * GLdata,

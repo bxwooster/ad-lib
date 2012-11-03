@@ -5,5 +5,5 @@ initial_framestate (void) {
         mat4_identity (),
         {0.0f, 0.0f, 0}
     };
-
 }
+
