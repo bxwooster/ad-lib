@@ -1,10 +1,17 @@
 void
-stage_I (void) {
+stage_I (void)
+/* ... where libraries are initalized and put to good use. */
+{
     log_info ("Revving up.");
 
     struct SDL sdl = {0};
     struct IMG img = {0};
     struct GL  gl  = {0};
+
+    /*
+     * GL, SDL, IMG correspond to the state of respective external libraries.
+     * Pass them as a pointer to (mutable!) struct, whenever a library is used.
+     */
 
     do {
         img = init_IMG ();
@@ -24,12 +31,5 @@ stage_I (void) {
     exit_GL (& gl, & sdl);
     exit_SDL (& sdl);
     exit_IMG (& img);
-
-    /* Commentary:
-     *
-     * GL, SDL, IMG are pure states, and should be handled like states.
-     * This means always passing them as a pointer to (mutable!) struct.
-     *
-     */
 }
 

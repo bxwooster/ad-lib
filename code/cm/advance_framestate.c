@@ -2,11 +2,10 @@ void
 advance_framestate (
         struct framestate * state,
         float screen_size,
-        int ix, int iy,
-        uint8_t mousebuttons
+        struct input const * input
 ) {
-    float nx = ix / screen_size;
-    float ny = iy / screen_size;
+    float nx = input->mouse.x / screen_size;
+    float ny = input->mouse.y / screen_size;
     float dx;
     float dy;
 
@@ -19,7 +18,7 @@ advance_framestate (
     }
     state->mouse.x = nx;
     state->mouse.y = ny;
-    state->mouse.lock = mousebuttons;
+    state->mouse.lock = input->mouse.buttons;
 
     float const ROTATION_SPEED = 4.0f;
     float angle = sqrtf (dx * dx + dy * dy) * ROTATION_SPEED;

@@ -1,0 +1,7 @@
+code/cm/destroy_planet_list.c:10:    TAILQ_FOREACH_SAFE(item, list, _, tvar) {
+code/cm/destroy_planet_list.c:12:        TAILQ_REMOVE (list, item, _);
+code/cm/planethead.h:2:TAILQ_HEAD (planethead, sysplanet);
+code/cm/planet_list_from_disk.c:4:    TAILQ_INIT (list);
+code/cm/planet_list_from_disk.c:23:            TAILQ_INSERT_TAIL (list, item, _);
+code/cm/stage_III.c:44:        TAILQ_FOREACH(item, planetlist, _) {
+code/cm/sysplanet.h:5:	TAILQ_ENTRY(sysplanet) _;

@@ -1,7 +1,8 @@
-code/cm is utterly messy
 meta/Xcode-iOS has 'Main'
 hack re. the depth buffer
 lack of superb commentary
 android, android, android
-resolution vs. fullscreen
-build: not all dependencies (resolved?)
+
+the load_file scandal
+the resolution debacle
+build: dir dependencies don't seem to work

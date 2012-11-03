@@ -1,4 +1,4 @@
-struct planet_draw_data {
+struct planet_draw_data { // horrible name.
     mat4 mvp;
     mat4 mv;
     float depth;
