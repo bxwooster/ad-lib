@@ -1,6 +1,11 @@
-int // quit
+struct input
 poll_SDLevents (struct SDL * sdl) {
-    int quit = 0;
+    struct input currently = {0};
+
+    (void) sdl;
+    currently.mouse.buttons = SDL_GetMouseState (
+            & currently.mouse.x,
+            & currently.mouse.y);
 
     (void) sdl;
     SDL_Event event;
@@ -8,12 +13,18 @@ poll_SDLevents (struct SDL * sdl) {
         if (event.type == SDL_KEYDOWN) {
             SDL_Keycode key = event.key.keysym.sym;
             if (key == SDLK_ESCAPE) {
-                quit = 1;
+                currently.halt = 1;
+            }
+            else if (key == SDLK_w) {
+                currently.toggle_wireframe = 1;
+            }
+            else if (key == SDLK_n) {
+                currently.toggle_normals = 1;
             }
         } else if (event.type == SDL_QUIT) {
-            quit = 1;
+            currently.halt = 1;
         }
     }
 
-    return quit;
+    return currently;
 }

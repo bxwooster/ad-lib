@@ -27,5 +27,8 @@ advance_framestate (
     if (angle != 0.0f) {
         state->ori = mat4_rotated_aa (& state->ori, & axis, angle);
     }
+
+    state->show_normals ^= input->toggle_normals;
+    state->show_wireframe ^= input->toggle_wireframe;
 }
 

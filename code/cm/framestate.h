@@ -6,4 +6,6 @@ struct framestate {
         float y;
         int lock;
     } mouse;
+    int show_wireframe;
+    int show_normals;
 };

@@ -20,15 +20,13 @@ stage_III (
     for (;;) {
         if (were_there_any_GL_errors (gl)) break;
 
-        int quit = poll_SDLevents (sdl);
-        if (quit) break;
-
-        struct input input = determine_input (sdl);
+        struct input physical = poll_SDLevents (sdl);
+        if (physical.halt) break;
 
         advance_framestate (
                 & state,
                 screen_size,
-                & input
+                & physical
         );
 
         double time = (double) SDL_GetTicks () / 1000;
@@ -37,6 +35,8 @@ stage_III (
                 & state
         );
 
+        GLenum poly_mode = state.show_wireframe ? GL_LINE : GL_FILL;
+        glPolygonMode(GL_FRONT_AND_BACK, poly_mode);
         glClearColor (0.0, 0.0, 0.0, 0.0);
         glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
