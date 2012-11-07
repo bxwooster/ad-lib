@@ -1,3 +1,5 @@
+#include <vec3.h>
+#include <mat4.h>
 struct planet {
 	float size;
 	vec3 color;

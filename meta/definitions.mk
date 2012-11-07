@@ -1,10 +1,10 @@
 program ?= cosmos
 profile ?= develop
 platform ?= native
+features ?=
 
 ifeq ($(profile),develop)
   optimization := -g
-  # -Og in gcc 4.7?
 else ifeq ($(profile),release)
   optimization := -Os
 endif
@@ -54,7 +54,6 @@ ifeq ($(program),cosmos)
   link_flags += -lm
   link_flags += -lSDL2
   link_flags += -lSDL2_image
-  features += cm
 endif
 
 base_dir := .build

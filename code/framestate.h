@@ -1,3 +1,4 @@
+#include <mat4.h>
 struct framestate {
     mat4 cam;
     mat4 ori;
