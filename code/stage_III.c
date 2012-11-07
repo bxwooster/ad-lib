@@ -17,6 +17,17 @@ stage_III (
     int error = to_common_draw_GLstate (gl, program, width, height);
     if (error) return;
 
+    unsigned count = 0;
+    for (struct sysplanet *
+            item = TAILQ_FIRST(planetlist);
+            item != TAILQ_END(planetlist);
+            item = TAILQ_NEXT(item, _)) {
+        count++;
+    }
+
+    struct planet_draw_data * datas =
+        malloc (count * sizeof (struct planet_draw_data));
+
     for (;;) {
         if (were_there_any_GL_errors (gl)) break;
 
@@ -37,19 +48,28 @@ stage_III (
 
         to_planet_GLstate (& state, gl);
 
-        struct sysplanet * item;
-        TAILQ_FOREACH(item, planetlist, _) {
-            struct planet_draw_data data = generate_planet_draw_data (
+        unsigned i = 0;
+	    for (struct sysplanet *
+                item = TAILQ_FIRST(planetlist);
+                item != TAILQ_END(planetlist);
+                item = TAILQ_NEXT(item, _)) {
+            datas[i] = generate_planet_draw_data (
                     time,
                     & item->planet,
                     & framedata
             );
-            planet_draw (vertices, & data, GLdata, gl);
+            i++;
+        }
+
+        for (unsigned i = 0; i < count; ++i) {
+            planet_draw (vertices, datas + i, GLdata, gl);
         }
 
         SDL_GL_SwapWindow (sdl->window);
         frame++;
     }
+
+    free (datas);
 
     log_info ("%d frames were done. Have a nice day!", frame);
 }

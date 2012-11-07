@@ -6,7 +6,7 @@ features ?=
 ifeq ($(profile),develop)
   optimization := -g
 else ifeq ($(profile),release)
-  optimization := -Os
+  optimization := -Os -Werror
 endif
 
 ifeq ($(platform),native)

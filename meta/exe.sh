@@ -9,7 +9,6 @@ $cc \
   -Wall \
   -Wextra \
   -pedantic \
-  -Werror \
   $optimization \
   $link_flags \
   -D$defines \
