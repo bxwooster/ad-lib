@@ -4,7 +4,8 @@ planet_list_from_disk (
 ) {
     unsigned count = 0;
     struct planethead * list = malloc (sizeof (struct planethead));
-    TAILQ_INIT (list);
+    list->first = NULL;
+    list->last = & list->first;
 
     char const * const dirname = "data/spawn";
     DIR * sysdir = opendir (dirname);
@@ -23,7 +24,12 @@ planet_list_from_disk (
             assert (item->file != NULL);
             
             snprintf (item->file, len, "%s/%s", dirname, dirent->d_name);
-            TAILQ_INSERT_TAIL (list, item, _);
+
+            item->_.next = NULL;
+            item->_.prev = list->last;
+            *list->last = item;
+            list->last = &item->_.next;
+
             count++;
 
             if (loadplanet (& item->planet, item->file) != 0) {

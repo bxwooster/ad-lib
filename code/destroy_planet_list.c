@@ -4,12 +4,24 @@ destroy_planet_list (
 ) {
     if (list == NULL) return;
 
-    struct sysplanet * item;
     struct sysplanet * tvar;
 
-    TAILQ_FOREACH_SAFE(item, list, _, tvar) {
+    for (struct sysplanet *
+            item = list->first;
+            item != NULL &&
+            (tvar = item->_.next, 1);
+            item = tvar
+    ) {
         free ((void *) item->file);
-        TAILQ_REMOVE (list, item, _);
+
+        if ((item->_.next) != NULL) {
+            item->_.next->_.prev =
+                item->_.prev;
+        } else {
+            list->last = item->_.prev;
+        }
+        *item->_.prev = item->_.next;
+
         free ((void *) item);
     }
 

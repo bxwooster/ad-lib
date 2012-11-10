@@ -1,3 +1,7 @@
 #include <sysplanet.h>
-TAILQ_HEAD (planethead, sysplanet);
+
+struct planethead {
+    struct sysplanet *first; /* first element */
+    struct sysplanet **last; /* addr of last next (?? -- ED) element */
+};
 

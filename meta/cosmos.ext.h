@@ -7,7 +7,6 @@
 #include <assert.h>
 #include <dirent.h>
 #include <string.h>
-#include <sys/queue.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 

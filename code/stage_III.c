@@ -40,9 +40,9 @@ stage_III (
 
         unsigned j = 0;
 	    for (struct sysplanet *
-                item = TAILQ_FIRST(planet_list);
-                item != TAILQ_END(planet_list);
-                item = TAILQ_NEXT(item, _)) {
+                item = planet_list->first;
+                item != NULL;
+                item = item->_.next) {
             planet_memory[j] = generate_planet_draw_data (
                     time,
                     & item->planet,
