@@ -1,5 +1,8 @@
-struct planethead *
-planet_list_from_disk (void) {
+unsigned /* count */
+planet_list_from_disk (
+        struct planethead ** out
+) {
+    unsigned count = 0;
     struct planethead * list = malloc (sizeof (struct planethead));
     TAILQ_INIT (list);
 
@@ -21,6 +24,7 @@ planet_list_from_disk (void) {
             
             snprintf (item->file, len, "%s/%s", dirname, dirent->d_name);
             TAILQ_INSERT_TAIL (list, item, _);
+            count++;
 
             if (loadplanet (& item->planet, item->file) != 0) {
                 log_info ("Could not load planet: %s.", item->file);
@@ -33,6 +37,7 @@ planet_list_from_disk (void) {
         closedir (sysdir);
     }
 
-    return list;
+    *out = list;
+    return count;
 }
 

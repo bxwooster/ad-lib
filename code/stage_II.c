@@ -10,6 +10,7 @@ stage_II (
     GLuint vbo = GL_FALSE;
     GLuint tex = GL_FALSE;
     struct planethead * planet_list = NULL;
+    struct planet_draw_data * planet_memory = NULL;
 
     unsigned width = 1024; /* fix me. I'm pulled out of thin air. */
     unsigned height = 768;
@@ -27,8 +28,11 @@ stage_II (
         vbo = prepare_GLvbo (gl);
         if (vbo == GL_FALSE) break;
 
-        planet_list = planet_list_from_disk ();
-        if (planet_list == NULL) break;
+        unsigned planet_count = planet_list_from_disk (& planet_list);
+        if (planet_count == 0) break;
+
+        struct planet_draw_data * planet_memory =
+            malloc (planet_count * sizeof (struct planet_draw_data));
 
         float fov = get_fov ();
         if (fov == 0.0f) break;
@@ -43,6 +47,7 @@ stage_II (
                 screen_size,
                 vertices,
                 planet_list,
+                planet_memory,
                 & GLdata,
                 program,
                 gl,
@@ -51,6 +56,7 @@ stage_II (
     } while (0); /* break out */
 
     destroy_planet_list (planet_list);
+    free (planet_memory);
     glDeleteBuffers (1, &vbo);
     glDeleteTextures (1, &tex);
     glDeleteProgram (program);
