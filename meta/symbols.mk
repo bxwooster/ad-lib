@@ -13,5 +13,5 @@ run: $(exe)
 debug: $(exe)
 	@gdb $(exe)
 
-prepare: $(source_c) $(source_h)
+prepare: $(source_c) $(source_h) $(source_ext_h)
 

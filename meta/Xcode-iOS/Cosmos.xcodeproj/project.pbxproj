@@ -16,7 +16,7 @@
 		CE71489416124003002C92ED /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE71489316124003002C92ED /* CoreGraphics.framework */; };
 		CE7E7231162190D000FEB6CD /* art in Resources */ = {isa = PBXBuildFile; fileRef = CE7E7230162190D000FEB6CD /* art */; };
 		CE7E7233162190D400FEB6CD /* data in Resources */ = {isa = PBXBuildFile; fileRef = CE7E7232162190D400FEB6CD /* data */; };
-		CE7E7234162190EA00FEB6CD /* all.c in Sources */ = {isa = PBXBuildFile; fileRef = CE7E722E162190A500FEB6CD /* all.c */; };
+		CE7E7234162190EA00FEB6CD /* source_of_cosmos.c in Sources */ = {isa = PBXBuildFile; fileRef = CE7E722E162190A500FEB6CD /* source_of_cosmos.c */; };
 		CE7E7237162190FA00FEB6CD /* libSDL2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE7E7235162190FA00FEB6CD /* libSDL2.a */; };
 		CE7E7238162190FA00FEB6CD /* libSDL2main.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE7E7236162190FA00FEB6CD /* libSDL2main.a */; };
 		CE7E723A1621920000FEB6CD /* libSDL2_image.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE7E72391621920000FEB6CD /* libSDL2_image.a */; };
@@ -44,8 +44,7 @@
 		CE71488F16124003002C92ED /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		CE71489116124003002C92ED /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		CE71489316124003002C92ED /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		CE7E722E162190A500FEB6CD /* all.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = all.c; path = ../../.build/ios/output/all.c; sourceTree = "<group>"; };
-		CE7E722F162190A500FEB6CD /* all.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = all.h; path = ../../.build/ios/output/all.h; sourceTree = "<group>"; };
+		CE7E722E162190A500FEB6CD /* source_of_cosmos.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = source_of_cosmos.c; path = ../../.build/ios/output/source_of_cosmos.c; sourceTree = "<group>"; };
 		CE7E7230162190D000FEB6CD /* art */ = {isa = PBXFileReference; lastKnownFileType = folder; name = art; path = ../../art; sourceTree = "<group>"; };
 		CE7E7232162190D400FEB6CD /* data */ = {isa = PBXFileReference; lastKnownFileType = folder; name = data; path = ../../data; sourceTree = "<group>"; };
 		CE7E7235162190FA00FEB6CD /* libSDL2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSDL2.a; path = ../../.config/ios/lib/libSDL2.a; sourceTree = "<group>"; };
@@ -53,7 +52,6 @@
 		CE7E72391621920000FEB6CD /* libSDL2_image.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSDL2_image.a; path = ../../.config/ios/lib/libSDL2_image.a; sourceTree = "<group>"; };
 		CE7E723B1621926700FEB6CD /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		CE7E723D1621928F00FEB6CD /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
-		CEB8F35B1620D6EE0039C8F4 /* Main.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Main.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,7 +96,6 @@
 				CE71489516124003002C92ED /* Source */,
 				CE71488E16124003002C92ED /* Frameworks */,
 				CE71488C16124003002C92ED /* Products */,
-				CEB8F35B1620D6EE0039C8F4 /* Main.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -128,8 +125,7 @@
 		CE71489516124003002C92ED /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				CE7E722E162190A500FEB6CD /* all.c */,
-				CE7E722F162190A500FEB6CD /* all.h */,
+				CE7E722E162190A500FEB6CD /* source_of_cosmos.c */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -191,7 +187,7 @@
 				LastUpgradeCheck = 0450;
 				ORGANIZATIONNAME = None;
 			};
-			buildConfigurationList = CE71488516124003002C92ED /* Build configuration list for PBXProject "cosmos" */;
+			buildConfigurationList = CE71488516124003002C92ED /* Build configuration list for PBXProject "Cosmos" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -226,7 +222,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE7E7234162190EA00FEB6CD /* all.c in Sources */,
+				CE7E7234162190EA00FEB6CD /* source_of_cosmos.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -311,8 +307,12 @@
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
-				GCC_PREPROCESSOR_DEFINITIONS = PLATFORM_IOS;
-				HEADER_SEARCH_PATHS = "\"../..\"";
+				GCC_PREPROCESSOR_DEFINITIONS = GLES;
+				HEADER_SEARCH_PATHS = (
+					"\"$(SRCROOT)/../..\"",
+					"\"$(SRCROOT)/../../code\"",
+					"\"$(SRCROOT)/../../.config/ios/include\"",
+				);
 				INFOPLIST_FILE = "$(SRCROOT)/Cosmos.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				LIBRARY_SEARCH_PATHS = (
@@ -322,6 +322,7 @@
 				PLIST_FILE_OUTPUT_FORMAT = binary;
 				PRODUCT_NAME = Cosmos;
 				TARGETED_DEVICE_FAMILY = 2;
+				USER_HEADER_SEARCH_PATHS = "";
 				VERSION_INFO_FILE = "";
 				WRAPPER_EXTENSION = app;
 			};
@@ -332,8 +333,12 @@
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
-				GCC_PREPROCESSOR_DEFINITIONS = PLATFORM_IOS;
-				HEADER_SEARCH_PATHS = "\"../..\"";
+				GCC_PREPROCESSOR_DEFINITIONS = GLES;
+				HEADER_SEARCH_PATHS = (
+					"\"$(SRCROOT)/../..\"",
+					"\"$(SRCROOT)/../../code\"",
+					"\"$(SRCROOT)/../../.config/ios/include\"",
+				);
 				INFOPLIST_FILE = "$(SRCROOT)/Cosmos.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				LIBRARY_SEARCH_PATHS = (
@@ -343,6 +348,7 @@
 				PLIST_FILE_OUTPUT_FORMAT = binary;
 				PRODUCT_NAME = Cosmos;
 				TARGETED_DEVICE_FAMILY = 2;
+				USER_HEADER_SEARCH_PATHS = "";
 				VERSION_INFO_FILE = "";
 				WRAPPER_EXTENSION = app;
 			};
@@ -390,7 +396,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		CE71488516124003002C92ED /* Build configuration list for PBXProject "cosmos" */ = {
+		CE71488516124003002C92ED /* Build configuration list for PBXProject "Cosmos" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CE7148A716124003002C92ED /* Debug */,

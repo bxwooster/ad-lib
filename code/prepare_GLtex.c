@@ -8,7 +8,7 @@ prepare_GLtex (
     GLuint tex;
     glGenTextures (1, &tex);
     glBindTexture (GL_TEXTURE_CUBE_MAP, tex); // ?
-
+#ifndef GLES
     glTexEnvf(GL_TEXTURE_FILTER_CONTROL, GL_TEXTURE_LOD_BIAS, -1.75f);
 
     GLenum tSTR [] = {
@@ -19,16 +19,24 @@ prepare_GLtex (
     for (int i = 0; i < 3; ++i) {
         glTexParameteri (GL_TEXTURE_CUBE_MAP, tSTR[i], GL_CLAMP_TO_EDGE);
     }
-
+ 
     glTexParameteri (
         GL_TEXTURE_CUBE_MAP,
         GL_GENERATE_MIPMAP,
         GL_TRUE);
+#endif
+
+	GLenum min_filter =
+#ifndef GLES
+        GL_NEAREST_MIPMAP_LINEAR;
+#else
+        GL_NEAREST;
+#endif
 
     glTexParameteri (
         GL_TEXTURE_CUBE_MAP,
         GL_TEXTURE_MIN_FILTER,
-        GL_NEAREST_MIPMAP_LINEAR);
+        min_filter);
 
     glTexParameteri (
         GL_TEXTURE_CUBE_MAP,
