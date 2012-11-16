@@ -11,7 +11,7 @@ $cc \
   -pedantic \
   $optimization \
   $link_flags \
-  -D$defines \
+  $prefixed_defines \
   -I.config/$platform/include \
   -Icode \
   -Icode/$features \

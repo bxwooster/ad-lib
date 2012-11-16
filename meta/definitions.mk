@@ -21,6 +21,8 @@ ifeq ($(platform),native)
   endif
 endif
 
+defines :=
+
 ifeq ($(program),cosmos)
   ifeq ($(platform),ios)
     cc := false
@@ -56,6 +58,7 @@ ifeq ($(program),cosmos)
   link_flags += -lSDL2_image
 endif
 
+prefixed_defines := $(addprefix,-D,$(defines))
 base_dir := .build
 platform_dir := $(base_dir)/$(platform)
 output_dir := $(platform_dir)/output
