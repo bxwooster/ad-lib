@@ -4,5 +4,5 @@ struct planet_GD {
     GLint depth;
     GLint uvscale;
     GLint texture;
-    GLint color;
+    GLint colour;
 };

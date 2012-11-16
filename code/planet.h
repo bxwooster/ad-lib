@@ -2,7 +2,7 @@
 #include <mat4.h>
 struct planet {
 	float size;
-	vec3 color;
+	vec3 colour;
 	struct orbit {
 		mat4 matrix;
 		float period;

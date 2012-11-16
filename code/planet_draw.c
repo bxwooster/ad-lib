@@ -11,7 +11,7 @@ planet_draw (
     glUniform1f (GLdata->depth, data->depth);
     glUniform1f (GLdata->uvscale, data->uvscale);
     glUniform1i (GLdata->texture, data->texture);
-    glUniform3fv (GLdata->color, 1, data->color.p);
+    glUniform3fv (GLdata->colour, 1, data->colour.p);
 
     glDrawArrays (GL_TRIANGLES, 0, gl->vertices);
 }

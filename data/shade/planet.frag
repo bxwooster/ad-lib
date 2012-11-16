@@ -1,4 +1,4 @@
-uniform vec3 color;
+uniform vec3 colour;
 uniform mat4 mv;
 uniform samplerCube texture;
 varying vec2 ixy;
@@ -27,7 +27,7 @@ void main (void) {
 
     float brightness = 1.5;
     result *= brightness;
-    result *= color;
+    result *= colour;
     result *= effect;
     result *= light;
 

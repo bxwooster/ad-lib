@@ -52,7 +52,7 @@ generate_planet_DD (
         hack,
         apparentratio,
         0, /* ? */
-        planet->color
+        planet->colour
     };
 
     return data;

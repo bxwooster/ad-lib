@@ -20,9 +20,9 @@ planet_GD_from_shader (
         log_info ("GL uniform 'mv' not found");
     }
 
-    GLint const uniform_color = glGetUniformLocation (program, "color");
-    if (uniform_color == -1) {
-        log_info ("GL uniform 'color' not found");
+    GLint const uniform_colour = glGetUniformLocation (program, "colour");
+    if (uniform_colour == -1) {
+        log_info ("GL uniform 'colour' not found");
     }
 
     GLint const uniform_uvscale = glGetUniformLocation (program, "uvscale");
@@ -41,7 +41,7 @@ planet_GD_from_shader (
         uniform_depth,
         uniform_uvscale,
         uniform_texture,
-        uniform_color
+        uniform_colour
     };
 
     return GLdata;

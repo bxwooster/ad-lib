@@ -5,6 +5,6 @@ struct planet_DD {
     float depth;
     float uvscale;
     GLuint texture;
-    vec3 color;
+    vec3 colour;
 };
 
