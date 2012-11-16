@@ -1,4 +1,4 @@
-struct planet_draw_GLdata {
+struct planet_GD {
     GLint mvp;
     GLint mv;
     GLint depth;

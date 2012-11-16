@@ -10,7 +10,7 @@ stage_II (
     GLuint vbo = GL_FALSE;
     GLuint tex = GL_FALSE;
     struct planethead * planet_list = NULL;
-    struct planet_draw_data * planet_memory = NULL;
+    struct planet_DD * planet_memory = NULL;
 
     unsigned width = 1024; /* fix me. I'm pulled out of thin air. */
     unsigned height = 768;
@@ -31,15 +31,15 @@ stage_II (
         unsigned planet_count = planet_list_from_disk (& planet_list);
         if (planet_count == 0) break;
 
-        struct planet_draw_data * planet_memory =
-            malloc (planet_count * sizeof (struct planet_draw_data));
+        struct planet_DD * planet_memory =
+            malloc (planet_count * sizeof (struct planet_DD));
 
         float fov = get_fov ();
         if (fov == 0.0f) break;
         mat4 mproj = standard_projection (width, height, fov);
 
-        struct planet_draw_GLdata GLdata =
-               planet_draw_GLdata_from_program (program, gl);
+        struct planet_GD GLdata =
+               planet_GD_from_shader (program, gl);
 
         stage_III (
                 & mproj,

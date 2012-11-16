@@ -1,5 +1,5 @@
-struct frame_draw_data
-generate_frame_draw_data (
+struct frame_DD
+generate_frame_DD (
         mat4 const * proj,
         struct framestate const * state
 ) {
@@ -7,7 +7,7 @@ generate_frame_draw_data (
     mat4 view = mat4_inverted_rtonly (& viewi);
     mat4 viewproj = mat4_multiply (proj, & view);
 
-    return (struct frame_draw_data) {
+    return (struct frame_DD) {
         viewi,
         viewproj
     };

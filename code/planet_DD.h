@@ -1,5 +1,5 @@
 #include <mat4.h>
-struct planet_draw_data { // horrible name.
+struct planet_DD {
     mat4 mvp;
     mat4 mv;
     float depth;

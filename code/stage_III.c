@@ -5,8 +5,8 @@ stage_III (
         float screen_size,
         int vertices,
         struct planethead const * planet_list,
-        struct planet_draw_data * planet_memory,
-        struct planet_draw_GLdata const * GLdata,
+        struct planet_DD * planet_memory,
+        struct planet_GD const * GLdata,
         GLuint program,
         struct GL * gl,
         struct SDL * sdl
@@ -31,7 +31,7 @@ stage_III (
         );
 
         double time = (double) SDL_GetTicks () / 1000;
-        struct frame_draw_data framedata = generate_frame_draw_data (
+        struct frame_DD framedata = generate_frame_DD (
                 mproj,
                 & state
         );
@@ -43,7 +43,7 @@ stage_III (
                 item = planet_list->first;
                 item != NULL;
                 item = item->_.next) {
-            planet_memory[j] = generate_planet_draw_data (
+            planet_memory[j] = generate_planet_DD (
                     time,
                     & item->planet,
                     & framedata

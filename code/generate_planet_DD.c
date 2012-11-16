@@ -1,8 +1,8 @@
-struct planet_draw_data
-generate_planet_draw_data (
+struct planet_DD
+generate_planet_DD (
     double time,
     struct planet const * planet,
-    struct frame_draw_data const * framedata
+    struct frame_DD const * framedata
 ) {
     float phi = (float) ((time / planet->orbit.period) * pi () * 2.0);
 
@@ -46,7 +46,7 @@ generate_planet_draw_data (
 
     mat4 mvp = mat4_multiply (& framedata->viewproj, & mmodel);
 
-    struct planet_draw_data data = {
+    struct planet_DD data = {
         mvp,
         rot,
         hack,

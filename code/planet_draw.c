@@ -1,8 +1,8 @@
 void
 planet_draw (
         int vertices,
-        struct planet_draw_data const * data,
-        struct planet_draw_GLdata const * GLdata,
+        struct planet_DD const * data,
+        struct planet_GD const * GLdata,
         struct GL * gl
 ) {
     (void) gl;

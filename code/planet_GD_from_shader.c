@@ -1,5 +1,5 @@
-struct planet_draw_GLdata
-planet_draw_GLdata_from_program (
+struct planet_GD
+planet_GD_from_shader (
         GLuint program,
         struct GL * gl
 ) {
@@ -35,7 +35,7 @@ planet_draw_GLdata_from_program (
         log_info ("GL uniform 'texture' not found");
     }
 
-    struct planet_draw_GLdata GLdata = {
+    struct planet_GD GLdata = {
         uniform_mvp,
         uniform_mv,
         uniform_depth,
