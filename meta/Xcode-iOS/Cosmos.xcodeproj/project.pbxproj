@@ -164,9 +164,9 @@
 /* End PBXLegacyTarget section */
 
 /* Begin PBXNativeTarget section */
-		CE71488A16124003002C92ED /* Main */ = {
+		CE71488A16124003002C92ED /* Cosmos */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = CE7148A916124003002C92ED /* Build configuration list for PBXNativeTarget "Main" */;
+			buildConfigurationList = CE7148A916124003002C92ED /* Build configuration list for PBXNativeTarget "Cosmos" */;
 			buildPhases = (
 				CE71488716124003002C92ED /* Sources */,
 				CE71488816124003002C92ED /* Frameworks */,
@@ -177,7 +177,7 @@
 			dependencies = (
 				CE7E724E1621AD4B00FEB6CD /* PBXTargetDependency */,
 			);
-			name = Main;
+			name = Cosmos;
 			productName = Cosmos;
 			productReference = CE71488B16124003002C92ED /* Cosmos.app */;
 			productType = "com.apple.product-type.application";
@@ -191,7 +191,7 @@
 				LastUpgradeCheck = 0450;
 				ORGANIZATIONNAME = None;
 			};
-			buildConfigurationList = CE71488516124003002C92ED /* Build configuration list for PBXProject "Main" */;
+			buildConfigurationList = CE71488516124003002C92ED /* Build configuration list for PBXProject "cosmos" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -203,7 +203,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				CE71488A16124003002C92ED /* Main */,
+				CE71488A16124003002C92ED /* Cosmos */,
 				CE7E72491621AD3000FEB6CD /* Prepare */,
 			);
 		};
@@ -313,7 +313,7 @@
 				GCC_PREFIX_HEADER = "";
 				GCC_PREPROCESSOR_DEFINITIONS = PLATFORM_IOS;
 				HEADER_SEARCH_PATHS = "\"../..\"";
-				INFOPLIST_FILE = "$(SRCROOT)/Main.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Cosmos.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -334,7 +334,7 @@
 				GCC_PREFIX_HEADER = "";
 				GCC_PREPROCESSOR_DEFINITIONS = PLATFORM_IOS;
 				HEADER_SEARCH_PATHS = "\"../..\"";
-				INFOPLIST_FILE = "$(SRCROOT)/Main.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Cosmos.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -390,7 +390,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		CE71488516124003002C92ED /* Build configuration list for PBXProject "Main" */ = {
+		CE71488516124003002C92ED /* Build configuration list for PBXProject "cosmos" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CE7148A716124003002C92ED /* Debug */,
@@ -399,7 +399,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		CE7148A916124003002C92ED /* Build configuration list for PBXNativeTarget "Main" */ = {
+		CE7148A916124003002C92ED /* Build configuration list for PBXNativeTarget "Cosmos" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CE7148AA16124003002C92ED /* Debug */,
@@ -415,6 +415,7 @@
 				CE7E724C1621AD3000FEB6CD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
