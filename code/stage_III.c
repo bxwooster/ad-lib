@@ -51,6 +51,8 @@ stage_III (
             j++;
         }
 
+        qsort (planet_memory, j, sizeof (struct planet_DD), closest_planet_DD);
+
         for (unsigned i = 0; i < j; ++i) {
             planet_draw (vertices, planet_memory + i, GLdata, gl);
         }
