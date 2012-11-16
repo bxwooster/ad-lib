@@ -3,7 +3,7 @@ stage_III (
         mat4 const * mproj,
         unsigned width, unsigned height,
         float screen_size,
-        int vertices,
+        struct GLvbo_and_size * imposter,
         struct planethead const * planet_list,
         struct planet_DD * planet_memory,
         struct planet_GD const * GLdata,
@@ -15,7 +15,7 @@ stage_III (
 {
     unsigned long frame = 0;
     struct framestate state = initial_framestate ();
-    int error = to_common_draw_GLstate (gl, program, width, height);
+    int error = to_common_draw_GLstate (gl, program, width, height, imposter);
     if (error) return;
 
     for (;;) {
@@ -54,7 +54,7 @@ stage_III (
         qsort (planet_memory, j, sizeof (struct planet_DD), closest_planet_DD);
 
         for (unsigned i = 0; i < j; ++i) {
-            planet_draw (vertices, planet_memory + i, GLdata, gl);
+            planet_draw (planet_memory + i, GLdata, gl);
         }
 
         SDL_GL_SwapWindow (sdl->window);

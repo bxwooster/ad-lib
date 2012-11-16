@@ -1,6 +1,5 @@
 void
 planet_draw (
-        int vertices,
         struct planet_DD const * data,
         struct planet_GD const * GLdata,
         struct GL * gl
@@ -14,7 +13,7 @@ planet_draw (
     glUniform1i (GLdata->texture, data->texture);
     glUniform3fv (GLdata->color, 1, data->color.p);
 
-    glDrawArrays (GL_TRIANGLES, 0, vertices);
+    glDrawArrays (GL_TRIANGLES, 0, gl->vertices);
 }
 
 

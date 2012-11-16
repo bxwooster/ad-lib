@@ -7,7 +7,7 @@ stage_II (
 /* ... where the run-time constants are introduced */
 {
     GLuint program = GL_FALSE;
-    GLuint vbo = GL_FALSE;
+    struct GLvbo_and_size imposter = {GL_FALSE, 0};
     GLuint tex = GL_FALSE;
     struct planethead * planet_list = NULL;
     struct planet_DD * planet_memory = NULL;
@@ -15,7 +15,6 @@ stage_II (
     unsigned width = 1024; /* fix me. I'm pulled out of thin air. */
     unsigned height = 768;
 
-    int vertices = 6; // fix me. I'm related to vbo.
     float screen_size = width > height ? width : height;
 
     do {
@@ -25,8 +24,8 @@ stage_II (
         tex = get_earth_GLtex (gl, sdl, img);
         if (tex == GL_FALSE) break;
 
-        vbo = prepare_GLvbo (gl);
-        if (vbo == GL_FALSE) break;
+        imposter = prepare_GLvbo (gl);
+        if (imposter.vbo == GL_FALSE) break;
 
         unsigned planet_count = planet_list_from_disk (& planet_list);
         if (planet_count == 0) break;
@@ -45,7 +44,7 @@ stage_II (
                 & mproj,
                 width, height,
                 screen_size,
-                vertices,
+                & imposter,
                 planet_list,
                 planet_memory,
                 & GLdata,
@@ -57,7 +56,7 @@ stage_II (
 
     destroy_planet_list (planet_list);
     free (planet_memory);
-    glDeleteBuffers (1, &vbo);
+    glDeleteBuffers (1, &imposter.vbo);
     glDeleteTextures (1, &tex);
     glDeleteProgram (program);
 }
