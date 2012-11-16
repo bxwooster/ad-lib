@@ -3,9 +3,7 @@ uniform mat4 mv;
 uniform samplerCube texture;
 varying vec2 ixy;
 varying vec2 uv;
-
-#pragma layout planet
-#pragma using this_and_that;
+varying vec3 normal_part1;
 
 void main (void) {
     vec3 result = vec3 (1.0);
@@ -16,7 +14,9 @@ void main (void) {
     float effect = sqrt (1.0 - radius);
 
     float w = -sqrt (1.0 - dot (uv, uv));
-    vec3 normal = mat3 (mv) * vec3 (uv, w);
+    vec3 normal_part2 = mv[2].xyz * w;
+	vec3 normal = normal_part1 + normal_part2;
+	// I hope the last 2 operations are a single MAD
     vec3 signflip = vec3 (1.0, 1.0, -1.0);
 
     result = textureCube (texture, normal * signflip).rgb;
