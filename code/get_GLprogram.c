@@ -17,7 +17,7 @@ get_GLprogram (
         if (fs_source == NULL) break;
 
         fs = gl_shader_from_source (fs_source, GL_FRAGMENT_SHADER);
-        free (vs_source);
+        free (fs_source);
 
         program = link_GLprogram (vs, fs, gl);
 
