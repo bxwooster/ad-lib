@@ -6,8 +6,7 @@ stage_III (
         struct GLvbo_and_size * imposter,
         struct planethead const * planet_list,
         struct planet_DD * planet_memory,
-        struct planet_GD const * GLdata,
-        GLuint program,
+        struct planet_shader const ps [3],
         struct GL * gl,
         struct SDL * sdl
 )
@@ -15,8 +14,7 @@ stage_III (
 {
     unsigned long frame = 0;
     struct framestate state = initial_framestate ();
-    int error = to_common_draw_GLstate (gl, program, width, height, imposter);
-    if (error) return;
+    to_common_draw_GLstate (gl, width, height, imposter);
 
     for (;;) {
         if (were_there_any_GL_errors (gl)) break;
@@ -36,13 +34,18 @@ stage_III (
                 & state
         );
 
-        to_planet_GLstate (& state, gl);
+        struct planet_layout const * layout = to_planet_GLstate (
+                & state,
+                gl,
+                ps
+        );
 
         unsigned j = 0;
 	    for (struct sysplanet *
                 item = planet_list->first;
                 item != NULL;
-                item = item->_.next) {
+                item = item->_.next
+        ) {
             planet_memory[j] = generate_planet_DD (
                     time,
                     & item->planet,
@@ -54,7 +57,7 @@ stage_III (
         qsort (planet_memory, j, sizeof (struct planet_DD), closest_planet_DD);
 
         for (unsigned i = 0; i < j; ++i) {
-            planet_draw (planet_memory + i, GLdata, gl);
+            planet_draw (planet_memory + i, layout, gl);
         }
 
         SDL_GL_SwapWindow (sdl->window);

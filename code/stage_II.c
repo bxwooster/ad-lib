@@ -6,7 +6,11 @@ stage_II (
 )
 /* ... where the run-time constants are introduced */
 {
-    GLuint program = GL_FALSE;
+    struct planet_shader ps [3] = {
+        {GL_FALSE, GL_FALSE},
+        {GL_FALSE, GL_FALSE},
+        {GL_FALSE, GL_FALSE},
+    };
     struct GLvbo_and_size imposter = {GL_FALSE, 0};
     GLuint tex = GL_FALSE;
     struct planethead * planet_list = NULL;
@@ -18,8 +22,20 @@ stage_II (
     float screen_size = width > height ? width : height;
 
     do {
-        program = get_GLprogram (gl);
-        if (program == GL_FALSE) break;
+        ps[0] = load_planet_shader (gl,
+                "data/shade/planet.vert",
+                "data/shade/planet.frag");
+        if (ps[0].program == GL_FALSE) break;
+
+        ps[1] = load_planet_shader (gl,
+                "data/shade/planet.vert",
+                "data/shade/planet-normals.frag");
+        if (ps[1].program == GL_FALSE) break;
+
+        ps[2] = load_planet_shader (gl,
+                "data/shade/planet.vert",
+                "data/shade/planet-colour.frag");
+        if (ps[2].program == GL_FALSE) break;
 
         tex = get_earth_GLtex (gl, sdl, img);
         if (tex == GL_FALSE) break;
@@ -37,9 +53,6 @@ stage_II (
         if (fov == 0.0f) break;
         mat4 mproj = standard_projection (width, height, fov);
 
-        struct planet_GD GLdata =
-               planet_GD_from_shader (program, gl);
-
         stage_III (
                 & mproj,
                 width, height,
@@ -47,8 +60,7 @@ stage_II (
                 & imposter,
                 planet_list,
                 planet_memory,
-                & GLdata,
-                program,
+                ps,
                 gl,
                 sdl
         );
@@ -58,6 +70,8 @@ stage_II (
     free (planet_memory);
     glDeleteBuffers (1, &imposter.vbo);
     glDeleteTextures (1, &tex);
-    glDeleteProgram (program);
+    glDeleteProgram (ps[1].program);
+    glDeleteProgram (ps[2].program);
+    glDeleteProgram (ps[3].program);
 }
 

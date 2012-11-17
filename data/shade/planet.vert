@@ -1,17 +1,23 @@
-uniform mat4 mvp;
-uniform mat4 mv;
-uniform float depth;
-uniform float uvscale;
+uniform struct {
+	mat4 mvp;
+	mat4 mv;
+	vec3 colour;
+	float depth;
+	float uvscale;
+	samplerCube texture;
+} I;
+
+attribute vec2 pos;
+
 varying vec2 ixy;
 varying vec2 uv;
 varying vec3 normal_part1;
-attribute vec2 pos;
 
 void main (void) {
-    gl_Position = mvp * vec4 (pos, 0.0, 1.0);
-    gl_Position.z = depth * gl_Position.w;
+    gl_Position = I.mvp * vec4 (pos, 0.0, 1.0);
+    gl_Position.z = I.depth * gl_Position.w;
     ixy = pos;
-    uv = pos * uvscale;
-	normal_part1 = mat3 (mv) * vec3 (uv, 0.0);
+    uv = pos * I.uvscale;
+	normal_part1 = mat3 (I.mv) * vec3 (uv, 0.0);
 }
 
