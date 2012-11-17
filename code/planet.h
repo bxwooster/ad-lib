@@ -3,11 +3,14 @@
 struct planet {
 	float size;
 	vec3 colour;
-	struct orbit {
-		mat4 matrix;
+	struct {
 		float period;
 		float major;
 		float minor;
-	} orbit;
+	} year;
+    struct {
+        vec3 axis;
+        float period;
+    } day;
 };
 

@@ -1,5 +1,11 @@
-size: 0.5
-colour: 1.0, 1.0, 0.0
-major: 5.5
-minor: 5.5
-period: 30.0
+size: 0.5;
+colour: 1.0, 1.0, 0.0;
+year: {
+	major: 5.5;
+	minor: 5.5;
+	period: 30.0;
+};
+day: {
+	axis: 0.0, 1.0, 0.0;
+	period: 10.0;
+};

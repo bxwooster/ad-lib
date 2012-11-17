@@ -8,26 +8,30 @@ loadplanet (
     struct planet read;
 
     if ((fp = fopen (file, "rb")) == 0 ||
-        fscanf (fp, "size: %f", &read.size) != 1 ||
-        fscanf (fp, "\ncolour: %f, %f, %f",
+        fscanf (fp, " size: %f", &read.size) != 1 ||
+        fscanf (fp, "; colour: %f, %f, %f",
             read.colour.p,
             read.colour.p + 1,
             read.colour.p + 2) != 3 ||
-        fscanf (fp, "\nmajor: %f", &read.orbit.major) != 1 ||
-        fscanf (fp, "\nminor: %f", &read.orbit.minor) != 1 ||
-        fscanf (fp, "\nperiod: %f", &read.orbit.period) != 1
+        fscanf (fp, " ; year: { major: %f", &read.year.major) != 1 ||
+        fscanf (fp, " ; minor: %f", &read.year.minor) != 1 ||
+        fscanf (fp, " ; period: %f", &read.year.period) != 1 ||
+        fscanf (fp, " ; } ; day: { axis: %f, %f, %f",
+            read.day.axis.p,
+            read.day.axis.p + 1,
+            read.day.axis.p + 2) != 3 ||
+        fscanf (fp, " ; period: %f", &read.day.period) != 1 ||
+        fscanf (fp, " ; } ; ")
     ) {
         error = __LINE__;
         goto end;
     }
 
-    fscanf (fp, "\n");
+    fscanf (fp, " ");
     if (fgetc (fp) != EOF) {
         error = __LINE__;
         goto end;
     }
-
-    read.orbit.matrix = mat4_identity ();
 
     *planet = read;
 

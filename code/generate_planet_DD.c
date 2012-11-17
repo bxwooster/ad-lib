@@ -4,11 +4,12 @@ generate_planet_DD (
     struct planet const * planet,
     struct frame_DD const * framedata
 ) {
-    float phi = (float) ((time / planet->orbit.period) * pi () * 2.0);
+    float phi = (float) ((time / planet->year.period) * pi () * 2.0);
 
-    mat4 mmodel = planet->orbit.matrix;
-    mmodel.column.w.element.x += planet->orbit.major * cosf (phi);
-    mmodel.column.w.element.y += planet->orbit.minor * sinf (phi);
+    mat4 mmodel = mat4_identity ();
+
+    mmodel.column.w.element.x += planet->year.major * cosf (phi);
+    mmodel.column.w.element.y += planet->year.minor * sinf (phi);
 
     vec3 first = vec3_diff (
         & mmodel.column.w.v3,
@@ -37,8 +38,11 @@ generate_planet_DD (
     rotation.column.y.v3 = vec3_normalized (& third);
     mmodel = mat4_multiply (& mmodel, & rotation);
 
-    mat4 rot = mmodel;
+    mat4 rot = mat4_identity ();
     rot.column.w.v3 = (vec3) {{0}};
+    float theta = (float) ((time / planet->day.period) * pi () * 2.0);
+    rot = mat4_rotated_aa (& rot, & planet->day.axis, theta);
+    rot = mat4_multiply (& rot, & mmodel);
 
     vec3 move = {{0.0f, 0.0f, -offset}};
     mmodel = mat4_moved (& mmodel, & move);
