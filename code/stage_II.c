@@ -7,9 +7,9 @@ stage_II (
 /* ... where the run-time constants are introduced */
 {
     struct planet_shader ps [3] = {
-        {GL_FALSE, GL_FALSE},
-        {GL_FALSE, GL_FALSE},
-        {GL_FALSE, GL_FALSE},
+        {GL_FALSE},
+        {GL_FALSE},
+        {GL_FALSE},
     };
     struct GLvbo_and_size imposter = {GL_FALSE, 0};
     GLuint tex = GL_FALSE;

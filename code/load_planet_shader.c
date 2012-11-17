@@ -40,7 +40,7 @@ load_planet_shader (
     layout.colour = glGetUniformLocation (program, "I.colour");
     layout.depth = glGetUniformLocation (program, "I.depth");
     layout.uvscale = glGetUniformLocation (program, "I.uvscale");
-    layout.texture = glGetUniformLocation (program, "I.texture");
+    layout.texture = glGetUniformLocation (program, "texture");
 
     /*if (... == -1) {
         log_info ("While loading\n\t%s,\n\t%s,\nthe uniform ... was not found.",

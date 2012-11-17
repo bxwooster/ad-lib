@@ -4,8 +4,8 @@ uniform struct {
 	vec3 colour;
 	float depth;
 	float uvscale;
-	samplerCube texture;
 } I;
+uniform samplerCube texture;
 
 varying vec2 ixy;
 varying vec2 uv;

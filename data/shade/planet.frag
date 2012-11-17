@@ -4,8 +4,8 @@ uniform struct {
 	vec3 colour;
 	float depth;
 	float uvscale;
-	samplerCube texture;
 } I;
+uniform samplerCube texture;
 
 varying vec2 ixy;
 varying vec2 uv;
@@ -25,7 +25,7 @@ void main (void) {
 	// I hope the last 2 operations are a single MAD
     vec3 signflip = vec3 (1.0, 1.0, -1.0);
 
-    result = textureCube (I.texture, normal * signflip).rgb;
+    result = textureCube (texture, normal * signflip).rgb;
 
     vec3 lightdir = vec3 (0.0, 1.0, 0.0);
     float ambient = 0.3;

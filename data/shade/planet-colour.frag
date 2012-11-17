@@ -4,8 +4,8 @@ uniform struct {
 	vec3 colour;
 	float depth;
 	float uvscale;
-	samplerCube texture;
 } I;
+uniform samplerCube texture;
 
 void main (void) {
     gl_FragColor = vec4 (I.colour, 0.0);
