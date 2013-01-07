@@ -6,7 +6,7 @@ stage_III (
         struct GLvbo_and_size * imposter,
         struct planethead const * planet_list,
         struct planet_DD * planet_memory,
-        struct planet_shader const ps [3],
+        struct cosmosA_glts const glts [3],
         struct GL * gl,
         struct SDL * sdl
 )
@@ -34,10 +34,10 @@ stage_III (
                 & state
         );
 
-        struct planet_layout const * layout = to_planet_GLstate (
+        struct cosmosA_layout const * layout = to_planet_GLstate (
                 & state,
                 gl,
-                ps
+                glts
         );
 
         unsigned j = 0;

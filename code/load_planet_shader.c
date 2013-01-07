@@ -12,7 +12,7 @@ load_planet_shader (
         char * vs_source = load_file (vs_filename);
         if (vs_source == NULL) break;
 
-        vs = gl_shader_from_source (vs_source, GL_VERTEX_SHADER);
+        vs = gl_shader_from_source (& vs_source, 1, GL_VERTEX_SHADER);
         if (vs == GL_FALSE)
             log_info ("That happened while loading %s just now.", vs_filename);
 
@@ -21,7 +21,7 @@ load_planet_shader (
         char * fs_source = load_file (fs_filename);
         if (fs_source == NULL) break;
 
-        fs = gl_shader_from_source (fs_source, GL_FRAGMENT_SHADER);
+        fs = gl_shader_from_source (& fs_source, 1, GL_FRAGMENT_SHADER);
         if (fs == GL_FALSE)
             log_info ("That happened while loading %s just now.", fs_filename);
 

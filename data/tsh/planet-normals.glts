@@ -1,0 +1,9 @@
+#pragma type cosmosA
+#pragma include planet_glue
+#ifdef FS
+vec3 fragment () {
+	discard_test ();
+	return the_normal ();
+}
+#endif
+

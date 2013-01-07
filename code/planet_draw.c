@@ -1,17 +1,17 @@
 void
 planet_draw (
         struct planet_DD const * data,
-        struct planet_layout const * layout,
+        struct cosmosA_layout const * layout,
         struct GL * gl
 ) {
     (void) gl;
 
-    glUniformMatrix4fv (layout->mvp, 1, GL_FALSE, data->mvp.p);
-    glUniformMatrix4fv (layout->mv, 1, GL_FALSE, data->mv.p);
-    glUniform1f (layout->depth, data->depth);
-    glUniform1f (layout->uvscale, data->uvscale);
-    glUniform1i (layout->texture, data->texture);
-    glUniform3fv (layout->colour, 1, data->colour.p);
+    glUniformMatrix4fv (layout->U.mvp, 1, GL_FALSE, data->mvp.p);
+    glUniformMatrix4fv (layout->U.mv, 1, GL_FALSE, data->mv.p);
+    glUniform1f (layout->U.depth, data->depth);
+    glUniform1f (layout->U.uvscale, data->uvscale);
+    glUniform1i (layout->Utexture, data->texture);
+    glUniform3fv (layout->U.colour, 1, data->colour.p);
 
     glDrawArrays (GL_TRIANGLES, 0, gl->vertices);
 }

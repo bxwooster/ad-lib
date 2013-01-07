@@ -15,7 +15,7 @@ function s:sys(cmd)
 endfunction
 
 function AL_make(what)
-  execute '!cls; make -C' . s:thispath . '/.. ' . a:what
+  execute '!make -C' . s:thispath . '/.. ' . a:what
 endfunction
 
 function AL_update_tags()
@@ -45,7 +45,7 @@ set expandtab
 call AL_do_tags()
 autocmd BufWritePost *.h,*.c call AL_update_tags()
 
-map <F5> :call AL_make('run')<CR>
-map <F6> :call AL_make('debug')<CR>
+map <F13> :call AL_make('run')<CR>
+map <S-F13> :call AL_make('debug')<CR>
 
 endif " end of guard

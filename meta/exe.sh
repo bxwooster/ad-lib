@@ -9,6 +9,8 @@ $cc \
   -Wall \
   -Wextra \
   -pedantic \
+  -Wno-missing-field-initializers \
+  -Wno-missing-braces \
   $optimization \
   $link_flags \
   $prefixed_defines \

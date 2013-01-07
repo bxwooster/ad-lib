@@ -1,8 +1,8 @@
-struct planet_layout const *
+struct cosmosA_layout const *
 to_planet_GLstate (
         struct framestate const * state,
         struct GL * gl,
-        struct planet_shader const ps [3]
+        struct cosmosA_glts const glts [3]
 ) {
     (void) gl;
 
@@ -15,9 +15,9 @@ to_planet_GLstate (
         choice = 1;
     }
 
-    program = ps[choice].program;
+    program = glts[choice].program;
     glUseProgram (program);
-    GLuint attribute_pos = (GLuint) glGetAttribLocation (program, "pos");
+    GLuint attribute_pos = (GLuint) glGetAttribLocation (program, "Apos2d");
     if (attribute_pos == (GLuint) -1) {
         log_info ("GL attribute 'pos' not found");
     }
@@ -30,5 +30,5 @@ to_planet_GLstate (
     glClearColor (0.0, 0.0, 0.0, 0.0);
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    return & ps[choice].layout;
+    return & glts[choice].layout;
 }

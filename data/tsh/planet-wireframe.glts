@@ -1,0 +1,8 @@
+#pragma type cosmosA
+#pragma include planet_glue
+#ifdef FS
+vec3 fragment () {
+    return U.colour;
+}
+#endif
+

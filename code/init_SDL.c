@@ -10,7 +10,9 @@ init_SDL (void) {
         SDL_WINDOWPOS_CENTERED,
         1024, 768,
         SDL_WINDOW_OPENGL |
-        SDL_WINDOW_SHOWN);
+        //SDL_WINDOW_MINIMIZED | /* for debugging */
+        //SDL_WINDOW_SHOWN);
+        0);
 
     if (window == NULL) {
         log_info ("SDL_CreateWindow error: %s.", SDL_GetError ());

@@ -6,10 +6,10 @@ stage_II (
 )
 /* ... where the run-time constants are introduced */
 {
-    struct planet_shader ps [3] = {
-        {GL_FALSE},
-        {GL_FALSE},
-        {GL_FALSE},
+    struct cosmosA_glts glts [3] = {
+        {{0}, GL_FALSE},
+        {{0}, GL_FALSE},
+        {{0}, GL_FALSE},
     };
     struct GLvbo_and_size imposter = {GL_FALSE, 0};
     GLuint tex = GL_FALSE;
@@ -22,20 +22,14 @@ stage_II (
     float screen_size = width > height ? width : height;
 
     do {
-        ps[0] = load_planet_shader (gl,
-                "data/shade/planet.vert",
-                "data/shade/planet.frag");
-        if (ps[0].program == GL_FALSE) break;
+        glts[0] = load_cosmosA_glts (gl, "data/tsh/planet.glts");
+        if (glts[0].program == GL_FALSE) break;
 
-        ps[1] = load_planet_shader (gl,
-                "data/shade/planet.vert",
-                "data/shade/planet-normals.frag");
-        if (ps[1].program == GL_FALSE) break;
+        glts[1] = load_cosmosA_glts (gl, "data/tsh/planet-normals.glts");
+        if (glts[1].program == GL_FALSE) break;
 
-        ps[2] = load_planet_shader (gl,
-                "data/shade/planet.vert",
-                "data/shade/planet-colour.frag");
-        if (ps[2].program == GL_FALSE) break;
+        glts[2] = load_cosmosA_glts (gl, "data/tsh/planet-wireframe.glts");
+        if (glts[2].program == GL_FALSE) break;
 
         tex = get_earth_GLtex (gl, sdl, img);
         if (tex == GL_FALSE) break;
@@ -60,7 +54,7 @@ stage_II (
                 & imposter,
                 planet_list,
                 planet_memory,
-                ps,
+                glts,
                 gl,
                 sdl
         );
@@ -70,8 +64,8 @@ stage_II (
     free (planet_memory);
     glDeleteBuffers (1, &imposter.vbo);
     glDeleteTextures (1, &tex);
-    glDeleteProgram (ps[1].program);
-    glDeleteProgram (ps[2].program);
-    glDeleteProgram (ps[3].program);
+    glDeleteProgram (glts[0].program);
+    glDeleteProgram (glts[1].program);
+    glDeleteProgram (glts[2].program);
 }
 
