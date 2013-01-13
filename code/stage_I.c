@@ -22,6 +22,7 @@ stage_I (void)
 
         gl = init_GL (& sdl);
         if (!gl.ready) break;
+        
 
         /* All systems go! */
         stage_II (& gl, & sdl, & img);

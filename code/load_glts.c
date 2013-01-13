@@ -75,7 +75,7 @@ end:
             filename, (int) (at - sources[1]));
 
 	for (unsigned n = 1; n < N; ++n)
-    	free (sources[n]);
+    	free ((char *) sources[n]);
 
     return program;        
 }

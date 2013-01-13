@@ -5,7 +5,7 @@ vec3 fragment ();
 	attribute vec2 Apos2d;
 #endif
 
-struct {
+uniform struct {
 	mat4 mvp;
 	mat4 mv;
 	vec3 colour;

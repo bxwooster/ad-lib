@@ -9,20 +9,23 @@ gl_shader_from_source (
     shader = glCreateShader (type);
     
     unsigned const P = 2;
-    size_t memsize = (count + P) * sizeof (char *);
+    unsigned const all_count = P + count;
+    size_t memsize = all_count * sizeof (char *);
+
     char const * * all_pieces = alloca (memsize);
     memcpy (all_pieces + P, pieces, memsize);
     all_pieces[0] = gl_shader_preamble ();
     all_pieces[1] = (type == GL_VERTEX_SHADER) ?
         "#define VS\n" : "#define FS\n";
-    glShaderSource (shader, count + P, all_pieces, NULL);
+
+    glShaderSource (shader, all_count, all_pieces, NULL);
     glCompileShader (shader);
     glGetShaderiv (shader, GL_COMPILE_STATUS, &code);
 
-    if (code == GL_FALSE || 1) {
+    if (code == GL_FALSE) {
         log_info("Shader source:\n");
-        for (unsigned i = 0; i < count; i++)
-            log_info ("// piece %d:\n%s", i, pieces[i]);
+        for (unsigned i = 0; i < all_count; i++)
+            log_info ("// piece %d:\n%s", i, all_pieces[i]);
         gl_shader_log (shader);
         glDeleteShader (shader);
         shader = GL_FALSE;
