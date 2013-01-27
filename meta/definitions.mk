@@ -1,7 +1,6 @@
 program ?= cosmos
 profile ?= develop
 platform ?= native
-features ?=
 
 ifeq ($(profile),develop)
   optimization := -g
@@ -21,6 +20,7 @@ ifeq ($(platform),native)
   endif
 endif
 
+features := $(program)
 defines :=
 
 ifeq ($(program),cosmos)
