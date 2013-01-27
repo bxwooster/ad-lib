@@ -22,6 +22,9 @@ endif
 
 features := $(program)
 defines :=
+includes :=
+cc := gcc
+link_flags :=
 
 ifeq ($(program),cosmos)
   ifeq ($(platform),ios)
@@ -34,16 +37,13 @@ ifeq ($(program),cosmos)
     defines += GLES
     includes += GLES2/gl2.h
   else ifeq ($(platform),linux)
-    cc := gcc
     defines += GLEW
     link_flags += -lGL -lGLEW
     includes += GL/glew.h
   else ifeq ($(platform),darwin)
-    cc := gcc
     link_flags += -framework OpenGL
     includes += OpenGL/gl.h
   else ifeq ($(platform),windows)
-    cc := gcc
     link_flags += \
       -lmingw32 \
       -lopengl32 \
