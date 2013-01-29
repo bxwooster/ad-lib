@@ -3,7 +3,7 @@ $(exe): code $(all_source) $(all_headers) \
 	@echo "Making the executable..."
 	@meta/exe.sh
 
-$(source_ext_h): | $(output_dir)
+$(source_ext_h): meta/$(program).ext.h | $(output_dir)
 	@echo "Making '$(source_ext_h)'..."
 	@meta/source_ext_h.sh
 
