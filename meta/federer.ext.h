@@ -9,4 +9,7 @@
 // socket
 #include <errno.h>
 // err.. no?
-
+#include <netinet/in.h>
+// ip_mreq, sockaddr_in
+#include <arpa/inet.h>
+// inet_addr
