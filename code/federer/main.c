@@ -13,40 +13,45 @@ main (
     int status = 0;
     log_info ("Hi, I'm Roger.");
 
-    int sock = socket (PF_INET, SOCK_DGRAM, 0);
-    if (sock < 0) {
+    if (socket_startup () != 0) {
+        log_info ("Sockets gone wrong.");
+        return 0;
+    }
+
+    SOCKET sock = socket (PF_INET, SOCK_DGRAM, 0);
+    if (sock == INVALID_SOCKET) { // windows-only?
         log_info ("My socket has a problem, namely. %s!",
-                strerror (errno));
+                socket_errstr ());
         goto end;
     }
 
     struct ip_mreq imreq = {0};
     imreq.imr_multiaddr.s_addr = inet_addr (ADDRESS);
-    
+
     status = setsockopt(sock, IPPROTO_IP, IP_ADD_MEMBERSHIP,
-            &imreq, sizeof (imreq));
+            (void *) &imreq, sizeof (imreq));
     if (status < 0) {
         log_info("Setsockopt has made a grave mistake. %s!",
-                strerror (errno));
+                socket_errstr ());
         goto end;
     }
 
     struct sockaddr_in saddr = {0};
     saddr.sin_family = PF_INET;
     saddr.sin_port = htons (PORT);
-    saddr.sin_addr.s_addr = inet_addr (ADDRESS);
+    saddr.sin_addr.s_addr = INADDR_ANY; // was inet_addr (ADDRESS);
 
     status = bind (sock, (const struct sockaddr *) &saddr, sizeof (saddr));
     if (status < 0) {
         log_info("Bind isn't behaving all too well. %s!",
-                strerror (errno));
+                socket_errstr () );
         goto end;
     }
 
     unsigned long number;
-    status = recv (sock, &number, sizeof (number), 0);
+    status = recv (sock, (void *) &number, sizeof (number), 0);
     if (status < 0) {
-        log_info("Recv has it a bit wrong. %s!", strerror (errno));
+        log_info("Recv has it a bit wrong. %s!", strerror (socket_errno ()));
         goto end;
     }
 

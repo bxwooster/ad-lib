@@ -5,11 +5,17 @@
 // strerror
 #include <unistd.h>
 // close
-#include <sys/socket.h>
-// socket
+
+#ifdef WINDOWS
+	#include <winsock.h>
+#else
+	#include <sys/socket.h>
+	// socket
+	#include <netinet/in.h>
+	// ip_mreq, sockaddr_in
+	#include <arpa/inet.h>
+	// inet_addr
+#endif
+
 #include <errno.h>
 // err.. no?
-#include <netinet/in.h>
-// ip_mreq, sockaddr_in
-#include <arpa/inet.h>
-// inet_addr

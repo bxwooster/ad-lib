@@ -21,10 +21,10 @@ ifeq ($(platform),native)
 endif
 
 features := $(program)
-defines :=
+defines := $(shell echo $(platform) | tr a-z A-Z)
 includes :=
 cc := gcc
-link_flags :=
+link_flags := -lwsock32 # sandbox
 
 ifeq ($(program),cosmos)
   ifeq ($(platform),ios)
