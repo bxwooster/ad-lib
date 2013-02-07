@@ -17,7 +17,8 @@ socket_errstr () {
         );
         size_t len = strlen (buffer);
         buffer [len - 3] = '\0'; // no dot and CRLF
-        return buffer; // note that this is not thread-safe!
+        char const * warning_disabler = buffer;
+        return warning_disabler; // note that this is not thread-safe!
     #endif
 }
 

@@ -1,0 +1,4 @@
+struct socklib {
+    int ready;
+};
+
