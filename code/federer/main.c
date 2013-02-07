@@ -14,13 +14,17 @@ main (
     SOCKET sock = prepare_queriee_socket (&lib);
 
     unsigned long number;
-    int status = recv (sock, (void *) &number, sizeof (number), 0);
+    struct sockaddr_in source = {0};
+    int source_length = sizeof (source);
+
+    int status = recvfrom (sock, (void *) &number, sizeof (number), 0,
+            (void *) &source, &source_length);
     if (status < 0) {
         log_info("Recv has it a bit wrong. %s!", strerror (socket_errno ()));
         goto end;
     }
 
-    log_info ("Number %x!", number);
+    log_info ("Number %x from IP %s!", number, inet_ntoa (source.sin_addr));
 
 end:
     close_socket (sock);
