@@ -11,11 +11,11 @@ main (
     struct socklib lib = init_socklib ();
     if (lib.ready == 0) return 0;
 
-    SOCKET sock = prepare_queriee_socket (&lib);
+    socklib_t sock = prepare_queriee_socket (&lib);
 
     unsigned long number;
     struct sockaddr_in source = {0};
-    int source_length = sizeof (source);
+    unsigned source_length = sizeof (source);
 
     int status = recvfrom (sock, (void *) &number, sizeof (number), 0,
             (void *) &source, &source_length);

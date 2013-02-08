@@ -1,5 +1,5 @@
 void close_socket (
-        SOCKET sock
+        socklib_t sock
 ) {
     int status;
     #ifdef WINDOWS

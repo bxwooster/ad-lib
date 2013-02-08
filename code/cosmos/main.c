@@ -14,7 +14,7 @@ main (
     struct socklib lib = init_socklib ();
     if (lib.ready == 0) return 0;
 
-    SOCKET sock = prepare_querier_socket (&lib);
+    socklib_t sock = prepare_querier_socket (&lib);
 
     unsigned long number = 0xF00DCAFE;
     int status = send (sock, (void *) &number, sizeof (number), 0);

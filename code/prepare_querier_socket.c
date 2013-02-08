@@ -1,4 +1,4 @@
-SOCKET
+socklib_t
 prepare_querier_socket (
         struct socklib * lib
 ) {
@@ -8,8 +8,8 @@ prepare_querier_socket (
 
     (void) lib;
 
-    SOCKET sock = socket (PF_INET, SOCK_DGRAM, 0);
-    if (sock == INVALID_SOCKET) { // windows-only?
+    socklib_t sock = socket (PF_INET, SOCK_DGRAM, 0);
+    if (sock == bad_socket ()) { // windows-only?
         log_info ("My socket has a problem, namely. %s!",
                 strerror (socket_errno ()));
         goto error;
@@ -31,6 +31,6 @@ prepare_querier_socket (
 
 error:
     close_socket (sock);
-    return INVALID_SOCKET;
+    return bad_socket ();
 }
 

@@ -24,7 +24,11 @@ features := $(program)
 defines := $(shell echo $(platform) | tr a-z A-Z)
 includes :=
 cc := gcc
-link_flags := -lwsock32 # sandbox
+link_flags :=
+
+ifeq ($(platform),windows)
+	link_flags += lwsock32 # sandbox
+endif
 
 ifeq ($(program),cosmos)
   ifeq ($(platform),ios)
