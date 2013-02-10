@@ -18,7 +18,7 @@ main (
 
     unsigned long number = 0xF00DCAFE;
     int status = send (sock, (void *) &number, sizeof (number), 0);
-    if (status < 0) {
+    if (status <= 0) {
         log_info("Send has it a bit wrong. %s!", strerror (socket_errno ()));
         goto end;
     }
@@ -27,7 +27,7 @@ end:
     close_socket (sock);
     return 0;
 
-/* sandbox area no more */
+    /* sandbox area no more */
 
     stage_I ();
 

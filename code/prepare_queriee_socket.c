@@ -9,7 +9,7 @@ prepare_queriee_socket (
     (void) lib;
 
     socklib_t sock = socket (PF_INET, SOCK_DGRAM, 0);
-    if (sock == bad_socket ()) { // windows-only?
+    if (sock == bad_socket ()) {
         log_info ("My socket has a problem, namely. %s!",
                 socket_errstr ());
         goto error;
