@@ -16,10 +16,10 @@ planet_ID_from_B (
         out->size = 1.0f;
     } else {
 
-        out->size = 0.0f;
+        out->size = 1.0f;
     }
 
-    out->mmodel = galaxy_helper[planet_number];
+    out->mmodel = galaxy_helper[planet_number ];
 
     out->mrot = planet_dayrotation (& planet->day, framedata->time);
 

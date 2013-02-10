@@ -15,7 +15,7 @@ galaxy_transform (
         vec3 offset = {{0}};
         unsigned PLACEHOLDER = 3;
         float distance = 1.0f * planet->where.orbit_number;
-        float alpha = 360.0f * planet->where.orbit_slot / PLACEHOLDER;
+        float alpha = (360.0f * planet->where.orbit_slot) / PLACEHOLDER;
 
         offset.element.x = sinf (alpha) * distance;
         offset.element.y = cosf (alpha) * distance;
