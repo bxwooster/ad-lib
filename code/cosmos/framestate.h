@@ -10,4 +10,6 @@ struct framestate {
     int show_wireframe;
     int show_normals;
     unsigned turn;
+    int turn_transition;
+    double turn_transition_ends;
 };

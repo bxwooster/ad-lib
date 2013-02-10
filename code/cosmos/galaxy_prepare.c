@@ -1,9 +1,10 @@
 struct galaxy_helper
 galaxy_prepare (
+        double time,
         struct planetB const * galaxy,
         struct galaxy_helper const * gh,
         unsigned planet_number,
-        unsigned turn
+        struct framestate const * state
 ) {
     struct galaxy_helper result;
 
@@ -22,8 +23,14 @@ galaxy_prepare (
         vec3 offset = {{0}};
         unsigned PLACEHOLDER = 3;
         float distance = gh[parent].size * planet->where.orbit_number;
-        unsigned cell = (planet->where.orbit_slot + turn) % PLACEHOLDER;
-        float alpha = (2.0f * pi () * cell) / PLACEHOLDER;
+
+        float rest = 0.0f;
+        if (state->turn_transition) {
+            float ttd = TURN_TRANSITION_DELAY;
+            rest = (time - state->turn_transition_ends + ttd) / ttd;
+        }
+        float float_slot = planet->where.orbit_slot + state->turn + rest;
+        float alpha = (2.0f * pi () * float_slot) / PLACEHOLDER;
 
         offset.element.x = sinf (alpha) * distance;
         offset.element.y = cosf (alpha) * distance;

@@ -23,17 +23,19 @@ sIII (
     for (;;) {
         if (were_there_any_GL_errors (gl)) break;
 
+        double time = (double) SDL_GetTicks () / 1000;
+
         struct input physical = poll_SDLevents (sdl);
         if (physical.halt) break;
 
-        advance_framestate (& state, screen_size, & physical);
+        advance_framestate (& state, screen_size, & physical, time);
 
         struct frame_DD framedata =
-            generate_frame_DD (sdl, mproj, & state);
+            generate_frame_DD (mproj, & state);
 
-        moduleA (planet_list, & framedata, planet_memory);
+        moduleA (time, planet_list, & framedata, planet_memory);
 
-        moduleB (& state, galaxy, gh, galaxy_size,
+        moduleB (time, & state, galaxy, gh, galaxy_size,
                & framedata, planet_memory, planetA_count);
 
         moduleP (& state, planet_memory, planetA_count + galaxy_size, gl, glts);

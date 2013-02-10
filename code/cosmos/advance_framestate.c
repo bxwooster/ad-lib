@@ -2,7 +2,8 @@ void
 advance_framestate (
         struct framestate * state,
         float screen_size,
-        struct input const * input
+        struct input const * input,
+        double time
 ) {
     float nx = input->mouse.x / screen_size;
     float ny = input->mouse.y / screen_size;
@@ -26,6 +27,14 @@ advance_framestate (
     state->show_normals ^= input->toggle_normals;
     state->show_wireframe ^= input->toggle_wireframe;
 
-    if (input->next_turn) state->turn++;
+    if (input->next_turn && !state->turn_transition) {
+        state->turn_transition = 1;
+        state->turn_transition_ends = time + TURN_TRANSITION_DELAY;
+    }
+
+    if (state->turn_transition && time > state->turn_transition_ends) {
+        state->turn++;
+        state->turn_transition = 0;
+    }
 }
 

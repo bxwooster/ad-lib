@@ -1,5 +1,6 @@
 void
 planet_ID_from_B (
+        double time,
         struct planet_ID * out,
         struct planetB const * galaxy,
         struct galaxy_helper const * gh,
@@ -19,7 +20,7 @@ planet_ID_from_B (
 
     out->mmodel = gh[planet_number].transform;
 
-    out->mrot = planet_dayrotation (& planet->day, framedata->time);
+    out->mrot = planet_dayrotation (& planet->day, time);
 
     out->colour = planet->colour;
     
