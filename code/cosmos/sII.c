@@ -66,6 +66,7 @@ sII (
                 screen_size,
                 & imposter,
                 planet_list,
+                planetA_count,
                 galaxy,
                 gh,
                 planetB_count,

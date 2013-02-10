@@ -5,6 +5,7 @@ sIII (
         float screen_size,
         struct GLvbo_and_size * imposter,
         struct planetlistA_head const * planet_list,
+        unsigned planetA_count,
         struct planetB * galaxy,
         struct galaxy_helper * gh,
         unsigned galaxy_size,
@@ -37,25 +38,13 @@ sIII (
                 & state
         );
 
-        unsigned j = 0;
-	    for (struct planetlistA_element *
-                item = planet_list->first;
-                item != NULL;
-                item = item->_.next
-        ) {
-            struct planet_ID pid;
-            planet_ID_from_A (& pid, & item->planet, & framedata);
-            planet_memory[j] = generate_planet_DD (
-                    & pid,
-                    & framedata
-            );
-            j++;
-        }
+        moduleA (planet_list, & framedata, planet_memory);
 
         for (unsigned i = 0; i < galaxy_size; ++i) {
             gh[i] = galaxy_prepare (galaxy, gh, i);
         }
 
+        unsigned j = planetA_count;
         for (unsigned i = 0; i < galaxy_size; ++i) {
             struct planet_ID pid;
             planet_ID_from_B (
