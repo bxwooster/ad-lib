@@ -8,15 +8,10 @@ vec3 fragment () {
     vec3 normal = the_normal ();
     vec3 result = textureCube (Utexture, normal).rgb;
 
-    vec3 lightdir = vec3 (0.0, 1.0, 0.0);
-    float ambient = 0.3;
-    float light = ambient + clamp (dot (normal, lightdir), 0.0, 1.0);
-
-    float brightness = 1.5;
+    float brightness = 1.0;
+    result += U.colour;
     result *= brightness;
-    result *= U.colour;
     result *= effect;
-    result *= light;
 
 	return result;
 }

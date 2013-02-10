@@ -21,7 +21,7 @@ planet_ID_from_B (
 
     out->mrot = planet_dayrotation (& planet->day, framedata->time);
 
-    out->colour = (vec3) {{10.0, 10.0, 10.0}};//planet->colour;
+    out->colour = planet->colour;
     
     out->size = 0.5f /* radius */ * gh[planet_number].size;
 }
