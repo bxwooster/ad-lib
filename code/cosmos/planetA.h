@@ -1,6 +1,7 @@
 #include <vec3.h>
 #include <mat4.h>
-struct planet {
+#include <planet_day.h>
+struct planetA {
 	float size;
 	vec3 colour;
 	struct {
@@ -8,9 +9,6 @@ struct planet {
 		float major;
 		float minor;
 	} year;
-    struct {
-        vec3 axis;
-        float period;
-    } day;
+    struct planet_day day;
 };
 

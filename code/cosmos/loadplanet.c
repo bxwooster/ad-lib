@@ -1,11 +1,11 @@
 int // status
 loadplanet (
-        struct planet * planet,
+        struct planetA * planet,
         char const * file
 ) {
     int error = 0;
     FILE * fp = NULL;
-    struct planet read;
+    struct planetA read;
 
     if ((fp = fopen (file, "rb")) == 0 ||
         fscanf (fp, " size: %f", &read.size) != 1 ||

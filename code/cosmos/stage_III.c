@@ -4,7 +4,9 @@ stage_III (
         unsigned width, unsigned height,
         float screen_size,
         struct GLvbo_and_size * imposter,
-        struct planethead const * planet_list,
+        struct planetlistA_head const * planet_list,
+        struct planetB * galaxy,
+        unsigned galaxy_size,
         struct planet_DD * planet_memory,
         struct cosmosA_glts const glts [3],
         struct GL * gl,
@@ -28,8 +30,8 @@ stage_III (
                 & physical
         );
 
-        double time = (double) SDL_GetTicks () / 1000;
         struct frame_DD framedata = generate_frame_DD (
+                sdl, 
                 mproj,
                 & state
         );
@@ -41,14 +43,25 @@ stage_III (
         );
 
         unsigned j = 0;
-	    for (struct sysplanet *
+	    for (struct planetlistA_element *
                 item = planet_list->first;
                 item != NULL;
                 item = item->_.next
         ) {
+            struct planet_ID pid;
+            planet_ID_from_A (& pid, & item->planet, & framedata);
             planet_memory[j] = generate_planet_DD (
-                    time,
-                    & item->planet,
+                    & pid,
+                    & framedata
+            );
+            j++;
+        }
+
+        for (unsigned i = 0; i < galaxy_size; ++i) {
+            struct planet_ID pid;
+            planet_ID_from_B (& pid, galaxy + i, & framedata);
+            planet_memory[j] = generate_planet_DD (
+                    & pid,
                     & framedata
             );
             j++;

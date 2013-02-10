@@ -1,12 +1,12 @@
 void
 destroy_planet_list (
-    struct planethead * list
+    struct planetlistA_head * list
 ) {
     if (list == NULL) return;
 
-    struct sysplanet * tvar;
+    struct planetlistA_element * tvar;
 
-    for (struct sysplanet *
+    for (struct planetlistA_element *
             item = list->first;
             item != NULL &&
             (tvar = item->_.next, 1);

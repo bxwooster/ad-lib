@@ -13,7 +13,7 @@ stage_II (
     };
     struct GLvbo_and_size imposter = {GL_FALSE, 0};
     GLuint tex = GL_FALSE;
-    struct planethead * planet_list = NULL;
+    struct planetlistA_head * planet_list = NULL;
     struct planet_DD * planet_memory = NULL;
 
     unsigned width = 1024; /* fix me. I'm pulled out of thin air. */
@@ -37,15 +37,27 @@ stage_II (
         imposter = prepare_GLvbo (gl);
         if (imposter.vbo == GL_FALSE) break;
 
-        unsigned planet_count = planet_list_from_disk (& planet_list);
-        if (planet_count == 0) break;
-
-        struct planet_DD * planet_memory =
-            malloc (planet_count * sizeof (struct planet_DD));
+        unsigned planetA_count = planet_list_from_disk (
+             "data/spawn-none",
+             & planet_list
+        );
 
         float fov = get_fov ();
         if (fov == 0.0f) break;
         mat4 mproj = standard_projection (width, height, fov);
+
+        char * galaxytext = load_file ("data/trivial-galaxy");
+        if (galaxytext== NULL) break;
+
+        struct planetB galaxy [16];
+        unsigned planetB_count = 16;
+        parse_galaxy (galaxytext, galaxy, &planetB_count);
+        log_debug ("Galaxy is %u large", planetB_count);
+
+        free (galaxytext);
+
+        struct planet_DD * planet_memory =
+            malloc ((planetA_count + planetB_count) * sizeof (struct planet_DD));
 
         stage_III (
                 & mproj,
@@ -53,6 +65,8 @@ stage_II (
                 screen_size,
                 & imposter,
                 planet_list,
+                galaxy,
+                planetB_count,
                 planet_memory,
                 glts,
                 gl,

@@ -1,24 +1,25 @@
 unsigned /* count */
 planet_list_from_disk (
-        struct planethead ** out
+        char const * dirname,
+        struct planetlistA_head ** out
 ) {
     unsigned count = 0;
-    struct planethead * list = malloc (sizeof (struct planethead));
+    struct planetlistA_head * list = malloc (sizeof (struct planetlistA_head));
     list->first = NULL;
     list->last = & list->first;
 
-    char const * const dirname = "data/spawn";
     DIR * sysdir = opendir (dirname);
     if (sysdir == NULL) {
         log_info ("Could not open directory %s.", dirname);
-        
+        *out = list;
+        return 0;
     }
 
     struct dirent * dirent = NULL;
     while ((dirent = readdir (sysdir)) != NULL) {
         if (dirent->d_name[0] != '.') {
             size_t len = strlen (dirname) + 1 + strlen (dirent->d_name) + 1;
-            struct sysplanet * item = malloc (sizeof (*item));
+            struct planetlistA_element * item = malloc (sizeof (*item));
             assert (item != NULL);
             item->file = (char *) malloc (len);
             assert (item->file != NULL);

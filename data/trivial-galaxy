@@ -1,0 +1,9 @@
+it's betelgeuse: {
+    where: center;
+    colour: 1.0, 1.0, 0.0;
+    day: {
+        axis: 0.0, 1.0, 0.0;
+        period: 10.0;
+    };
+};
+
