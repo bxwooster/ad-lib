@@ -39,39 +39,8 @@ sIII (
         );
 
         moduleA (planet_list, & framedata, planet_memory);
-
-        for (unsigned i = 0; i < galaxy_size; ++i) {
-            gh[i] = galaxy_prepare (galaxy, gh, i);
-        }
-
-        unsigned j = planetA_count;
-        for (unsigned i = 0; i < galaxy_size; ++i) {
-            struct planet_ID pid;
-            planet_ID_from_B (
-                    & pid,
-                    galaxy,
-                    gh,
-                    i,
-                    & framedata
-            );
-            planet_memory[j] = generate_planet_DD (
-                    & pid,
-                    & framedata
-            );
-            j++;
-        }
-
-        qsort (planet_memory, j, sizeof (struct planet_DD), closest_planet_DD);
-
-        struct cosmosA_layout const * layout = to_planet_GLstate (
-                & state,
-                gl,
-                glts
-        );
-
-        for (unsigned i = 0; i < j; ++i) {
-            planet_draw (planet_memory + i, layout, gl);
-        }
+        moduleB (galaxy, gh, galaxy_size, & framedata, planet_memory, planetA_count);
+        moduleP (& state, planet_memory, planetA_count + galaxy_size, gl, glts);
 
         SDL_GL_SwapWindow (sdl->window);
         frame++;
