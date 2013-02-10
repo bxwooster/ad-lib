@@ -26,17 +26,10 @@ sIII (
         struct input physical = poll_SDLevents (sdl);
         if (physical.halt) break;
 
-        advance_framestate (
-                & state,
-                screen_size,
-                & physical
-        );
+        advance_framestate (& state, screen_size, & physical);
 
-        struct frame_DD framedata = generate_frame_DD (
-                sdl, 
-                mproj,
-                & state
-        );
+        struct frame_DD framedata =
+            generate_frame_DD (sdl, mproj, & state);
 
         moduleA (planet_list, & framedata, planet_memory);
         moduleB (galaxy, gh, galaxy_size, & framedata, planet_memory, planetA_count);

@@ -4,17 +4,17 @@ get_earth_GLtex (
         struct SDL * sdl,
         struct IMG * img
 ) {
-        GLuint tex = GL_FALSE;
-        SDL_Surface * earth [6] = {0};
+    GLuint tex = GL_FALSE;
+    SDL_Surface * earth [6] = {0};
 
-        GLenum GLformat = load_earth (earth, img, sdl);
-        if (GLformat != GL_FALSE) {
-            tex = prepare_GLtex (earth, GLformat, gl);
-        }
+    GLenum GLformat = load_earth (earth, img, sdl);
+    if (GLformat != GL_FALSE) {
+        tex = prepare_GLtex (earth, GLformat, gl);
+    }
 
-        for (int i = 0; i < 6; i++) {
-            SDL_FreeSurface (earth[i]);
-        }
+    for (int i = 0; i < 6; i++) {
+        SDL_FreeSurface (earth[i]);
+    }
 
-        return tex;
+    return tex;
 }

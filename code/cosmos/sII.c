@@ -21,68 +21,70 @@ sII (
 
     float screen_size = width > height ? width : height;
 
-    do {
-        glts[0] = load_cosmosA_glts (gl, "data/tsh/planet.glts");
-        if (glts[0].program == GL_FALSE) break;
+    char const * glts_names [] = {
+        "data/tsh/planet.glts",
+        "data/tsh/planet-normals.glts",
+        "data/tsh/planet-wireframe.glts"
+    };
+    for (unsigned i = 0; i < 3; ++i) {
+        glts[i] = load_cosmosA_glts (gl, glts_names[i]);
+        if (glts[i].program == GL_FALSE) goto end;
+    }
 
-        glts[1] = load_cosmosA_glts (gl, "data/tsh/planet-normals.glts");
-        if (glts[1].program == GL_FALSE) break;
+    tex = get_earth_GLtex (gl, sdl, img);
+    if (tex == GL_FALSE) goto end;
 
-        glts[2] = load_cosmosA_glts (gl, "data/tsh/planet-wireframe.glts");
-        if (glts[2].program == GL_FALSE) break;
+    imposter = prepare_GLvbo (gl);
+    if (imposter.vbo == GL_FALSE) goto end;
 
-        tex = get_earth_GLtex (gl, sdl, img);
-        if (tex == GL_FALSE) break;
+    unsigned planetA_count = planet_list_from_disk (
+         "data/spawn-none",
+         & planet_list
+    );
 
-        imposter = prepare_GLvbo (gl);
-        if (imposter.vbo == GL_FALSE) break;
+    float fov = get_fov ();
+    if (fov == 0.0f) goto end;
+    mat4 mproj = standard_projection (width, height, fov);
 
-        unsigned planetA_count = planet_list_from_disk (
-             "data/spawn-none",
-             & planet_list
-        );
+    char * galaxytext = load_file ("data/galaxy");
+    if (galaxytext== NULL) goto end;
 
-        float fov = get_fov ();
-        if (fov == 0.0f) break;
-        mat4 mproj = standard_projection (width, height, fov);
+    struct planetB galaxy [16];
+    struct galaxy_helper gh [16];
+    unsigned planetB_count = 16;
+    parse_galaxy (galaxytext, galaxy, &planetB_count);
+    log_debug ("Galaxy is %u large", planetB_count);
 
-        char * galaxytext = load_file ("data/galaxy");
-        if (galaxytext== NULL) break;
+    free (galaxytext);
 
-        struct planetB galaxy [16];
-        struct galaxy_helper gh [16];
-        unsigned planetB_count = 16;
-        parse_galaxy (galaxytext, galaxy, &planetB_count);
-        log_debug ("Galaxy is %u large", planetB_count);
+    planet_memory =
+        malloc ((planetA_count + planetB_count) * sizeof (struct planet_DD));
 
-        free (galaxytext);
+    sIII (
+            & mproj,
+            width, height,
+            screen_size,
+            & imposter,
+            planet_list,
+            planetA_count,
+            galaxy,
+            gh,
+            planetB_count,
+            planet_memory,
+            glts,
+            gl,
+            sdl
+    );
 
-        planet_memory =
-            malloc ((planetA_count + planetB_count) * sizeof (struct planet_DD));
-
-        sIII (
-                & mproj,
-                width, height,
-                screen_size,
-                & imposter,
-                planet_list,
-                planetA_count,
-                galaxy,
-                gh,
-                planetB_count,
-                planet_memory,
-                glts,
-                gl,
-                sdl
-        );
-    } while (0); /* break out */
-
+end:
     destroy_planet_list (planet_list);
     free (planet_memory);
+
     glDeleteBuffers (1, &imposter.vbo);
     glDeleteTextures (1, &tex);
-    glDeleteProgram (glts[0].program);
-    glDeleteProgram (glts[1].program);
-    glDeleteProgram (glts[2].program);
+
+    for (unsigned i = 0; i < 3; ++i) {
+        glDeleteProgram (glts[i].program);
+    }
 }
 
