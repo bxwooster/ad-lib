@@ -1,5 +1,6 @@
 void
 moduleB (
+        struct framestate const * state,
         struct planetB * galaxy,
         struct galaxy_helper * gh,
         unsigned galaxy_size,
@@ -8,7 +9,7 @@ moduleB (
         unsigned offset
 ) {
     for (unsigned i = 0; i < galaxy_size; ++i) {
-        gh[i] = galaxy_prepare (galaxy, gh, i);
+        gh[i] = galaxy_prepare (galaxy, gh, i, state->turn);
     }
 
     for (unsigned i = 0; i < galaxy_size; ++i) {

@@ -2,7 +2,8 @@ struct galaxy_helper
 galaxy_prepare (
         struct planetB const * galaxy,
         struct galaxy_helper const * gh,
-        unsigned planet_number
+        unsigned planet_number,
+        unsigned turn
 ) {
     struct galaxy_helper result;
 
@@ -21,7 +22,8 @@ galaxy_prepare (
         vec3 offset = {{0}};
         unsigned PLACEHOLDER = 3;
         float distance = gh[parent].size * planet->where.orbit_number;
-        float alpha = (2.0f * pi () * planet->where.orbit_slot) / PLACEHOLDER;
+        unsigned cell = (planet->where.orbit_slot + turn) % PLACEHOLDER;
+        float alpha = (2.0f * pi () * cell) / PLACEHOLDER;
 
         offset.element.x = sinf (alpha) * distance;
         offset.element.y = cosf (alpha) * distance;

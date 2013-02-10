@@ -21,6 +21,9 @@ poll_SDLevents (struct SDL * sdl) {
             else if (key == SDLK_n) {
                 currently.toggle_normals = 1;
             }
+            else if (key == SDLK_SPACE) {
+                currently.next_turn = 1;
+            }
         } else if (event.type == SDL_QUIT) {
             currently.halt = 1;
         }

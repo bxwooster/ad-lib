@@ -9,4 +9,5 @@ struct framestate {
     } mouse;
     int show_wireframe;
     int show_normals;
+    unsigned turn;
 };

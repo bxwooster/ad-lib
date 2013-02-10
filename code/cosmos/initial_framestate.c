@@ -6,6 +6,7 @@ initial_framestate (void) {
         {0.0f, 0.0f, 0},
         0,
         0,
+        0,
     };
 }
 

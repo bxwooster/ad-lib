@@ -32,7 +32,10 @@ sIII (
             generate_frame_DD (sdl, mproj, & state);
 
         moduleA (planet_list, & framedata, planet_memory);
-        moduleB (galaxy, gh, galaxy_size, & framedata, planet_memory, planetA_count);
+
+        moduleB (& state, galaxy, gh, galaxy_size,
+               & framedata, planet_memory, planetA_count);
+
         moduleP (& state, planet_memory, planetA_count + galaxy_size, gl, glts);
 
         SDL_GL_SwapWindow (sdl->window);

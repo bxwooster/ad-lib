@@ -25,5 +25,7 @@ advance_framestate (
 
     state->show_normals ^= input->toggle_normals;
     state->show_wireframe ^= input->toggle_wireframe;
+
+    if (input->next_turn) state->turn++;
 }
 
