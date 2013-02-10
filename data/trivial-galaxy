@@ -1,4 +1,4 @@
-it's betelgeuse: {
+it's sun: {
     where: center;
     colour: 1.0, 1.0, 0.0;
     day: {

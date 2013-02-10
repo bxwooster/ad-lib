@@ -1,11 +1,6 @@
 it's betelgeuse: {
     where: center;
-    orbits: [
-        { cells: 4; phase: 40.0; }
-        { cells: 5; phase: 100.0; }
-        { cells: 3; phase: 330.0; }
-    ];
-    colour: 1.0, 1.0, 0.0;
+    colour: 1.0, 1.0, 1.0;
     day: {
         axis: 0.0, 1.0, 0.0;
         period: 10.0;
@@ -13,10 +8,7 @@ it's betelgeuse: {
 };
 
 it's fiptokaria: {
-    where: betelgeuse-2-4;
-    orbits: [
-        { cells: 5; phase: 0.0; }
-    ];
+    where: betelgeuse-1-2;
     colour: 0.0, 0.4, 0.9;
     day: {
         axis: 0.0, 0.0, 1.0;
@@ -25,10 +17,7 @@ it's fiptokaria: {
 };
 
 it's yed: {
-    where: betelgeuse-3-1;
-    orbits: [
-        { cells: 3; phase: 0.0; }
-    ];
+    where: betelgeuse-1-1;
     colour: 0.0, 0.4, 0.9;
     day: {
         axis: 0.0, 0.0, 1.0;
@@ -38,7 +27,6 @@ it's yed: {
 
 it's roneus: {
     where: fiptokaria-1-3;
-    orbits: [];
     colour: 1.0, 0.8, 0.6;
     day: {
         axis: 1.0, 0.0, 1.0;

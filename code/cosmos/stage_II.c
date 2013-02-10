@@ -46,7 +46,7 @@ stage_II (
         if (fov == 0.0f) break;
         mat4 mproj = standard_projection (width, height, fov);
 
-        char * galaxytext = load_file ("data/trivial-galaxy");
+        char * galaxytext = load_file ("data/galaxy");
         if (galaxytext== NULL) break;
 
         struct planetB galaxy [16];

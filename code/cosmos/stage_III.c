@@ -59,7 +59,7 @@ stage_III (
 
         for (unsigned i = 0; i < galaxy_size; ++i) {
             struct planet_ID pid;
-            planet_ID_from_B (& pid, galaxy + i, & framedata);
+            planet_ID_from_B (& pid, galaxy, i, & framedata);
             planet_memory[j] = generate_planet_DD (
                     & pid,
                     & framedata
