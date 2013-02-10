@@ -15,7 +15,7 @@ if [ -n "$3" ]; then
 	exit 3
 fi
 
-files=$(find code -name \*$1\*)
+files=$(find code -name \*$1\*.c -o -name \*$1\*.h)
 for file in $files; do
 	renamed=$(echo $file | sed s/$1/$2/)
 	git mv $file $renamed

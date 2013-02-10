@@ -50,7 +50,7 @@ stage_II (
         if (galaxytext== NULL) break;
 
         struct planetB galaxy [16];
-        mat4 galaxy_helper [16];
+        struct galaxy_helper gh [16];
         unsigned planetB_count = 16;
         parse_galaxy (galaxytext, galaxy, &planetB_count);
         log_debug ("Galaxy is %u large", planetB_count);
@@ -67,7 +67,7 @@ stage_II (
                 & imposter,
                 planet_list,
                 galaxy,
-                galaxy_helper,
+                gh,
                 planetB_count,
                 planet_memory,
                 glts,

@@ -44,6 +44,7 @@ endfunction
 set expandtab
 call AL_do_tags()
 autocmd BufWritePost *.h,*.c call AL_update_tags()
+autocmd FileChangedShell *.h,*.c call AL_update_tags()
 
 map <F13> :call AL_make('run')<CR>
 map <S-F13> :call AL_make('debug')<CR>
