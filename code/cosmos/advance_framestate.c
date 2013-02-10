@@ -20,13 +20,8 @@ advance_framestate (
     state->mouse.y = ny;
     state->mouse.lock = input->mouse.buttons;
 
-    float const ROTATION_SPEED = 4.0f;
-    float angle = sqrtf (dx * dx + dy * dy) * ROTATION_SPEED;
-    vec3 axis = {{dy, 0.0f, dx}};
-
-    if (angle != 0.0f) {
-        state->ori = mat4_rotated_aa (& state->ori, & axis, angle);
-    }
+    vec3 move = {{-dx, dy, 0.0f}};
+    state->ori = mat4_moved (& state->ori, & move);
 
     state->show_normals ^= input->toggle_normals;
     state->show_wireframe ^= input->toggle_wireframe;
