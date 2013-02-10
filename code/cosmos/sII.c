@@ -1,5 +1,5 @@
 void
-stage_II (
+sII (
         struct GL * gl,
         struct SDL * sdl,
         struct IMG * img
@@ -60,7 +60,7 @@ stage_II (
         planet_memory =
             malloc ((planetA_count + planetB_count) * sizeof (struct planet_DD));
 
-        stage_III (
+        sIII (
                 & mproj,
                 width, height,
                 screen_size,

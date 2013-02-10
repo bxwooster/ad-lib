@@ -1,5 +1,5 @@
 void
-stage_I (void)
+sI (void)
 /* ... where libraries are initalized and put to good use. */
 {
     log_info ("Revving up.");
@@ -24,7 +24,7 @@ stage_I (void)
         if (!gl.ready) break;
         
         /* All systems go! */
-        stage_II (& gl, & sdl, & img);
+        sII (& gl, & sdl, & img);
 
     } while (0); /* break out */
 

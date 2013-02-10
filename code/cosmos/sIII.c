@@ -1,5 +1,5 @@
 void
-stage_III (
+sIII (
         mat4 const * mproj,
         unsigned width, unsigned height,
         float screen_size,

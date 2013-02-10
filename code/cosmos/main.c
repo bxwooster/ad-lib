@@ -8,7 +8,7 @@ main (
     (void) argc;
     (void) argv; /* silence the warnings */
 
-    stage_I ();
+    sI ();
 
     return 0;
 }
