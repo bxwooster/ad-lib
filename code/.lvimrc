@@ -15,7 +15,7 @@ function s:sys(cmd)
 endfunction
 
 function AL_make(what)
-  execute '!make -C' . s:thispath . '/.. ' . a:what
+  execute 'make -C' . s:thispath . '/.. ' . a:what
 endfunction
 
 function AL_update_tags()
