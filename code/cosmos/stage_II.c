@@ -50,13 +50,14 @@ stage_II (
         if (galaxytext== NULL) break;
 
         struct planetB galaxy [16];
+        mat4 galaxy_helper [16];
         unsigned planetB_count = 16;
         parse_galaxy (galaxytext, galaxy, &planetB_count);
         log_debug ("Galaxy is %u large", planetB_count);
 
         free (galaxytext);
 
-        struct planet_DD * planet_memory =
+        planet_memory =
             malloc ((planetA_count + planetB_count) * sizeof (struct planet_DD));
 
         stage_III (
@@ -66,6 +67,7 @@ stage_II (
                 & imposter,
                 planet_list,
                 galaxy,
+                galaxy_helper,
                 planetB_count,
                 planet_memory,
                 glts,

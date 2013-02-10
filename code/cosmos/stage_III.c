@@ -6,6 +6,7 @@ stage_III (
         struct GLvbo_and_size * imposter,
         struct planetlistA_head const * planet_list,
         struct planetB * galaxy,
+        mat4 * galaxy_helper,
         unsigned galaxy_size,
         struct planet_DD * planet_memory,
         struct cosmosA_glts const glts [3],
@@ -58,8 +59,18 @@ stage_III (
         }
 
         for (unsigned i = 0; i < galaxy_size; ++i) {
+            galaxy_helper[i] = galaxy_transform (galaxy, galaxy_helper, i);
+        }
+
+        for (unsigned i = 0; i < galaxy_size; ++i) {
             struct planet_ID pid;
-            planet_ID_from_B (& pid, galaxy, i, & framedata);
+            planet_ID_from_B (
+                    & pid,
+                    galaxy,
+                    galaxy_helper,
+                    i,
+                    & framedata
+            );
             planet_memory[j] = generate_planet_DD (
                     & pid,
                     & framedata
