@@ -8,9 +8,6 @@ galaxy_prepare (
 ) {
     struct galaxy_helper result;
 
-    unsigned PLACEHOLDER = 2;
-    float const size_constant = 0.9;
-
     struct planetB const * planet = galaxy + planet_number;
 
     if (planet_number == 0) {
@@ -20,27 +17,27 @@ galaxy_prepare (
         unsigned parent = planet->where.parent_index;
         assert (parent < planet_number);
 
-        vec3 offset = {{0}};
-        unsigned PLACEHOLDER = 3;
-        float distance = gh[parent].size * planet->where.orbit_number;
-
         float rest = 0.0f;
         if (state->turn_transition) {
             float ttd = TURN_TRANSITION_DELAY;
             rest = (time - state->turn_transition_ends + ttd) / ttd;
         }
         float float_slot = planet->where.orbit_slot + state->turn + rest;
-        float alpha = (2.0f * pi () * float_slot) / PLACEHOLDER;
 
+        unsigned orbit_slots = planet->where.orbit_number - 1 + 3;
+        float alpha = (2.0f * pi () * float_slot) / orbit_slots;
+
+        float distance = gh[parent].size * (planet->where.orbit_number + 0.5f);
+
+        vec3 offset = {{0}};
         offset.element.x = sinf (alpha) * distance;
         offset.element.y = cosf (alpha) * distance;
 
         result.transform = mat4_moved (& gh[parent].transform, & offset);
-        result.size = gh[parent].size;
-
+        result.size = gh[parent].size * 0.5 * PLANET_SIZE_MINIFIER;
     }
 
-    result.size *= size_constant / PLACEHOLDER;
+    result.size /= planet->orbit_count + 1;
 
     return result;
 }

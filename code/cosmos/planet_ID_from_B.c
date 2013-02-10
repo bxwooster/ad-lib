@@ -24,5 +24,5 @@ planet_ID_from_B (
 
     out->colour = planet->colour;
     
-    out->size = 0.5f /* radius */ * gh[planet_number].size;
+    out->size = gh[planet_number].size;
 }

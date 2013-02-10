@@ -39,10 +39,6 @@ parse_galaxy (
                         & a->where.orbit_slot, & read) < 3) goto syntax_error;
             if (where[read] != '\0') goto syntax_error;
 
-            if (a->where.orbit_number != 1 || a->where.orbit_slot > 3) {
-                assert (false);
-            }
-
             for (unsigned i = 0; i < *count; ++i) {
                 if (strcmp (name, galaxy[i].name) == 0) {
                     a->where.parent_index = i;
@@ -54,14 +50,10 @@ parse_galaxy (
                 goto syntax_error;
             }
         }
-
-        /*
-        if (sscanf (in, " ; orbits : [ %15[^;]%n", orbit, & read) < 1)
+       
+        if (sscanf (in, " ; orbits : %u%n", & a->orbit_count, & read) < 1)
             goto syntax_error;
         in += read;
-        log_debug ("orbits: %s", orbit);
-        // here we check if the string was not "]" and loop
-        */
         
         if (sscanf (in, " ; colour : %f, %f, %f%n",
                     a->colour.p,

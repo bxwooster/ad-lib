@@ -7,6 +7,7 @@ struct planetB {
         unsigned orbit_number;
         unsigned orbit_slot;
     } where;
+    unsigned orbit_count;
 	vec3 colour;
     struct planet_day day;
 };
