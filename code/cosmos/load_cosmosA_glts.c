@@ -6,6 +6,10 @@ struct cosmosA_glts
     struct cosmosA_glts it;
     it.program = load_glts (gl, filename, "cosmosA", "");
     // we could check that program's not GL_FALSE, but we won't.
+    it.Apos2d = (GLuint) glGetAttribLocation (it.program, "Apos2d");
+    if (it.Apos2d == (GLuint) -1) {
+        log_info ("GL attribute 'Apos2d' not found");
+    }
     it.layout.U.mv = glGetUniformLocation (it.program, "U.mv");
     it.layout.U.mvp = glGetUniformLocation (it.program, "U.mvp");
     assert (it.layout.U.mvp != -1);

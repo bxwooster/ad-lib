@@ -37,12 +37,6 @@ stage_III (
                 & state
         );
 
-        struct cosmosA_layout const * layout = to_planet_GLstate (
-                & state,
-                gl,
-                glts
-        );
-
         unsigned j = 0;
 	    for (struct planetlistA_element *
                 item = planet_list->first;
@@ -79,6 +73,12 @@ stage_III (
         }
 
         qsort (planet_memory, j, sizeof (struct planet_DD), closest_planet_DD);
+
+        struct cosmosA_layout const * layout = to_planet_GLstate (
+                & state,
+                gl,
+                glts
+        );
 
         for (unsigned i = 0; i < j; ++i) {
             planet_draw (planet_memory + i, layout, gl);

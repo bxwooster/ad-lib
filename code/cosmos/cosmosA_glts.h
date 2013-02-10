@@ -2,5 +2,6 @@
 struct cosmosA_glts {
     struct cosmosA_layout layout;
     GLuint program;
+    GLuint Apos2d;
 };
 
