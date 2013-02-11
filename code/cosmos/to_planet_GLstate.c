@@ -1,20 +1,10 @@
-struct planeta_layout const *
+void
 to_planet_GLstate (
         struct framestate const * state,
-        struct GL * gl,
-        struct planeta_glts const glts [3]
+        struct planeta_glts const * glts
 ) {
-    (void) gl;
-
-    unsigned choice = 0;
-    if (state->show_wireframe) {
-        choice = 2;
-    } else if (state->show_normals) {
-        choice = 1;
-    }
-
-    GLuint attrib = glts[choice].Apos2d;
-    GLuint program = glts[choice].program;
+    GLuint attrib = glts->Apos2d;
+    GLuint program = glts->program;
     glUseProgram (program);
     glVertexAttribPointer (attrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray (attrib);
@@ -22,6 +12,4 @@ to_planet_GLstate (
     GLenum poly_mode = state->show_wireframe ? GL_LINE : GL_FILL;
     glPolygonMode(GL_FRONT_AND_BACK, poly_mode);
 #endif
-
-    return & glts[choice].layout;
 }

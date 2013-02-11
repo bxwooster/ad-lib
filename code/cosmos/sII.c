@@ -6,11 +6,7 @@ sII (
 )
 /* ... where the run-time constants are introduced */
 {
-    struct planeta_glts glts [3] = {
-        {{0}, GL_FALSE},
-        {{0}, GL_FALSE},
-        {{0}, GL_FALSE},
-    };
+    struct planeta_glts glts [3];
     struct GLvbo_and_size imposter = {GL_FALSE, 0};
     GLuint tex = GL_FALSE;
     struct planetlistA_head * planet_list = NULL;

@@ -75,7 +75,7 @@ end:
             filename, (int) (at - current_file));
 
 	for (unsigned n = 1; n < N; ++n) {
-        log_info ("Source %u: %s", n, sources[n]);
+        //log_debug ("Source %u: %s", n, sources[n]);
     	free ((char *) sources[n]);
     }
 

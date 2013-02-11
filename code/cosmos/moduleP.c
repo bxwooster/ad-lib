@@ -7,10 +7,16 @@ void moduleP (
 ) {
     qsort (planet_memory, total, sizeof (struct planet_DD), closest_planet_DD);
 
-    struct planeta_layout const * layout =
-        to_planet_GLstate (state, gl, glts);
+    unsigned choice = 0;
+    if (state->show_wireframe) {
+        choice = 2;
+    } else if (state->show_normals) {
+        choice = 1;
+    }
+
+    to_planet_GLstate (state, glts + choice);
 
     for (unsigned i = 0; i < total; ++i) {
-        planet_draw (planet_memory + i, layout, gl);
+        planet_draw (planet_memory + i, glts + choice, gl);
     }
 }
