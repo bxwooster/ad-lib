@@ -1,8 +1,8 @@
-struct cosmosA_layout const *
+struct planeta_layout const *
 to_planet_GLstate (
         struct framestate const * state,
         struct GL * gl,
-        struct cosmosA_glts const glts [3]
+        struct planeta_glts const glts [3]
 ) {
     (void) gl;
 
@@ -22,8 +22,6 @@ to_planet_GLstate (
     GLenum poly_mode = state->show_wireframe ? GL_LINE : GL_FILL;
     glPolygonMode(GL_FRONT_AND_BACK, poly_mode);
 #endif
-    glClearColor (0.0, 0.0, 0.0, 0.0);
-    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     return & glts[choice].layout;
 }

@@ -1,4 +1,4 @@
-#pragma type cosmosA
+#pragma type planeta
 #pragma include planet_glue
 #ifdef FS
 vec3 fragment () {
@@ -9,7 +9,7 @@ vec3 fragment () {
     vec3 result = textureCube (Utexture, normal).rgb;
 
     float brightness = 1.0;
-    result += 0.5 * U.colour;
+    result += 0.5 * Ucolour;
     result *= brightness;
     result *= effect;
 

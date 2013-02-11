@@ -1,9 +1,8 @@
-#pragma type cosmosA
+#pragma type planeta
 #pragma include planet_glue
 #ifdef FS
 vec3 fragment () {
-	discard_test ();
-	return the_normal ();
+    return Ucolour;
 }
 #endif
 

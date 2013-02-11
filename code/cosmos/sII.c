@@ -6,7 +6,7 @@ sII (
 )
 /* ... where the run-time constants are introduced */
 {
-    struct cosmosA_glts glts [3] = {
+    struct planeta_glts glts [3] = {
         {{0}, GL_FALSE},
         {{0}, GL_FALSE},
         {{0}, GL_FALSE},
@@ -22,12 +22,12 @@ sII (
     float screen_size = width > height ? width : height;
 
     char const * glts_names [] = {
-        "data/tsh/planet.glts",
-        "data/tsh/planet-normals.glts",
-        "data/tsh/planet-wireframe.glts"
+        "data/shade/planet.glts",
+        "data/shade/planet-normals.glts",
+        "data/shade/planet-wireframe.glts"
     };
     for (unsigned i = 0; i < 3; ++i) {
-        glts[i] = load_cosmosA_glts (gl, glts_names[i]);
+        glts[i] = load_planeta_glts (gl, glts_names[i]);
         if (glts[i].program == GL_FALSE) goto end;
     }
 

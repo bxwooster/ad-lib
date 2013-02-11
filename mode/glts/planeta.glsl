@@ -5,13 +5,11 @@ vec3 fragment ();
 	attribute vec2 Apos2d;
 #endif
 
-uniform struct {
-	mat4 mvp;
-	mat4 mv;
-	vec3 colour;
-	float depth;
-	float uvscale;
-} U;
+uniform mat4 Umvp;
+uniform mat4 Umv;
+uniform vec3 Ucolour;
+uniform float Udepth;
+uniform float Uuvscale;
 
 uniform samplerCube Utexture;
 

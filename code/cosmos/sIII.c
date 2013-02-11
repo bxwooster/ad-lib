@@ -10,7 +10,7 @@ sIII (
         struct galaxy_helper * gh,
         unsigned galaxy_size,
         struct planet_DD * planet_memory,
-        struct cosmosA_glts const glts [3],
+        struct planeta_glts const glts [3],
         struct GL * gl,
         struct SDL * sdl
 )
@@ -21,7 +21,9 @@ sIII (
     to_common_draw_GLstate (gl, width, height, imposter);
 
     for (;;) {
-        if (were_there_any_GL_errors (gl)) break;
+        glClearColor (0.0, 0.0, 0.0, 0.0);
+        glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        if (GL_check_errors (gl)) break;
 
         double time = (double) SDL_GetTicks () / 1000;
 

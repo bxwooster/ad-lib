@@ -1,5 +1,5 @@
 int
-were_there_any_GL_errors (
+GL_check_errors (
         struct GL * gl
 ) {
     (void) gl;

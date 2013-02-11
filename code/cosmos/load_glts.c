@@ -26,7 +26,7 @@ load_glts (
 	if (strncmp (at, typename, count) != 0) goto end;
 	at += count;
     char const * base_file = sources[N++] =
-        load_glts_file (typename, NULL);
+        load_glts_file ("mode/glts/", typename, NULL);
     if (base_file == NULL) goto end;
 
     /* newline */
@@ -41,7 +41,7 @@ load_glts (
 		if (newline == NULL) goto end;
 
         char const * included_file = sources[N++] =
-                      load_glts_file (at, newline);
+                      load_glts_file ("data/shade/", at, newline);
         if (included_file == NULL) goto end;
 
 		at = newline;
@@ -71,11 +71,13 @@ load_glts (
 
 end:
     if (at != NULL)
-        log_info ("Syntax error while loading a GLTS: %s:%d",
-            filename, (int) (at - sources[1]));
+        log_info ("Syntax error while loading a GLTS: %s:byte-%d",
+            filename, (int) (at - current_file));
 
-	for (unsigned n = 1; n < N; ++n)
+	for (unsigned n = 1; n < N; ++n) {
+        log_info ("Source %u: %s", n, sources[n]);
     	free ((char *) sources[n]);
+    }
 
     return program;        
 }
