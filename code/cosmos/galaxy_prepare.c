@@ -25,7 +25,7 @@ galaxy_prepare (
         float float_slot = planet->where.orbit_slot + state->turn + rest;
 
         unsigned orbit_slots = planet->where.orbit_number - 1 + 3;
-        float alpha = (2.0f * pi () * float_slot) / orbit_slots;
+        float alpha = (2.0f * M_PI * float_slot) / orbit_slots;
 
         float distance = gh[parent].size * (planet->where.orbit_number + 0.5f);
 

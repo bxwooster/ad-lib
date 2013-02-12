@@ -1,10 +1,10 @@
 void
-sIII (
+go_go_go (
         struct stone_engine * E
 )
 {
     unsigned long frame = 0;
-    to_common_draw_GLstate (E->gl, E->width, E->height);
+    to_common_draw_GLstate (E);
 
     for (;;) {
         glClearColor (0.0, 0.0, 0.0, 0.0);

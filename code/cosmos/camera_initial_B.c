@@ -6,7 +6,7 @@ camera_initial_B (void) {
     mcam = mat4_moved (& mcam, & move);
     
     vec3 axis_z = {{0.0f, 0.0f, 1.0f}};
-    mcam = mat4_rotated_aa (& mcam, & axis_z, pi ());
+    mcam = mat4_rotated_aa (& mcam, & axis_z, M_PI);
 
     return mcam;
 }

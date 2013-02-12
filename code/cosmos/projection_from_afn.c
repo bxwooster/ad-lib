@@ -6,7 +6,7 @@ projection_from_afn (
 ) {
     mat4 out;
 
-	float q = 1 / tanf (pi () / 180 / 2 * fov_horizontal_in_degrees);
+	float q = 1 / tanf (M_PI / 180 / 2 * fov_horizontal_in_degrees);
 
 	out.p[0] = q;
 	out.p[1] = 0.0f;
