@@ -4,7 +4,6 @@ sII (
         struct SDL * sdl,
         struct IMG * img
 )
-/* ... where the run-time constants are introduced */
 {
     struct glts_planeta glts [3];
     struct GLvbo_and_size imposter = {GL_FALSE, 0};
@@ -56,9 +55,12 @@ sII (
     planet_memory =
         malloc ((planetA_count + planetB_count) * sizeof (struct planet_DD));
 
+    struct framestate state = initial_framestate ();
+
     struct stone_engine E = {
         & mproj,
-        width, height,
+        width,
+        height,
         screen_size,
         & imposter,
         planet_list,
@@ -69,7 +71,9 @@ sII (
         planet_memory,
         glts,
         gl,
-        sdl
+        sdl,
+        & state,
+        0.0
     };
 
     sIII(& E);

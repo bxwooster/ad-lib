@@ -67,6 +67,21 @@ struct SDL {
     int subsystem_timer;
 };
 
+struct framestate {
+    mat4 cam;
+    mat4 ori;
+    struct {
+        float x;
+        float y;
+        int lock;
+    } mouse;
+    int show_wireframe;
+    int show_normals;
+    unsigned turn;
+    int turn_transition;
+    double turn_transition_ends;
+};
+
 struct stone_engine {
     mat4 const * mproj;
     unsigned width;
@@ -82,4 +97,7 @@ struct stone_engine {
     struct glts_planeta const * glts;
     struct GL * gl;
     struct SDL * sdl;
+
+    struct framestate * state;
+    double time;
 };

@@ -1,40 +1,40 @@
 void
 advance_framestate (
-        struct framestate * state,
-        float screen_size,
-        struct input const * input,
-        double time
+        struct stone_engine * E,
+        struct input const * input
 ) {
-    float nx = input->mouse.x / screen_size;
-    float ny = input->mouse.y / screen_size;
+    float nx = input->mouse.x / E->screen_size;
+    float ny = input->mouse.y / E->screen_size;
     float dx;
     float dy;
 
-    if (state->mouse.lock != 0) {
-        dx = state->mouse.x - nx;
-        dy = state->mouse.y - ny;
+    struct framestate * S = E->state;
+
+    if (S->mouse.lock != 0) {
+        dx = S->mouse.x - nx;
+        dy = S->mouse.y - ny;
     } else {
         dx = 0;
         dy = 0;
     }
-    state->mouse.x = nx;
-    state->mouse.y = ny;
-    state->mouse.lock = input->mouse.buttons;
+    S->mouse.x = nx;
+    S->mouse.y = ny;
+    S->mouse.lock = input->mouse.buttons;
 
     vec3 move = {{-dx, dy, 0.0f}};
-    state->ori = mat4_moved (& state->ori, & move);
+    S->ori = mat4_moved (& S->ori, & move);
 
-    state->show_normals ^= input->toggle_normals;
-    state->show_wireframe ^= input->toggle_wireframe;
+    S->show_normals ^= input->toggle_normals;
+    S->show_wireframe ^= input->toggle_wireframe;
 
-    if (input->next_turn && !state->turn_transition) {
-        state->turn_transition = 1;
-        state->turn_transition_ends = time + TURN_TRANSITION_DELAY;
+    if (input->next_turn && !S->turn_transition) {
+        S->turn_transition = 1;
+        S->turn_transition_ends = E->time + TURN_TRANSITION_DELAY;
     }
 
-    if (state->turn_transition && time > state->turn_transition_ends) {
-        state->turn++;
-        state->turn_transition = 0;
+    if (S->turn_transition && E->time > S->turn_transition_ends) {
+        S->turn++;
+        S->turn_transition = 0;
     }
 }
 

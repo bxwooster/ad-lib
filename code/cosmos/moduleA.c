@@ -1,18 +1,16 @@
 void moduleA (
-        double time, 
-        struct planetlistA_head const * planet_list,
-        struct frame_DD const * framedata,
-        struct planet_DD * planet_memory
+        struct stone_engine * E,
+        struct frame_DD * framedata
 ) {
     unsigned j = 0;
     for (struct planetlistA_element *
-            item = planet_list->first;
+            item = E->planet_list->first;
             item != NULL;
             item = item->_.next
     ) {
         struct planet_ID pid;
-        planet_ID_from_A (time, & pid, & item->planet);
-        planet_memory[j] = generate_planet_DD (
+        planet_ID_from_A (E->time, & pid, & item->planet);
+        E->planet_memory[j] = generate_planet_DD (
                 & pid,
                 framedata
         );
