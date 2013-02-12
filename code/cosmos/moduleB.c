@@ -7,8 +7,6 @@ moduleB (
         E->gh[i] = galaxy_prepare (E->time, E->galaxy, E->gh, i, E->state);
     }
 
-    unsigned offset = E->planetA_count;
-
     for (unsigned i = 0; i < E->galaxy_size; ++i) {
         struct planet_ID pid;
         planet_ID_from_B (
@@ -19,11 +17,10 @@ moduleB (
                 i,
                 framedata
         );
-        E->planet_memory[offset] = generate_planet_DD (
+        E->planet_memory[i] = generate_planet_DD (
                 & pid,
                 framedata
         );
-        offset++;
     }
 }
 

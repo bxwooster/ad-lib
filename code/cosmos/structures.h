@@ -3,18 +3,71 @@ struct GLvbo_and_size {
     GLsizei size;
 };
 
-struct planetlistA_element {
-	struct planetA planet;
-	char * file;
-    struct {
-        struct planetlistA_element *next;	/* next element */
-        struct planetlistA_element **prev; /* address of previous next (sic) element */
-    } _;
+struct galaxy_helper {
+    mat4 transform;
+    float size;
 };
 
-struct planetlistA_head {
-    struct planetlistA_element *first; /* first element */
-    struct planetlistA_element **last; /* addr of last next (?? -- ED) element */
+/* Intermediate data, on the way to Draw data */
+struct planet_ID {
+    mat4 mmodel;
+    mat4 mrot;
+    float size;
+    vec3 colour;
+};
+
+struct planet_DD {
+    mat4 mvp;
+    mat4 mv;
+    float depth;
+    float uvscale;
+    GLuint texture;
+    vec3 colour;
+};
+
+struct frame_DD { // atrocious name
+    mat4 viewi;
+    mat4 viewproj;
+};
+
+struct glts_planeta {
+    GLuint program;
+    GLuint Apos2d;
+    GLint Umv;
+    GLint Umvp;
+    GLint Ucolour;
+    GLint Udepth;
+    GLint Uuvscale;
+    GLint Utexture;
+};
+
+struct glts_cello {
+    GLuint program;
+    GLuint Apos2d;
+    GLint Umvp;
+};
+
+struct GL {
+    int ready;
+    SDL_GLContext context;
+    GLsizei vertices; // this needs explanation
+};
+
+struct SDL {
+    int ready;
+    SDL_Window * window;
+    int subsystem_video;
+    int subsystem_timer;
+};
+
+struct IMG {
+    int ready;
+    int type_jpg;
+};
+
+struct planet_day {
+    vec3 axis;
+    float period;
 };
 
 struct planetB {
@@ -29,42 +82,15 @@ struct planetB {
     struct planet_day day;
 };
 
-struct galaxy_helper {
-    mat4 transform;
-    float size;
-};
-
-struct planet_DD {
-    mat4 mvp;
-    mat4 mv;
-    float depth;
-    float uvscale;
-    GLuint texture;
-    vec3 colour;
-};
-
-struct glts_planeta {
-    GLuint program;
-    GLuint Apos2d;
-    GLint Umv;
-    GLint Umvp;
-    GLint Ucolour;
-    GLint Udepth;
-    GLint Uuvscale;
-    GLint Utexture;
-};
-
-struct GL {
-    int ready;
-    SDL_GLContext context;
-    GLsizei vertices; // this needs explanation
-};
-
-struct SDL {
-    int ready;
-    SDL_Window * window;
-    int subsystem_video;
-    int subsystem_timer;
+struct input {
+    int halt;
+    int toggle_wireframe;
+    int toggle_normals;
+    int next_turn;
+    struct {
+        int x, y;
+        uint8_t buttons;
+    } mouse;
 };
 
 struct framestate {
@@ -88,8 +114,6 @@ struct stone_engine {
     unsigned height;
     float screen_size;
     struct GLvbo_and_size * imposter;
-    struct planetlistA_head const * planet_list;
-    unsigned planetA_count;
     struct planetB * galaxy;
     struct galaxy_helper * gh;
     unsigned galaxy_size;

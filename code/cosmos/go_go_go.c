@@ -27,7 +27,6 @@ go_go_go (
         struct frame_DD framedata =
             generate_frame_DD (E->mproj, E->state);
 
-        moduleA (E, & framedata);
         moduleB (E, & framedata);
         moduleP (E);
 
