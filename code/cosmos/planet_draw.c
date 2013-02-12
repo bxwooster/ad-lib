@@ -1,7 +1,7 @@
 void
 planet_draw (
         struct planet_DD const * data,
-        struct planeta_glts const * glts,
+        struct glts_planeta const * glts,
         struct GL * gl
 ) {
     glUniformMatrix4fv (glts->Umvp, 1, GL_FALSE, data->mvp.p);

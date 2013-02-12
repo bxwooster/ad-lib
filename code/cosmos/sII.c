@@ -6,7 +6,7 @@ sII (
 )
 /* ... where the run-time constants are introduced */
 {
-    struct planeta_glts glts [3];
+    struct glts_planeta glts [3];
     struct GLvbo_and_size imposter = {GL_FALSE, 0};
     GLuint tex = GL_FALSE;
     struct planetlistA_head * planet_list = NULL;
@@ -23,7 +23,7 @@ sII (
         "data/shade/planet-wireframe.glts"
     };
     for (unsigned i = 0; i < 3; ++i) {
-        glts[i] = load_planeta_glts (gl, glts_names[i]);
+        glts[i] = load_glts_planeta (gl, glts_names[i]);
         if (glts[i].program == GL_FALSE) goto end;
     }
 
@@ -56,21 +56,24 @@ sII (
     planet_memory =
         malloc ((planetA_count + planetB_count) * sizeof (struct planet_DD));
 
-    sIII (
-            & mproj,
-            width, height,
-            screen_size,
-            & imposter,
-            planet_list,
-            planetA_count,
-            galaxy,
-            gh,
-            planetB_count,
-            planet_memory,
-            glts,
-            gl,
-            sdl
-    );
+    struct stone_engine E = {
+        & mproj,
+        width, height,
+        screen_size,
+        & imposter,
+        planet_list,
+        planetA_count,
+        galaxy,
+        gh,
+        planetB_count,
+        planet_memory,
+        glts,
+        gl,
+        sdl
+    };
+
+    sIII(& E);
+
 
 end:
     destroy_planet_list (planet_list);

@@ -1,48 +1,42 @@
 void
 sIII (
-        mat4 const * mproj,
-        unsigned width, unsigned height,
-        float screen_size,
-        struct GLvbo_and_size * imposter,
-        struct planetlistA_head const * planet_list,
-        unsigned planetA_count,
-        struct planetB * galaxy,
-        struct galaxy_helper * gh,
-        unsigned galaxy_size,
-        struct planet_DD * planet_memory,
-        struct planeta_glts const glts [3],
-        struct GL * gl,
-        struct SDL * sdl
+        struct stone_engine * E
 )
 /* ... where all sorts of states enter the scene */
 {
     unsigned long frame = 0;
     struct framestate state = initial_framestate ();
-    to_common_draw_GLstate (gl, width, height, imposter);
+    to_common_draw_GLstate (E->gl, E->width, E->height);
 
     for (;;) {
         glClearColor (0.0, 0.0, 0.0, 0.0);
         glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        if (GL_check_errors (gl)) break;
+
+        #ifndef GLES
+            GLenum poly_mode = state.show_wireframe ? GL_LINE : GL_FILL;
+            glPolygonMode(GL_FRONT_AND_BACK, poly_mode);
+        #endif
+
+        if (GL_check_errors (E->gl)) break;
 
         double time = (double) SDL_GetTicks () / 1000;
 
-        struct input physical = poll_SDLevents (sdl);
+        struct input physical = poll_SDLevents (E->sdl);
         if (physical.halt) break;
 
-        advance_framestate (& state, screen_size, & physical, time);
+        advance_framestate (& state, E->screen_size, & physical, time);
 
         struct frame_DD framedata =
-            generate_frame_DD (mproj, & state);
+            generate_frame_DD (E->mproj, & state);
 
-        moduleA (time, planet_list, & framedata, planet_memory);
+        moduleA (time, E->planet_list, & framedata, E->planet_memory);
 
-        moduleB (time, & state, galaxy, gh, galaxy_size,
-               & framedata, planet_memory, planetA_count);
+        moduleB (time, & state, E->galaxy, E->gh, E->galaxy_size,
+               & framedata, E->planet_memory, E->planetA_count);
 
-        moduleP (& state, planet_memory, planetA_count + galaxy_size, gl, glts);
+        moduleP (& state, E->planet_memory, E->planetA_count + E->galaxy_size, E->gl, E->imposter, E->glts);
 
-        SDL_GL_SwapWindow (sdl->window);
+        SDL_GL_SwapWindow (E->sdl->window);
         frame++;
     }
 

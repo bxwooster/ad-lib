@@ -3,7 +3,8 @@ void moduleP (
     struct planet_DD * planet_memory,
     unsigned total,
     struct GL * gl,
-    struct planeta_glts const glts [3]
+    struct GLvbo_and_size * imposter,
+    struct glts_planeta const glts [3]
 ) {
     qsort (planet_memory, total, sizeof (struct planet_DD), closest_planet_DD);
 
@@ -14,7 +15,7 @@ void moduleP (
         choice = 1;
     }
 
-    to_planet_GLstate (state, glts + choice);
+    to_planeta_GLstate (gl, imposter, glts + choice);
 
     for (unsigned i = 0; i < total; ++i) {
         planet_draw (planet_memory + i, glts + choice, gl);

@@ -1,9 +1,9 @@
-struct planeta_glts
-  load_planeta_glts (
+struct glts_planeta
+  load_glts_planeta (
             struct GL * gl,
             char const * filename
 ) {
-    struct planeta_glts it;
+    struct glts_planeta it;
 
     it.program = load_glts (gl, filename, "planeta", "");
     // we could check that program's not GL_FALSE, but we won't.
