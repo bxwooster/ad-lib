@@ -16,7 +16,6 @@ struct glts_planeta
     it.Umv = glGetUniformLocation (it.program, "Umv");
     it.Umvp = glGetUniformLocation (it.program, "Umvp");
     assert (it.Umvp != -1);
-    assert (it.Umv != -1);
 
     it.Ucolour = glGetUniformLocation (it.program, "Ucolour");
     it.Udepth = glGetUniformLocation (it.program, "Udepth");
