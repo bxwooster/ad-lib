@@ -5,7 +5,7 @@ sII (
         struct IMG * img
 )
 {
-    struct glts_planeta glts [3];
+    struct glts_planeta glts [4];
     struct GLvbo_and_size imposter = {GL_FALSE, 0};
     GLuint tex = GL_FALSE;
     struct planet_DD * planet_memory = NULL;
@@ -18,9 +18,10 @@ sII (
     char const * glts_names [] = {
         "data/shade/planet.glts",
         "data/shade/planet-normals.glts",
-        "data/shade/planet-wireframe.glts"
+        "data/shade/planet-wireframe.glts",
+        "data/shade/test.glts"
     };
-    for (unsigned i = 0; i < 3; ++i) {
+    for (unsigned i = 0; i < 4; ++i) {
         glts[i] = load_glts_planeta (gl, glts_names[i]);
         if (glts[i].program == GL_FALSE) goto end;
     }
@@ -77,7 +78,7 @@ end:
     glDeleteBuffers (1, &imposter.vbo);
     glDeleteTextures (1, &tex);
 
-    for (unsigned i = 0; i < 3; ++i) {
+    for (unsigned i = 0; i < 4; ++i) {
         glDeleteProgram (glts[i].program);
     }
 }

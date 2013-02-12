@@ -1,0 +1,14 @@
+#pragma type planeta
+#ifdef FS
+vec3 fragment () {
+	return vec3 (0.2, 0.5, 0.4);
+}
+#else
+vec4 vertex () {
+    vec4 position = Umvp * vec4 (Apos2d, 0.0, 1.0);
+	position.z = 0.99;
+
+    return position;
+}
+#endif
+

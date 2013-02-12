@@ -29,6 +29,7 @@ go_go_go (
 
         moduleB (E, & framedata);
         moduleP (E);
+        moduleC (E);
 
         SDL_GL_SwapWindow (E->sdl->window);
         frame++;
