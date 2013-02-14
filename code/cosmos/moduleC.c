@@ -2,7 +2,10 @@ void moduleC (
         struct stone_engine * E,
         struct frame_DD * framedata
 ) {
-    struct glts_planeta const * shader = E->glts + 3;
+    struct glts_cello const * shader = E->sh_ce;
+
+    glBindBuffer (GL_ARRAY_BUFFER, E->imposter->vbo);
+    E->gl->vertices = E->imposter->size;
 
     glUseProgram (shader->program);
     glVertexAttribPointer (shader->Apos2d, 2, GL_FLOAT, GL_FALSE, 0, 0);

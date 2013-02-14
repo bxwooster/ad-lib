@@ -15,7 +15,7 @@ go_go_go (
             glPolygonMode(GL_FRONT_AND_BACK, poly_mode);
         #endif
 
-        if (GL_check_errors (E->gl)) break;
+        //if (GL_check_errors (E->gl)) break;
 
         E->time = (double) SDL_GetTicks () / 1000;
 

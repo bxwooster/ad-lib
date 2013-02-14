@@ -121,7 +121,8 @@ struct stone_engine {
     struct galaxy_helper * gh;
     unsigned galaxy_size;
     struct planet_DD * planet_memory;
-    struct glts_planeta const * glts;
+    struct glts_planeta const * sh_pl;
+    struct glts_cello const * sh_ce;
     struct GL * gl;
     struct SDL * sdl;
 

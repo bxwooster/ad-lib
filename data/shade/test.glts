@@ -1,4 +1,4 @@
-#pragma type planeta
+#pragma type cello
 #ifdef FS
 vec3 fragment () {
 	return 0.5 * vec3 (0.2, 0.5, 0.4);
