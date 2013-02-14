@@ -5,21 +5,41 @@ advance_framestate (
 ) {
     struct framestate * S = E->state;
 
-    float k = S->cam.column.w.element.z * tanf (M_PI / 180 / 2 * 60.0);
-    float px = I->mouse.x * k;
-    float py = I->mouse.y * k;
+    /* this is all broken at the moment */
+    mat4 camrot = S->cam;
+    camrot.column.w = (vec4) {{0, 0, 0, 1}};
 
-    S->mouse.lock = I->mouse.buttons;
-    if (S->mouse.lock != 0) {
-        float dx = px - S->mouse.x;
-        float dy = py - S->mouse.y;
+    float q = 1.0f / tanf (M_PI / 180 / 2 * 60.0);
+    vec4 view = {I->mouse.x / q, I->mouse.y / q, 1.0, 0.0};
 
-        vec3 move = {{-dx, dy, 0.0f}};
-        S->cam = mat4_moved (& S->cam, & move);
+    vec4 result = vec4_multiply (& camrot, & view);
+    log_debug ("R = %f, %f, %f, %f",
+            result.p[0], result.p[1], result.p[2], result.p[3]);
+
+    float ratio  = S->cam.column.w.element.z / result.element.z;
+    float px = result.element.x * ratio;
+    float py = result.element.y * ratio;
+
+    if (I->mouse.buttons != 0) {
+        float dx = px - S->pan.x;
+        float dy = py - S->pan.y;
+
+        if (0 && I->mouse.buttons & SDL_BUTTON_LEFT) {
+            vec3 move = {{-dx, -dy, 0.0f}};
+            S->cam = mat4_moved (& S->cam, & move);
+        }
+
+        if (I->mouse.buttons & SDL_BUTTON_RIGHT) {
+            vec3 rot = {{dy, dx, 0.0f}};
+            float angle = sqrtf (dx*dx + dy*dy)/ 4.0f;
+            if (angle > 0) {
+                S->cam = mat4_rotated_aa (& S->cam, & rot, angle);
+            }
+        }
     }
 
-    S->mouse.x = px;
-    S->mouse.y = py;
+    S->pan.x = px;
+    S->pan.y = py;
 
     S->show_normals ^= I->toggle_normals;
     S->show_wireframe ^= I->toggle_wireframe;

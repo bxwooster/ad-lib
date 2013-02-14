@@ -101,8 +101,7 @@ struct framestate {
     struct {
         float x;
         float y;
-        int lock;
-    } mouse;
+    } pan;
     int show_wireframe;
     int show_normals;
     unsigned turn;
