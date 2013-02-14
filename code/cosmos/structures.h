@@ -83,12 +83,13 @@ struct planetB {
 };
 
 struct input {
-    int halt;
-    int toggle_wireframe;
-    int toggle_normals;
-    int next_turn;
+    char halt;
+    char toggle_wireframe;
+    char toggle_normals;
+    char next_turn;
     struct {
-        int x, y;
+        float x;
+        float y;
         uint8_t buttons;
     } mouse;
 };
@@ -112,7 +113,6 @@ struct stone_engine {
     mat4 const * mproj;
     unsigned width;
     unsigned height;
-    float screen_size;
     struct GLvbo_and_size * imposter;
     struct planetB * galaxy;
     struct galaxy_helper * gh;

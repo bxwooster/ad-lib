@@ -19,7 +19,7 @@ galaxy_prepare (
 
         float rest = 0.0f;
         if (state->turn_transition) {
-            float ttd = TURN_TRANSITION_DELAY;
+            float ttd = k_turn_transition_delay;
             rest = (time - state->turn_transition_ends + ttd) / ttd;
         }
         float float_slot = planet->where.orbit_slot + state->turn + rest;
@@ -34,7 +34,7 @@ galaxy_prepare (
         offset.element.y = cosf (alpha) * distance;
 
         result.transform = mat4_moved (& gh[parent].transform, & offset);
-        result.size = gh[parent].size * 0.5 * PLANET_SIZE_MINIFIER;
+        result.size = gh[parent].size * 0.5 * k_planet_size_minifier;
     }
 
     result.size /= planet->orbit_count + 1;

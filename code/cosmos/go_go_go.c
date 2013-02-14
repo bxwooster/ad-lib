@@ -19,7 +19,8 @@ go_go_go (
 
         E->time = (double) SDL_GetTicks () / 1000;
 
-        struct input physical = poll_SDLevents (E->sdl);
+        struct input physical;
+        poll_SDLevents (E, & physical);
         if (physical.halt) break;
 
         advance_framestate (E, & physical);
@@ -29,7 +30,7 @@ go_go_go (
 
         moduleB (E, & framedata);
         moduleP (E);
-        moduleC (E);
+        moduleC (E, & framedata);
 
         SDL_GL_SwapWindow (E->sdl->window);
         frame++;

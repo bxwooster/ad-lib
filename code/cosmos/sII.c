@@ -13,8 +13,6 @@ sII (
     unsigned width = 1024; /* fix me. I'm pulled out of thin air. */
     unsigned height = 768;
 
-    float screen_size = width > height ? width : height;
-
     char const * glts_names [] = {
         "data/shade/planet.glts",
         "data/shade/planet-normals.glts",
@@ -56,7 +54,6 @@ sII (
         & mproj,
         width,
         height,
-        screen_size,
         & imposter,
         galaxy,
         gh,
@@ -70,7 +67,6 @@ sII (
     };
 
     go_go_go(& E);
-
 
 end:
     free (planet_memory);
