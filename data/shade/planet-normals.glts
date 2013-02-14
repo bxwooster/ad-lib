@@ -1,5 +1,7 @@
 #pragma type planeta
 #pragma include planet_glue
+#pragma include simplevf
+
 #ifdef FS
 vec3 fragment () {
 	discard_test ();

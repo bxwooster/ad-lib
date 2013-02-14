@@ -44,7 +44,7 @@ load_glts (
                       load_glts_file ("data/shade/", at, newline);
         if (included_file == NULL) goto end;
 
-		at = newline;
+		at = newline + 1;
         if (N >= maxN) {
             log_info ("Whoa there, you included more than %u files!", maxN);
             goto end;

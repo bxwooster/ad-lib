@@ -1,5 +1,7 @@
 #pragma type planeta
+#pragma include simplevf
 #pragma include planet_glue
+
 #ifdef FS
 vec3 fragment () {
     float radius = discard_test ();

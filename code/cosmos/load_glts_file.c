@@ -13,7 +13,7 @@ load_glts_file (
 
     char included_file [size];
     snprintf (included_file, size, "%s%.*s%s",
-        prefix, (int) id_size, id_starts, suffix); 
+        prefix, (int) id_size, id_starts, suffix);
 
     return load_file (included_file);
 }
