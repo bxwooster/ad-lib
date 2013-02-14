@@ -10,9 +10,6 @@ sII (
     GLuint tex = GL_FALSE;
     struct planet_DD * planet_memory = NULL;
 
-    unsigned width = 1024; /* fix me. I'm pulled out of thin air. */
-    unsigned height = 768;
-
     char const * glts_names [] = {
         "data/shade/planet.glts",
         "data/shade/planet-normals.glts",
@@ -32,7 +29,7 @@ sII (
 
     float fov = get_fov ();
     if (fov == 0.0f) goto end;
-    mat4 mproj = standard_projection (width, height, fov);
+    mat4 mproj = standard_projection (sdl->width, sdl->height, fov);
 
     char * galaxytext = load_file ("data/galaxy");
     if (galaxytext== NULL) goto end;
@@ -52,8 +49,6 @@ sII (
 
     struct stone_engine E = {
         & mproj,
-        width,
-        height,
         & imposter,
         galaxy,
         gh,

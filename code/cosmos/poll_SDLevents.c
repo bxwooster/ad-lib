@@ -8,16 +8,11 @@ poll_SDLevents (
     int x, y;
     currently->mouse.buttons = SDL_GetMouseState (& x, & y);
 
-    int hw = E->width / 2;
-    int hh = E->height / 2;
+    float hw = E->sdl->width / 2;
+    float hh = E->sdl->height / 2;
 
-    float diagonal = sqrtf (hw * hw + hh * hh);
-    /* Normalize mouse coordinates by diagonal.
-     * I don't feel using only width or height is proper,
-     * but I have to use something, therefore - diagonal */
-    currently->mouse.x = (x - hw) / diagonal;
-    currently->mouse.y = (y - hh) / diagonal;
-    log_debug ("%f %f", currently->mouse.y, currently->mouse.x);
+    currently->mouse.x = (x - hw) / hw;
+    currently->mouse.y = (y - hh) / hw;
 
     SDL_Event event;
     while (SDL_PollEvent (&event)) {

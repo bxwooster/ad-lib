@@ -4,5 +4,5 @@ to_common_draw_GLstate (
 ) {
     glActiveTexture (GL_TEXTURE0);
     glEnable (GL_DEPTH_TEST);
-    glViewport (0, 0, E->width, E->height);
+    glViewport (0, 0, E->sdl->width, E->sdl->height);
 }

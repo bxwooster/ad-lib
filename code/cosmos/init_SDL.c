@@ -5,10 +5,14 @@ init_SDL (void) {
         return (struct SDL) {0};
     }
 
+    unsigned width = 1024;
+    unsigned height = 768;
+    /* bug: this is the size of the window, not of framebuffer as wanted */
+
     SDL_Window * window = SDL_CreateWindow ("",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
-        1024, 768,
+        width, height,
         SDL_WINDOW_OPENGL |
         //SDL_WINDOW_MINIMIZED | /* for debugging */
         //SDL_WINDOW_SHOWN);
@@ -23,6 +27,8 @@ init_SDL (void) {
         .subsystem_video = 1,
         .subsystem_timer = 1,
         .window = window,
+        .width = width,
+        .height = height,
         .ready = 1,
     };
 }

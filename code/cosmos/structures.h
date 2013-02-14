@@ -56,6 +56,8 @@ struct GL {
 struct SDL {
     int ready;
     SDL_Window * window;
+    unsigned width;
+    unsigned height;
     int subsystem_video;
     int subsystem_timer;
 };
@@ -111,8 +113,6 @@ struct framestate {
 
 struct stone_engine {
     mat4 const * mproj;
-    unsigned width;
-    unsigned height;
     struct GLvbo_and_size * imposter;
     struct planetB * galaxy;
     struct galaxy_helper * gh;
