@@ -1,14 +1,17 @@
 #pragma type cello
 #pragma include simplevf
 
+varying vec2 Vplanar;
 #ifdef FS
 vec3 fragment () {
-	return 0.5 * vec3 (0.2, 0.5, 0.4);
+	if (length (Vplanar - Ucenter) > Uradius) discard;
+	return Ucolour;
 }
 #else
 vec4 vertex () {
     vec4 position = Umvp * vec4 (Apos2d, 0.0, 1.0);
 	position.z = 0.99;
+	Vplanar = Apos2d;
 
     return position;
 }
