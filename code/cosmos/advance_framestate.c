@@ -5,16 +5,22 @@ advance_framestate (
 ) {
     struct framestate * S = E->state;
 
-    if (I->mouse.buttons & SDL_BUTTON(3)) {
+    if (S->lock) {
         float dx = I->mouse.x - S->mouse.x;
         float dy = I->mouse.y - S->mouse.y;
         /* still something is broken with arbitrary rotations */
         dx = 0;
 
-        vec3 rot = {{dy, dx, 0.0f}};
-        float angle = sqrt (dx*dx + dy*dy);
-        if (angle > 0) {
-            S->cam = mat4_rotated_aa (& S->cam, & rot, -angle);
+        if (I->mouse.buttons & SDL_BUTTON(2)) {
+            S->cam.column.w.element.z *= exp(dy);
+        }
+        
+        if (I->mouse.buttons & SDL_BUTTON(3)) {
+            vec3 rot = {{dy, dx, 0.0f}};
+            float angle = sqrt (dx*dx + dy*dy);
+            if (angle > 0) {
+                S->cam = mat4_rotated_aa (& S->cam, & rot, -angle);
+            }
         }
     }
 
