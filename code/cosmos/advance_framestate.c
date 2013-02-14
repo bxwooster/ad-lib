@@ -5,17 +5,21 @@ advance_framestate (
 ) {
     struct framestate * S = E->state;
 
+    float k = S->cam.column.w.element.z * tanf (M_PI / 180 / 2 * 60.0);
+    float px = I->mouse.x * k;
+    float py = I->mouse.y * k;
+
     S->mouse.lock = I->mouse.buttons;
     if (S->mouse.lock != 0) {
-        float dx = I->mouse.x - S->mouse.x;
-        float dy = I->mouse.y - S->mouse.y;
-        
-        vec3 move = {{dx * k_mouse_sensitivity, -dy * k_mouse_sensitivity, 0.0f}};
-        S->ori = mat4_moved (& S->ori, & move);
+        float dx = px - S->mouse.x;
+        float dy = py - S->mouse.y;
+
+        vec3 move = {{-dx, dy, 0.0f}};
+        S->cam = mat4_moved (& S->cam, & move);
     }
 
-    S->mouse.x = I->mouse.x;
-    S->mouse.y = I->mouse.y;
+    S->mouse.x = px;
+    S->mouse.y = py;
 
     S->show_normals ^= I->toggle_normals;
     S->show_wireframe ^= I->toggle_wireframe;
