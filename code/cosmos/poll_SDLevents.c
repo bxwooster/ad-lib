@@ -3,7 +3,7 @@ poll_SDLevents (
         struct stone_engine * E,
         struct input * currently
 ) {
-    memset (currently, sizeof (currently), 0);
+    memset (currently, 0, sizeof (*currently));
 
     int x, y;
     currently->mouse.buttons = SDL_GetMouseState (& x, & y);
