@@ -4,8 +4,8 @@ mat4_print (
 ) {
     for (unsigned i = 0; i < 4; ++i) {
         log_info ("\t( %.3f\t%.3f\t%.3f\t%.3f )",
-                m->p[4*i + 0], m->p[4*i + 1],
-                m->p[4*i + 2], m->p[4*i + 3]);
+                m->p[i + 0], m->p[i + 4],
+                m->p[i + 8], m->p[i + 12]);
     }
 }
 

@@ -4,10 +4,10 @@
 varying vec2 Vplanar;
 #ifdef FS
 vec3 fragment () {
-	float radius = length (Vplanar - Ucenter);
-    float norm = Uradius * 0.34;
+	float radius = length (Vplanar) / Uradius;
+    float norm = 0.5;
     float ambient = (radius - norm) / (1 - norm);
-    if (ambient < 0) discard;
+    //if (ambient < 0) discard;
 	return Ucolour * ambient;
 }
 #else

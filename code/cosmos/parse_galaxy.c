@@ -79,8 +79,6 @@ parse_galaxy (
         a++;
     };
 
-    // hack:
-    *count = 1;
     return 0;
 
 syntax_error:

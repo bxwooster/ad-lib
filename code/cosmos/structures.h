@@ -5,6 +5,7 @@ struct GLvbo_and_size {
 
 struct galaxy_helper {
     mat4 transform;
+    float supersize;
     float size;
 };
 

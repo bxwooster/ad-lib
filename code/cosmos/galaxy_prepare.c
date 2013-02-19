@@ -12,7 +12,7 @@ galaxy_prepare (
 
     if (planet_number == 0) {
         result.transform = mat4_identity ();
-        result.size = 1.0;
+        result.supersize = 1.0f;
     } else {
         unsigned parent = planet->where.parent_index;
         assert (parent < planet_number);
@@ -34,10 +34,10 @@ galaxy_prepare (
         offset.element.y = cosf (alpha) * distance;
 
         result.transform = mat4_moved (& gh[parent].transform, & offset);
-        result.size = gh[parent].size * 0.5 * k_planet_size_minifier;
+        result.supersize = gh[parent].size * 0.5 * k_planet_size_minifier;
     }
-
-    result.size /= planet->orbit_count + 1;
+    
+    result.size = result.supersize / (planet->orbit_count + 1);
 
     return result;
 }
