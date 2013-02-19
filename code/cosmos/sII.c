@@ -8,6 +8,7 @@ sII (
     struct glts_planeta sh_pl [3];
     struct glts_cello sh_ce;
     struct GLvbo_and_size imposter = {GL_FALSE, 0};
+    GLuint cell_vbo = GL_FALSE;
     GLuint tex = GL_FALSE;
     struct planet_DD * planet_memory = NULL;
 
@@ -27,8 +28,11 @@ sII (
     tex = get_earth_GLtex (gl, sdl, img);
     if (tex == GL_FALSE) goto end;
 
-    imposter = prepare_GLvbo (gl);
+    imposter = prepare_imposter (gl);
     if (imposter.vbo == GL_FALSE) goto end;
+
+    glGenBuffers (1, & cell_vbo);
+    if (cell_vbo == GL_FALSE) goto end; // log?
 
     float fov = get_fov ();
     if (fov == 0.0f) goto end;
@@ -50,28 +54,30 @@ sII (
 
     struct framestate state = initial_framestate ();
 
-    struct stone_engine E = {
-        & mproj,
-        & imposter,
-        galaxy,
-        gh,
-        galaxy_size,
-        planet_memory,
-        sh_pl,
-        & sh_ce,
-        gl,
-        sdl,
-        & state,
-        0.0
-    };
+    struct stone_engine E = {0};
+
+    E.mproj = & mproj;
+    E.imposter = & imposter;
+    E.cell_vbo = cell_vbo;
+    E.galaxy = galaxy;
+    E.gh = gh;
+    E.galaxy_size = galaxy_size;
+    E.planet_memory = planet_memory;
+    E.sh_pl = sh_pl;
+    E.sh_ce = & sh_ce;
+    E.gl = gl;
+    E.sdl = sdl;
+    E.state = & state;
+    E.time = 0.0;
 
     go_go_go(& E);
 
 end:
     free (planet_memory);
 
-    glDeleteBuffers (1, &imposter.vbo);
-    glDeleteTextures (1, &tex);
+    glDeleteBuffers (1, & cell_vbo);
+    glDeleteBuffers (1, & imposter.vbo);
+    glDeleteTextures (1, & tex);
 
     for (unsigned i = 0; i < 3; ++i) {
         glDeleteProgram (sh_pl[i].program);

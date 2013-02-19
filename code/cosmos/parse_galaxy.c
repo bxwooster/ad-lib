@@ -50,11 +50,11 @@ parse_galaxy (
                 goto syntax_error;
             }
         }
-       
+
         if (sscanf (in, " ; orbits : %u%n", & a->orbit_count, & read) < 1)
             goto syntax_error;
         in += read;
-        
+
         if (sscanf (in, " ; colour : %f, %f, %f%n",
                     a->colour.p,
                     a->colour.p + 1,
@@ -79,6 +79,8 @@ parse_galaxy (
         a++;
     };
 
+    // hack:
+    *count = 1;
     return 0;
 
 syntax_error:

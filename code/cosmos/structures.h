@@ -120,6 +120,7 @@ struct framestate {
 struct stone_engine {
     mat4 const * mproj;
     struct GLvbo_and_size * imposter;
+    GLuint cell_vbo;
     struct planetB * galaxy;
     struct galaxy_helper * gh;
     unsigned galaxy_size;

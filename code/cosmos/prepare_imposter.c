@@ -1,5 +1,5 @@
 struct GLvbo_and_size
-prepare_GLvbo (
+prepare_imposter (
         struct GL * gl
 ) {
     float const y = (float) (1.0 - sqrt(2.0));

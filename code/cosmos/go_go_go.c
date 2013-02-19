@@ -1,8 +1,7 @@
 void
 go_go_go (
         struct stone_engine * E
-)
-{
+) {
     unsigned long frame = 0;
     to_common_draw_GLstate (E);
 
