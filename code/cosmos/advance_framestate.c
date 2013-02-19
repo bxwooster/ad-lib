@@ -41,9 +41,8 @@ advance_framestate (
         float dx = px - S->pan.x;
         float dy = py - S->pan.y;
 
-        float m = 1.95;
-        S->mov.column.w.element.x -= m * dx;
-        S->mov.column.w.element.y += m * dy;
+        S->mov.column.w.element.x -= dx;
+        S->mov.column.w.element.y += dy;
 
         if (!lock) S->lock = 0;
     }
