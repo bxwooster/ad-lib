@@ -17,6 +17,7 @@ void moduleP (
     glBindBuffer (GL_ARRAY_BUFFER, E->imposter->vbo);
     E->gl->vertices = E->imposter->size;
 
+    glDepthMask (GL_TRUE);
     glUseProgram (shader->program);
     glVertexAttribPointer (shader->Apos2d, 2, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray (shader->Apos2d);

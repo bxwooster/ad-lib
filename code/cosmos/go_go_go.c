@@ -6,6 +6,7 @@ go_go_go (
     to_common_draw_GLstate (E);
 
     for (;;) {
+        glDepthMask (GL_TRUE);
         glClearColor (0.0, 0.0, 0.0, 0.0);
         glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

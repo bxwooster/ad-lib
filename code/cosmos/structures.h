@@ -129,7 +129,6 @@ struct stone_engine {
     struct glts_cello const * sh_ce;
     struct GL * gl;
     struct SDL * sdl;
-
     struct framestate * state;
     double time;
 };
