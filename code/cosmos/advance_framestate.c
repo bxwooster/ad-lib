@@ -5,48 +5,57 @@ advance_framestate (
 ) {
     struct framestate * S = E->state;
 
-    if (S->lock) {
-        float dx = I->mouse.x - S->mouse.x;
-        float dy = I->mouse.y - S->mouse.y;
-        /* still something is broken with arbitrary rotations */
-        dx = 0;
+    float dx = I->mouse.x - S->mouse.x;
+    float dy = I->mouse.y - S->mouse.y;
+    /* still something is broken with arbitrary rotations */
+    dx = 0;
 
-        if (I->mouse.buttons & SDL_BUTTON(2)) {
-            S->cam.column.w.element.z *= exp(dy);
-        }
-        
-        if (I->mouse.buttons & SDL_BUTTON(3)) {
-            vec3 rot = {{dy, dx, 0.0f}};
-            float angle = sqrt (dx*dx + dy*dy);
-            if (angle > 0) {
-                S->cam = mat4_rotated_aa (& S->cam, & rot, -angle);
-            }
+    if (I->mouse.buttons & SDL_BUTTON (2)) {
+        S->mov.column.w.element.z *= exp(dy);
+    }
+    
+    if (I->mouse.buttons & SDL_BUTTON (3)) {
+        vec3 rot = {{dy, dx, 0.0f}};
+        float angle = sqrt (dx*dx + dy*dy);
+        if (angle > 0) {
+            S->rot = mat4_rotated_aa (& S->rot, & rot, -angle);
         }
     }
 
     S->mouse.x = I->mouse.x;
     S->mouse.y = I->mouse.y;
 
+    mat4 cam = mat4_multiply (& S->mov, & S->rot);
+
     float q = 1.0f / tanf (M_PI / 180 / 2 * 60.0);
     vec4 view = {-I->mouse.x / q, -I->mouse.y / q, 1.0, 0.0};
-    view = vec4_multiply (& S->cam, & view);
+    view = vec4_multiply (& cam, & view);
 
-    float ratio  = S->cam.column.w.element.z / view.element.z;
-    float px = view.element.x * ratio;
-    float py = view.element.y * ratio;
+    float ratio  = cam.column.w.element.z / view.element.z;
+    float px = view.element.x * ratio + cam.column.w.element.x;
+    float py = view.element.y * ratio - cam.column.w.element.y;
+
+    char lock = (I->mouse.buttons & SDL_BUTTON (1)) != 0;
 
     if (S->lock != 0) {
         float dx = px - S->pan.x;
         float dy = py - S->pan.y;
 
-        S->cam.column.w.element.x -= dx;
-        S->cam.column.w.element.y += dy;
+        float m = 1.95;
+        S->mov.column.w.element.x -= m * dx;
+        S->mov.column.w.element.y += m * dy;
+
+        if (!lock) S->lock = 0;
     }
+    else {
+        if (lock) {
+            S->lock = 1;
+            S->pan.x = px;
+            S->pan.y = py;
 
-    S->pan.x = px;
-    S->pan.y = py;
-
-    S->lock = (I->mouse.buttons != 0);
+            log_debug ("%f - %f", px, py);
+        }
+    }
 
     S->show_normals ^= I->toggle_normals;
     S->show_wireframe ^= I->toggle_wireframe;

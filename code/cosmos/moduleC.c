@@ -4,7 +4,7 @@ void moduleC (
 ) {
     struct glts_cello const * shader = E->sh_ce;
 
-    unsigned N = (unsigned) E->time + 3;
+    unsigned N = 6;//(unsigned) E->time + 3;
     struct {
         float x;
         float y;

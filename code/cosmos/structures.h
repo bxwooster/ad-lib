@@ -100,7 +100,8 @@ struct input {
 };
 
 struct framestate {
-    mat4 cam;
+    mat4 rot;
+    mat4 mov;
     struct {
         float x;
         float y;
