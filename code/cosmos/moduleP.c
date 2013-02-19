@@ -1,6 +1,8 @@
 void moduleP (
         struct stone_engine * E
 ) {
+    glDisable (GL_BLEND);
+
     qsort (E->planet_memory, E->galaxy_size, sizeof (struct planet_DD), closest_planet_DD);
 
     unsigned choice = 0;

@@ -4,15 +4,14 @@
 varying vec2 Vplanar;
 #ifdef FS
 vec3 fragment () {
-	if (length (Vplanar - Ucenter) > Uradius) discard;
+	if (length (Vplanar - Ucenter) < Uradius*0.4) discard;
 	return Ucolour;
 }
 #else
 vec4 vertex () {
     vec4 position = Umvp * vec4 (Apos2d, 0.0, 1.0);
-	position.z = 0.99;
-	Vplanar = Apos2d;
 
+	Vplanar = Apos2d;
     return position;
 }
 #endif

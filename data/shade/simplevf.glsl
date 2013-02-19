@@ -7,6 +7,6 @@ vec3 fragment ();
 	}
 #else
 	void main(void) {
-		gl_FragColor = vec4 (fragment (), 0.0);
+		gl_FragColor = vec4 (fragment (), 0.5);
 	}
 #endif

@@ -5,5 +5,5 @@ standard_projection (
         float fov
 ) {
     float const screen_aspect = ((float) width) / height;
-    return projection_from_afn (screen_aspect, fov, 0.0f);
+    return projection_from_afn (screen_aspect, fov, 0.01f);
 }

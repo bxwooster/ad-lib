@@ -5,7 +5,7 @@ varying vec3 Vnormal_part1;
 #ifdef VS
 vec4 vertex () {
     vec4 position = Umvp * vec4 (Apos2d, 0.0, 1.0);
-    position.z = Udepth * position.w;
+//    position.z = Udepth * position.w;
     Vixy = Apos2d;
     Vuv = Apos2d * Uuvscale;
 	Vnormal_part1 = mat3 (Umv) * vec3 (Vuv, 0.0);
