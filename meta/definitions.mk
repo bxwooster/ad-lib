@@ -20,22 +20,30 @@ ifeq ($(platform),native)
   endif
 endif
 
-features := $(program)
-defines :=
-includes :=
 cc := gcc
+features := $(program)
+defines := $(shell echo $(platform) | tr a-z A-Z)
+includes :=
 link_flags :=
-all_source :=
-all_headers	:=
+
+all_source := \
+		code/log.c \
+		code/sockets.c \
+
+all_headers	:= \
+		code/log.h \
+		code/sockets.h \
+
+ifeq ($(platform),windows)
+	link_flags += lwsock32 # sandbox
+endif
 
 ifeq ($(program),cosmos)
 	all_source += \
-		code/log.c \
 		code/vecmat.c \
 
 	all_headers += \
 		code/ext.h \
-		code/log.h \
 		code/vecmat.h \
 		code/structures.h \
 		code/konstants.h \
