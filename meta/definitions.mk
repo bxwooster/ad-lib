@@ -25,8 +25,22 @@ defines :=
 includes :=
 cc := gcc
 link_flags :=
+all_source :=
+all_headers	:=
 
 ifeq ($(program),cosmos)
+	all_source += \
+		code/log.c \
+		code/vecmat.c \
+
+	all_headers += \
+		code/ext.h \
+		code/log.h \
+		code/vecmat.h \
+		code/structures.h \
+		code/konstants.h \
+		code/cosmos.h \
+
   ifeq ($(platform),ios)
     cc := false
     defines += GLES
@@ -48,7 +62,8 @@ ifeq ($(program),cosmos)
       -lmingw32 \
       -lopengl32 \
       -lglew32 \
-      -lSDL2main
+      -lSDL2main \
+
     exe_suffix := .exe
     defines += GLEW
     includes += GL/glew.h
@@ -64,11 +79,9 @@ platform_dir := $(base_dir)/$(platform)
 output_dir := $(platform_dir)/output
 package_dir := $(platform_dir)/package
 
-all_source = $(shell shopt -s nullglob; echo code/*.c code/*/*.c)
-all_headers = $(shell shopt -s nullglob; echo code/*.h code/*/*.h)
+all_source += code/$(program).c
+all_headers += code/$(program).h
 exe := $(output_dir)/$(program)$(exe_suffix)
-source_c := $(output_dir)/source_of_$(program).c
-source_h := $(output_dir)/source_of_$(program).h
-source_ext_h := $(output_dir)/$(program).ext.h
 package_archive := $(platform_dir)/package.tar.bz2
 
+include_flags := $(addprefix -include ,$(includes) $(all_headers))
