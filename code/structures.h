@@ -47,8 +47,10 @@ struct glts_cello {
     GLuint Apos2d;
     GLint Umvp;
     GLint Ucolour;
-    GLint Ucenter;
-    GLint Uradius;
+    GLint Ucutout_center;
+    GLint Ucutout_radius;
+    GLint Uradius_min;
+    GLint Uradius_max;
 };
 
 struct GL {
@@ -115,6 +117,7 @@ struct framestate {
     char show_wireframe;
     char show_normals;
     unsigned turn;
+    float turn_tail;
     int turn_transition;
     double turn_transition_ends;
 };

@@ -4,5 +4,7 @@ attribute vec2 Apos2d;
 
 uniform mat4 Umvp;
 uniform vec3 Ucolour;
-uniform vec2 Ucenter;
-uniform float Uradius;
+uniform vec2 Ucutout_center;
+uniform float Ucutout_radius;
+uniform float Uradius_min;
+uniform float Uradius_max;

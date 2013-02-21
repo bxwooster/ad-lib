@@ -75,6 +75,15 @@ mat4_multiply (
 }
 
 void
+vec4_print (
+        vec4 const * v
+) {
+    log_info ("\t( %.3f\t%.3f\t%.3f\t%.3f )",
+            v->p[0], v->p[1],
+            v->p[2], v->p[3]);
+}
+
+void
 mat4_print (
         mat4 const * m
 ) {

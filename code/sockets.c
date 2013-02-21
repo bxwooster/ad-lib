@@ -42,7 +42,7 @@ prepare_queriee_socket (
     (void) lib;
 
     socklib_t sock = socket (PF_INET, SOCK_DGRAM, 0);
-    if (sock == bad_socket ()) {
+    if (sock == INVALID_SOCKET) {
         log_info ("My socket has a problem, namely. %s!",
                 socket_errstr ());
         goto error;
@@ -76,7 +76,7 @@ prepare_queriee_socket (
 
 error:
     close_socket (sock);
-    return bad_socket ();
+    return INVALID_SOCKET;
 }
 
 socklib_t
@@ -90,7 +90,7 @@ prepare_querier_socket (
     (void) lib;
 
     socklib_t sock = socket (PF_INET, SOCK_DGRAM, 0);
-    if (sock == bad_socket ()) {
+    if (sock == INVALID_SOCKET) {
         log_info ("My socket has a problem, namely. %s!",
                 socket_errstr ());
         goto error;
@@ -112,7 +112,7 @@ prepare_querier_socket (
 
 error:
     close_socket (sock);
-    return bad_socket ();
+    return INVALID_SOCKET;
 }
 
 int
@@ -148,24 +148,15 @@ socket_errstr () {
     #endif
 }
 
-int
-bad_socket () {
-    #ifdef WINDOWS
-        return INVALID_SOCKET;
-    #else
-        return -1;
-    #endif
-}
+#ifndef WINDOWS
+    #define INVALID_SOCKET -1
+    #define closesocket close
+#endif
 
 void close_socket (
         socklib_t sock
 ) {
-    int status;
-    #ifdef WINDOWS
-        status = closesocket (sock);
-    #else
-        status = close (sock);
-    #endif
+    int status = closesocket (sock);
     if (status != 0) log_info ("While closing a socket this happened: %s",
             socket_errstr ());
 }

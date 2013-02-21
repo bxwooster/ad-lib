@@ -54,9 +54,6 @@ socket_errno ();
 char const *
 socket_errstr ();
 
-int
-bad_socket ();
-
 void close_socket (
     socklib_t sock
 );

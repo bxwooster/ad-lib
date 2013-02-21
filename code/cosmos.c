@@ -26,7 +26,7 @@ advance_framestate (
     if (I->mouse.buttons & SDL_BUTTON (2)) {
         S->mov.column.w.element.z *= exp(dy);
     }
-    
+
     if (I->mouse.buttons & SDL_BUTTON (3)) {
         vec3 rot = {{dy, dx, 0.0f}};
         float angle = sqrt (dx*dx + dy*dy);
@@ -81,17 +81,23 @@ advance_framestate (
         S->turn++;
         S->turn_transition = 0;
     }
+    
+    S->turn_tail = 0.0f;
+    if (S->turn_transition) {
+        float ttd = k_turn_transition_delay;
+        S->turn_tail = (E->time - S->turn_transition_ends + ttd) / ttd;
+    }
 }
 
 void
 camera_initial (struct framestate * S) {
     mat4 one = mat4_identity ();
 
-    vec3 move = {{0.0f, 2.0f, 0.5f}};
+    vec3 move = {{0.0f, 1.7f, 1.0f}};
     S->mov = mat4_moved (& one, & move);
     
     vec3 axis = {{1.0f, 0.0f, 0.0f}};
-    S->rot = mat4_rotated_aa (& one, & axis, M_PI * 0.56);
+    S->rot = mat4_rotated_aa (& one, & axis, M_PI * 0.7);
 }
 
 int closest_planet_DD (void const * a, void const * b) {
@@ -138,15 +144,13 @@ exit_SDL (
 
 struct galaxy_helper
 galaxy_prepare (
-        double time,
-        struct planetB const * galaxy,
-        struct galaxy_helper const * gh,
-        unsigned planet_number,
-        struct framestate const * state
+        struct stone_engine * E,
+        unsigned planet_number
 ) {
     struct galaxy_helper result;
 
-    struct planetB const * planet = galaxy + planet_number;
+    struct framestate const * S = E->state;
+    struct planetB const * planet = E->galaxy + planet_number;
 
     if (planet_number == 0) {
         result.transform = mat4_identity ();
@@ -155,30 +159,28 @@ galaxy_prepare (
         unsigned parent = planet->where.parent_index;
         assert (parent < planet_number);
 
-        float rest = 0.0f;
-        if (state->turn_transition) {
-            float ttd = k_turn_transition_delay;
-            rest = (time - state->turn_transition_ends + ttd) / ttd;
-        }
-        float float_slot = planet->where.orbit_slot + state->turn + rest;
+        float float_slot = planet->where.orbit_slot +
+            S->turn + S->turn_tail;
 
         unsigned orbit_slots = planet->where.orbit_number - 1 + 3;
         float alpha = (2.0f * M_PI * float_slot) / orbit_slots;
 
-        float distance = gh[parent].size * (planet->where.orbit_number + 0.5f);
+        float distance = E->gh[parent].size *
+            (planet->where.orbit_number + 0.5f);
 
         vec3 offset = {{0}};
         offset.element.x = sinf (alpha) * distance;
         offset.element.y = cosf (alpha) * distance;
 
-        result.transform = mat4_moved (& gh[parent].transform, & offset);
-        result.supersize = gh[parent].size * 0.5 * k_planet_size_minifier;
+        result.transform = mat4_moved (& E->gh[parent].transform, & offset);
+        result.supersize = E->gh[parent].size * 0.5 * k_planet_size_minifier;
     }
-    
+
     result.size = result.supersize / (planet->orbit_count + 1);
 
     return result;
 }
+
 struct frame_DD
 generate_frame_DD (
         mat4 const * proj,
@@ -482,7 +484,6 @@ initial_framestate (void) {
     struct framestate out = {0};
     camera_initial (& out);
     out.show_normals = 1;
-    out.show_wireframe = 1;
     return out;
 }
 
@@ -693,8 +694,10 @@ struct glts_cello
     assert (it.Umvp != -1);
 
     it.Ucolour = glGetUniformLocation (it.program, "Ucolour");
-    it.Ucenter = glGetUniformLocation (it.program, "Ucenter");
-    it.Uradius = glGetUniformLocation (it.program, "Uradius");
+    it.Ucutout_center = glGetUniformLocation (it.program, "Ucutout_center");
+    it.Ucutout_radius = glGetUniformLocation (it.program, "Ucutout_radius");
+    it.Uradius_min = glGetUniformLocation (it.program, "Uradius_min");
+    it.Uradius_max = glGetUniformLocation (it.program, "Uradius_max");
 
     return it;
 }
@@ -764,7 +767,7 @@ moduleB (
         struct frame_DD * framedata
 ) {
     for (unsigned i = 0; i < E->galaxy_size; ++i) {
-        E->gh[i] = galaxy_prepare (E->time, E->galaxy, E->gh, i, E->state);
+        E->gh[i] = galaxy_prepare (E, i);
     }
 
     for (unsigned i = 0; i < E->galaxy_size; ++i) {
@@ -788,61 +791,110 @@ void moduleC (
         struct stone_engine * E,
         struct frame_DD * framedata
 ) {
+    struct glts_cello const * shader = E->sh_ce;
+
+    glDepthMask (GL_FALSE);
+    glUseProgram (shader->program);
+
+    srand(1); // color hack!
+    log_debug ("C!");
+
     for (unsigned j = 0; j < E->galaxy_size; ++j) {
-        struct glts_cello const * shader = E->sh_ce;
+        for (unsigned k = 0; k < E->galaxy[j].orbit_count; ++k) {
+            unsigned orbit_size = k + 3; //!!
+            float angle = 2*M_PI / orbit_size;
+            unsigned N = k_round_cell_segments / (float) orbit_size;
+            struct {
+                float x;
+                float y;
+            } tris [N] [6];
 
-        unsigned N = 64;//(unsigned) E->time + 3;
-        struct {
-            float x;
-            float y;
-        } tris [N] [6];
+            float s1 = E->gh[j].size;
+            float s2 = E->gh[j].supersize;
+            float sd = (s2 - s1) / E->galaxy[j].orbit_count;
+            float r1 = s1 + sd * k;
+            float r2 = s1 + sd * (k + 1);
+            for (unsigned i = 0; i < N; ++i) {
+                float b = i / (float) N * angle;
+                float a = (i + 1) / (float) N * angle;
+                tris[i][0].x = r1 * sinf (a);
+                tris[i][0].y = r1 * cosf (a);
+                tris[i][1].x = r2 * sinf (a);
+                tris[i][1].y = r2 * cosf (a);
+                tris[i][2].x = r2 * sinf (b);
+                tris[i][2].y = r2 * cosf (b);
+                tris[i][3].x = r1 * sinf (a);
+                tris[i][3].y = r1 * cosf (a);
+                tris[i][4].x = r2 * sinf (b);
+                tris[i][4].y = r2 * cosf (b);
+                tris[i][5].x = r1 * sinf (b);
+                tris[i][5].y = r1 * cosf (b);
+            };
 
-        float r1 = E->gh[j].size;
-        float r2 = E->gh[j].supersize;
-        for (unsigned i = 0; i < N; ++i) {
-            float b = i / (float) N * 2 * M_PI;
-            float a = (i + 1) / (float) N * 2 * M_PI;
-            tris[i][0].x = r1 * sinf (a);
-            tris[i][0].y = r1 * cosf (a);
-            tris[i][1].x = r2 * sinf (a);
-            tris[i][1].y = r2 * cosf (a);
-            tris[i][2].x = r2 * sinf (b);
-            tris[i][2].y = r2 * cosf (b);
-            tris[i][3].x = r1 * sinf (a);
-            tris[i][3].y = r1 * cosf (a);
-            tris[i][4].x = r2 * sinf (b);
-            tris[i][4].y = r2 * cosf (b);
-            tris[i][5].x = r1 * sinf (b);
-            tris[i][5].y = r1 * cosf (b);
-        };
+            glBindBuffer (GL_ARRAY_BUFFER, E->cell_vbo);
+            glBufferData (GL_ARRAY_BUFFER, sizeof (tris), tris, GL_DYNAMIC_DRAW);
 
-        glBindBuffer (GL_ARRAY_BUFFER, E->cell_vbo);
-        glBufferData (GL_ARRAY_BUFFER, sizeof (tris), tris, GL_DYNAMIC_DRAW);
+            // these two guys need to be called after glBindBuffer
+            glVertexAttribPointer (shader->Apos2d, 2, GL_FLOAT, GL_FALSE, 0, 0);
+            glEnableVertexAttribArray (shader->Apos2d);
 
-        glDepthMask (GL_FALSE);
-        glUseProgram (shader->program);
-        glVertexAttribPointer (shader->Apos2d, 2, GL_FLOAT, GL_FALSE, 0, 0);
-        glEnableVertexAttribArray (shader->Apos2d);
+            for (unsigned p = 0; p < orbit_size; ++p) {
+                float posish = p - 0.5 -
+                   (E->state->turn + E->state->turn_tail);
 
-        vec3 colour = {0.5 * j, 0.4, 0.6};
-        glUniform3fv (shader->Ucolour, 1, colour.p);
-        glUniform1f (shader->Uradius, r2);
-        mat4 mvp = mat4_multiply (& framedata->viewproj, & E->gh[j].transform);
-        glUniformMatrix4fv (shader->Umvp, 1, GL_FALSE, mvp.p);
+                glUniform1f (shader->Uradius_min, r1);
+                glUniform1f (shader->Uradius_max, r2);
 
-        glEnable (GL_BLEND);
-        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                float r = (float) rand() / (float) RAND_MAX;
+                float g = (float) rand() / (float) RAND_MAX;
+                float b = 2.0f - r - g;
+                vec3 colour = {r, g, b};
+                glUniform3fv (shader->Ucolour, 1, colour.p);
 
-        glDrawArrays (GL_TRIANGLES, 0, 2 * N * 3);
+                unsigned q;
+                for (q = j; q < E->galaxy_size; q++) {
+                    if (E->galaxy[q].where.parent_index == j &&
+                        E->galaxy[q].where.orbit_number == k &&
+                        E->galaxy[q].where.orbit_number == p) {
+                        break;
+                    }
+                }
+                if (q == E->galaxy_size) q = j; //no-op
+                else log_debug ("parent of %u is %u!", q, j);
 
-        colour = (vec3){1.0, 1.0, 1.0};
-        glUniform3fv (shader->Ucolour, 1, colour.p);
+                mat4 transform = mat4_rotated_aa
+                    (& E->gh[j].transform, & (vec3) {0,0,1}, angle * (posish));
 
-        glLineWidth (5.0f);
-        glDisable (GL_BLEND);
-        glDisable (GL_CULL_FACE);
+                mat4 inverse = mat4_inverted_rtonly (& transform);
+                vec4 cutout_center = vec4_multiply
+                    (& inverse, & (vec4) {0,0,0,1});
+                log_debug ("%u %u %u", j, k, p);
+                vec4_print (&cutout_center);
 
-        //glDrawArrays (GL_LINE_LOOP, 0, N*3);
+                mat4 mvp = mat4_multiply
+                    (& framedata->viewproj, & transform);
+                glUniformMatrix4fv (shader->Umvp, 1, GL_FALSE, mvp.p);
+
+                glEnable (GL_BLEND);
+                glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+                glUniform1f (shader->Ucutout_radius, 0.5f);
+                glUniform2fv (shader->Ucutout_center, 1, cutout_center.p);
+
+                glDrawArrays (GL_TRIANGLES, 0, 2 * N * 3);
+
+#if 0
+                colour = (vec3){1.0, 1.0, 1.0};
+                glUniform3fv (shader->Ucolour, 1, colour.p);
+
+                glLineWidth (5.0f);
+                glDisable (GL_BLEND);
+                glDisable (GL_CULL_FACE);
+
+                glDrawArrays (GL_LINE_LOOP, 0, N*3);
+#endif
+           }
+       }
    }
 }
 void moduleP (

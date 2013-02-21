@@ -38,7 +38,7 @@ all_headers	:= \
 		code/sockets.h \
 
 ifeq ($(platform),windows)
-	link_flags += lwsock32 # sandbox
+	link_flags += -lwsock32
 endif
 
 ifeq ($(program),cosmos)

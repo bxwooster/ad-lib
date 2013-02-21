@@ -59,6 +59,11 @@ mat4_print (
         mat4 const * m
 );
 
+void
+vec4_print (
+        vec4 const * v
+);
+
 mat4
 mat4_rotated_aa (
         mat4 const * m,
