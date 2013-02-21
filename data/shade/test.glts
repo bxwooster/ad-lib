@@ -8,7 +8,7 @@ vec3 fragment () {
     float inner = 0.4 + (radius - Uradius_min) / (Uradius_max - Uradius_min);
 
     float dist = length (Vplanar - Ucutout_center);
-    if (dist > Ucutout_radius) discard;
+    if (dist < Ucutout_radius) discard;
 	return 0.8 * Ucolour * inner;
 }
 #else

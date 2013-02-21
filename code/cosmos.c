@@ -65,7 +65,7 @@ advance_framestate (
             S->pan.x = px;
             S->pan.y = py;
 
-            log_debug ("%f - %f", px, py);
+            log_debug ("Locked @ %f - %f", px, py);
         }
     }
 
@@ -460,7 +460,6 @@ init_SDL (void) {
         SDL_WINDOWPOS_CENTERED,
         width, height,
         SDL_WINDOW_OPENGL |
-        //SDL_WINDOW_MINIMIZED | /* for debugging */
         //SDL_WINDOW_SHOWN);
         0);
 
@@ -797,7 +796,6 @@ void moduleC (
     glUseProgram (shader->program);
 
     srand(1); // color hack!
-    log_debug ("C!");
 
     for (unsigned j = 0; j < E->galaxy_size; ++j) {
         for (unsigned k = 0; k < E->galaxy[j].orbit_count; ++k) {
@@ -839,8 +837,7 @@ void moduleC (
             glEnableVertexAttribArray (shader->Apos2d);
 
             for (unsigned p = 0; p < orbit_size; ++p) {
-                float posish = p - 0.5 -
-                   (E->state->turn + E->state->turn_tail);
+                float posish = 0.5 + p + E->state->turn + E->state->turn_tail;
 
                 glUniform1f (shader->Uradius_min, r1);
                 glUniform1f (shader->Uradius_max, r2);
@@ -854,22 +851,20 @@ void moduleC (
                 unsigned q;
                 for (q = j; q < E->galaxy_size; q++) {
                     if (E->galaxy[q].where.parent_index == j &&
-                        E->galaxy[q].where.orbit_number == k &&
-                        E->galaxy[q].where.orbit_number == p) {
+                        E->galaxy[q].where.orbit_number == k + 1 &&
+                        E->galaxy[q].where.orbit_slot == p + 1) {
                         break;
                     }
                 }
                 if (q == E->galaxy_size) q = j; //no-op
-                else log_debug ("parent of %u is %u!", q, j);
 
                 mat4 transform = mat4_rotated_aa
-                    (& E->gh[j].transform, & (vec3) {0,0,1}, angle * (posish));
+                    (& E->gh[j].transform, & (vec3) {0,0,1}, -angle * (posish));
 
-                mat4 inverse = mat4_inverted_rtonly (& transform);
+                mat4 cutout = mat4_inverted_rtonly (& transform);
+                cutout = mat4_multiply (&cutout, & E->gh[q].transform);
                 vec4 cutout_center = vec4_multiply
-                    (& inverse, & (vec4) {0,0,0,1});
-                log_debug ("%u %u %u", j, k, p);
-                vec4_print (&cutout_center);
+                    (& cutout, & (vec4) {0,0,0,1});
 
                 mat4 mvp = mat4_multiply
                     (& framedata->viewproj, & transform);
@@ -878,7 +873,8 @@ void moduleC (
                 glEnable (GL_BLEND);
                 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-                glUniform1f (shader->Ucutout_radius, 0.5f);
+                glUniform1f (shader->Ucutout_radius,
+                        q == j ? 0.0f : E->gh[q].supersize);
                 glUniform2fv (shader->Ucutout_center, 1, cutout_center.p);
 
                 glDrawArrays (GL_TRIANGLES, 0, 2 * N * 3);
