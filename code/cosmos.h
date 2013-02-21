@@ -1,8 +1,3 @@
-int
-GL_check_errors (
-        struct GL * gl
-);
-
 void
 advance_framestate (
         struct stone_engine * E,
@@ -134,11 +129,6 @@ struct glts_planeta
             struct GL * gl,
             char const * filename
 );
-int // exitcode
-main (
-        int argc,
-        char * argv []
-); 
 
 void
 moduleB (
@@ -160,22 +150,6 @@ parse_galaxy (
         char const * in,
         struct planetB galaxy [],
         unsigned * count
-);
-
-void
-planet_ID_from_B (
-        double time,
-        struct planet_ID * out,
-        struct planetB const * galaxy,
-        struct galaxy_helper const * gh,
-        unsigned planet_number,
-        struct frame_DD const * framedata
-);
-
-mat4
-planet_dayrotation (
-        struct planet_day const * day,
-        double time
 );
 
 void

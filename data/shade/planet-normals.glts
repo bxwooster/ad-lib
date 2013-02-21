@@ -5,7 +5,7 @@
 #ifdef FS
 vec3 fragment () {
 	discard_test ();
-	return the_normal ();
+	return 0.5 + 0.5 * the_normal ();
 }
 #endif
 

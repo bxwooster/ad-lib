@@ -4,6 +4,7 @@ set -e -u
 cp -r \
   $exe \
   data \
+  mode \
   art \
   .config/$platform/package/* \
   $package_dir \

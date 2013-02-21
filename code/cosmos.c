@@ -1,3 +1,29 @@
+mat4
+planet_dayrotation (
+        struct planet_day const * day,
+        struct stone_engine * E
+) {
+    float theta = (float) ((E->time / day->period) * M_PI * 2.0);
+
+    mat4 out = mat4_identity ();
+    out.column.w.v3 = (vec3) {{0}};
+    return mat4_rotated_aa (& out, & day->axis, theta);
+}
+        
+void
+planet_ID_from_B (
+        struct planet_ID * out,
+        unsigned planet_number,
+        struct stone_engine * E
+) {
+    struct planetB const * planet = E->galaxy + planet_number;
+
+    out->mmodel = E->gh[planet_number].transform;
+    out->mrot = planet_dayrotation (& planet->day, E);
+    out->colour = planet->colour;
+    out->size = E->gh[planet_number].size;
+}
+
 int
 GL_check_errors (
         struct GL * gl
@@ -38,15 +64,15 @@ advance_framestate (
     S->mouse.x = I->mouse.x;
     S->mouse.y = I->mouse.y;
 
-    mat4 cam = mat4_multiply (& S->mov, & S->rot);
-
     float q = 1.0f / tanf (M_PI / 180 / 2 * 60.0);
-    vec4 view = {-I->mouse.x / q, -I->mouse.y / q, 1.0, 0.0};
-    view = vec4_multiply (& cam, & view);
+    vec4 view = {-I->mouse.x / q, I->mouse.y / q, 1.0, 0.0};
+    mat4 invrot = mat4_inverted_rtonly (& S->rot);
+    /* need this be inverted? */
+    view = vec4_multiply (& invrot, & view);
 
-    float ratio  = cam.column.w.element.z / view.element.z;
-    float px = view.element.x * ratio + cam.column.w.element.x;
-    float py = view.element.y * ratio - cam.column.w.element.y;
+    float ratio = S->mov.column.w.element.z / view.element.z;
+    float px = view.element.x * ratio + S->mov.column.w.element.x;
+    float py = view.element.y * ratio + S->mov.column.w.element.y;
 
     char lock = (I->mouse.buttons & SDL_BUTTON (1)) != 0;
 
@@ -55,7 +81,7 @@ advance_framestate (
         float dy = py - S->pan.y;
 
         S->mov.column.w.element.x -= dx;
-        S->mov.column.w.element.y += dy;
+        S->mov.column.w.element.y -= dy;
 
         if (!lock) S->lock = 0;
     }
@@ -771,14 +797,7 @@ moduleB (
 
     for (unsigned i = 0; i < E->galaxy_size; ++i) {
         struct planet_ID pid;
-        planet_ID_from_B (
-                E->time,
-                & pid,
-                E->galaxy,
-                E->gh,
-                i,
-                framedata
-        );
+        planet_ID_from_B (& pid, i, E);
         E->planet_memory[i] = generate_planet_DD (
                 & pid,
                 framedata
@@ -1019,46 +1038,6 @@ syntax_error:
     return 1;
 }
 
-void
-planet_ID_from_B (
-        double time,
-        struct planet_ID * out,
-        struct planetB const * galaxy,
-        struct galaxy_helper const * gh,
-        unsigned planet_number,
-        struct frame_DD const * framedata
-) {
-    (void) framedata;
-
-    struct planetB const * planet = galaxy + planet_number;
-
-    if (planet_number == 0) {
-        assert (planet->where.parent_index == ~0u);
-
-    } else {
-
-    }
-
-    out->mmodel = gh[planet_number].transform;
-
-    out->mrot = planet_dayrotation (& planet->day, time);
-
-    out->colour = planet->colour;
-    
-    out->size = gh[planet_number].size;
-}
-mat4
-planet_dayrotation (
-        struct planet_day const * day,
-        double time
-) {
-    float theta = (float) ((time / day->period) * M_PI * 2.0);
-
-    mat4 out = mat4_identity ();
-    out.column.w.v3 = (vec3) {{0}};
-    return mat4_rotated_aa (& out, & day->axis, theta);
-}
-        
 void
 poll_SDLevents (
         struct stone_engine * E,
@@ -1351,7 +1330,8 @@ standard_projection (
 ) {
     float const screen_aspect = ((float) width) / height;
     return projection_from_afn (screen_aspect, fov, 0.01f);
-}
+} 
+
 void
 to_common_draw_GLstate (
         struct stone_engine * E
