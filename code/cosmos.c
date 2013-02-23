@@ -1,3 +1,5 @@
+#include "cosmos.h"
+
 mat4
 planet_dayrotation (
         struct planet_day const * day,

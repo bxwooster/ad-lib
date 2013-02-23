@@ -15,7 +15,7 @@ main (
 
     unsigned long number;
     struct sockaddr_in source = {0};
-    unsigned source_length = sizeof (source);
+    int source_length = sizeof (source);
 
     int status = recvfrom (sock, (void *) & number, sizeof (number), 0,
             (void *) & source, & source_length);
