@@ -1,17 +1,14 @@
-int // exitcode
-main (
-        int argc,
-        char * argv []
-) {
+int main (int argc, char * argv []) {
     (void) argc;
     (void) argv; /* silence the warnings */
 
     logi ("Hi, I'm Roger.");
 
-    struct socklib lib = init_socklib ();
-    if (lib.ready == 0) return 0;
+    struct socklib lib = socket_init ();
+    OK (lib.ready);
 
-    socklib_t sock = prepare_queriee_socket (& lib);
+    SOCKET sock = socket_queriee (& lib);
+	OK (sock != INVALID_SOCKET);
 
     unsigned long number;
     struct sockaddr_in source = {0};
@@ -19,17 +16,13 @@ main (
 
     int status = recvfrom (sock, (void *) & number, sizeof (number), 0,
             (void *) & source, & source_length);
-    if (status <= 0) {
-        logi("Recv has it a bit wrong. %s!", strerror (socket_errno ()));
-        goto end;
-    }
+	OK (status > 0);
 
     logi ("Number %x from IP %s, port %hu!", number,
             inet_ntoa (source.sin_addr),
             ntohs (source.sin_port));
 
-end:
-    close_socket (sock);
+    socket_close (sock);
 
     return 0;
 }

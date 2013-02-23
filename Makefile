@@ -25,7 +25,7 @@ ifeq ($(program),cosmos)
 else ifeq ($(program),federer)
 
     files += \
-             sockets \
+             socket \
 
 endif
 
@@ -69,9 +69,12 @@ ifeq ($(platform),windows)
 	includes += malloc.h
 endif
 
-ifneq ($(filter sockets,$(files)),)
+ifneq ($(filter socket,$(files)),)
     ifeq ($(platform),windows)
         link_flags += -lwsock32
+        includes += winsock.h
+    else
+		includes += sys/socket.h netinet/in.h arpa/inet.h
     endif
 endif
 

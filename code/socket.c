@@ -1,25 +1,23 @@
-void
-dodger () {
+void dodger () {
     logi ("Hi, I'm Dodger.");
 
-    struct socklib lib = init_socklib ();
+    struct socklib lib = socket_init ();
     if (lib.ready == 0) return;
 
-    socklib_t sock = prepare_querier_socket (&lib);
+    SOCKET sock = socket_querier (&lib);
 
     unsigned long number = 0xF00DCAFE;
     int status = send (sock, (void *) &number, sizeof (number), 0);
     if (status <= 0) {
-        logi("Send has it a bit wrong. %s!", strerror (socket_errno ()));
+        logi("Recv has it a bit wrong. %s!", socket_errstr ());
         goto end;
     }
 
 end:
-    close_socket (sock);
+    socket_close (sock);
 }
 
-struct socklib
-init_socklib () {
+struct socklib socket_init () {
     #ifdef WINDOWS
         WSADATA whatever;
         int wstatus = WSAStartup (MAKEWORD (1, 1), &whatever);
@@ -31,17 +29,14 @@ init_socklib () {
     return (struct socklib) {.ready = 1};
 }
 
-socklib_t
-prepare_queriee_socket (
-        struct socklib * lib
-) {
+SOCKET socket_queriee (struct socklib * lib) {
     unsigned const PORT = 57294;
     char const ADDRESS [] = "224.0.0.178";
     int status = 0;
 
     (void) lib;
 
-    socklib_t sock = socket (PF_INET, SOCK_DGRAM, 0);
+    SOCKET sock = socket (PF_INET, SOCK_DGRAM, 0);
     if (sock == INVALID_SOCKET) {
         logi ("My socket has a problem, namely. %s!",
                 socket_errstr ());
@@ -75,21 +70,18 @@ prepare_queriee_socket (
     return sock;
 
 error:
-    close_socket (sock);
+    socket_close (sock);
     return INVALID_SOCKET;
 }
 
-socklib_t
-prepare_querier_socket (
-        struct socklib * lib
-) {
+SOCKET socket_querier (struct socklib * lib) {
     unsigned const PORT = 57294;
     char const ADDRESS [] = "224.0.0.178";
     int status = 0;
 
     (void) lib;
 
-    socklib_t sock = socket (PF_INET, SOCK_DGRAM, 0);
+    SOCKET sock = socket (PF_INET, SOCK_DGRAM, 0);
     if (sock == INVALID_SOCKET) {
         logi ("My socket has a problem, namely. %s!",
                 socket_errstr ());
@@ -104,19 +96,18 @@ prepare_querier_socket (
     status = connect (sock, (const struct sockaddr *) &saddr, sizeof (saddr));
     if (status < 0) {
         logi("Connect isn't behaving all too well. %s!",
-                strerror (socket_errno ()));
+                socket_errstr ());
         goto error;
     }
 
     return sock;
 
 error:
-    close_socket (sock);
+    socket_close (sock);
     return INVALID_SOCKET;
 }
 
-int
-socket_errno () {
+int socket_errno () {
     #ifdef WINDOWS
         return WSAGetLastError();
     #else
@@ -124,8 +115,7 @@ socket_errno () {
     #endif
 }
 
-char const *
-socket_errstr () {
+char const * socket_errstr () {
     int status = socket_errno ();
     #ifndef WINDOWS
         return strerror (status);
@@ -148,16 +138,8 @@ socket_errstr () {
     #endif
 }
 
-#ifndef WINDOWS
-    #define INVALID_SOCKET -1
-    #define closesocket close
-#endif
-
-void close_socket (
-        socklib_t sock
-) {
+void socket_close (SOCKET sock) {
     int status = closesocket (sock);
     if (status != 0) logi ("While closing a socket this happened: %s",
             socket_errstr ());
 }
-
