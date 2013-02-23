@@ -6,17 +6,6 @@
 static unsigned const PORT = 57294;
 static char const ADDRESS [] = "224.0.0.178";
 
-void rafael () {
-    logi ("Hi, I'm Rafael.");
-    SOCKET sock = socket_querier ();
-
-    unsigned long number = 0xF00DCAFE;
-    int status = send (sock, (void *) &number, sizeof (number), 0);
-	OK (status > 0);
-
-    socket_close (sock);
-}
-
 void socket_init (void) {
 #ifdef WINDOWS
 	WSADATA whatever;

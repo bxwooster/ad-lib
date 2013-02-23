@@ -27,6 +27,12 @@ ifeq ($(program),cosmos)
     features += \
                 SDLGL \
 
+else ifeq ($(program),nadal)
+
+    files += \
+             misc \
+             socket \
+
 else ifeq ($(program),federer)
 
     files += \

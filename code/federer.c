@@ -6,7 +6,6 @@ int main (int argc, char * argv []) {
     socket_init ();
 
     SOCKET sock = socket_queriee ();
-	OK (sock != INVALID_SOCKET);
 
     unsigned long number;
     struct sockaddr_in source = {0};
