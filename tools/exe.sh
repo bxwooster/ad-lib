@@ -11,10 +11,11 @@ $cc \
   -pedantic \
   -Wno-missing-field-initializers \
   -Wno-missing-braces \
+  -I.config/$platform/include \
+  -L.config/$platform/lib \
   $include_flags \
   $optimization \
   $link_flags \
   $prefixed_defines \
-  -I.config/$platform/include \
   -g \
 

@@ -33,6 +33,14 @@ else ifeq ($(program),federer)
              misc \
              socket \
 
+else ifeq ($(program),lunar)
+
+    files += \
+             misc \
+
+    features += \
+                lua \
+
 endif
 
 ################################################################################
@@ -85,6 +93,13 @@ endif
 
 ifeq ($(platform),windows)
     link_flags += -lmingw32
+endif
+
+ifneq ($(filter lua,$(features)),)
+    includes += lauxlib.h lua.h lualib.h
+    ifeq ($(platform),windows)
+        link_flags += -llua51
+    endif
 endif
 
 ifneq ($(filter SDLGL,$(features)),)
