@@ -17,7 +17,12 @@ all_headers :=
 ifeq ($(program),cosmos)
 
     files += \
+             misc \
              vecmat \
+             libs \
+             glts \
+             galaxy \
+             stone \
 
     features += \
                 SDLGL \
@@ -25,6 +30,7 @@ ifeq ($(program),cosmos)
 else ifeq ($(program),federer)
 
     files += \
+             misc \
              socket \
 
 endif
@@ -61,7 +67,6 @@ includes += \
 			string.h \
 			unistd.h \
 
-files += misc
 link_flags += -lm
 
 ifeq ($(platform),windows)

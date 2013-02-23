@@ -14,3 +14,5 @@
 	} } while (0)
 
 void logi (char const * fmt, ...);
+
+char * /* contents */ load_file( char const * filename);
