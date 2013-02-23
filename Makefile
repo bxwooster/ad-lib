@@ -18,8 +18,6 @@ ifeq ($(program),cosmos)
 
     files += \
              vecmat \
-             sockets \
-             log \
 
     features += \
                 SDLGL \
@@ -28,7 +26,6 @@ else ifeq ($(program),federer)
 
     files += \
              sockets \
-             log \
 
 endif
 
@@ -64,6 +61,7 @@ includes += \
 			string.h \
 			unistd.h \
 
+files += misc
 link_flags += -lm
 
 ifeq ($(platform),windows)

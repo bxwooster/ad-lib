@@ -2,7 +2,7 @@
 // they are copy-pasted
 #include <stdio.h>
 #include <stdarg.h>
-// needed for log_info, nasty to include here
+// needed for logi, nasty to include here
 #include <string.h>
 // strerror
 #include <unistd.h>

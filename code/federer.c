@@ -6,7 +6,7 @@ main (
     (void) argc;
     (void) argv; /* silence the warnings */
 
-    log_info ("Hi, I'm Roger.");
+    logi ("Hi, I'm Roger.");
 
     struct socklib lib = init_socklib ();
     if (lib.ready == 0) return 0;
@@ -20,11 +20,11 @@ main (
     int status = recvfrom (sock, (void *) & number, sizeof (number), 0,
             (void *) & source, & source_length);
     if (status <= 0) {
-        log_info("Recv has it a bit wrong. %s!", strerror (socket_errno ()));
+        logi("Recv has it a bit wrong. %s!", strerror (socket_errno ()));
         goto end;
     }
 
-    log_info ("Number %x from IP %s, port %hu!", number,
+    logi ("Number %x from IP %s, port %hu!", number,
             inet_ntoa (source.sin_addr),
             ntohs (source.sin_port));
 

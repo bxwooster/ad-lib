@@ -33,7 +33,7 @@ GL_check_errors (
     (void) gl;
     GLuint error = glGetError ();
     if (error != 0) {
-        log_info ("There occurred a GL error, # %d.", error);
+        logi ("There occurred a GL error, # %d.", error);
     }
 
     return (error != 0);
@@ -93,7 +93,7 @@ advance_framestate (
             S->pan.x = px;
             S->pan.y = py;
 
-            log_debug ("Locked @ %f - %f", px, py);
+            logi ("Locked @ %f - %f", px, py);
         }
     }
 
@@ -306,7 +306,7 @@ get_fov (void) {
     float fov = atof (string);
 
     if (fov == 0.0f) {
-        log_info ("Can't read FOV.");
+        logi ("Can't read FOV.");
     }
 
     return fov;
@@ -336,9 +336,9 @@ gl_shader_from_source (
     glGetShaderiv (shader, GL_COMPILE_STATUS, &code);
 
     if (code == GL_FALSE) {
-        log_info("Shader source:\n");
+        logi ("Shader source:\n");
         for (unsigned i = 0; i < all_count; i++)
-            log_info ("// piece %d:\n%s", i, all_pieces[i]);
+            logi ("// piece %d:\n%s", i, all_pieces[i]);
         gl_shader_log (shader);
         glDeleteShader (shader);
         shader = GL_FALSE;
@@ -358,13 +358,13 @@ gl_shader_log (
         log = malloc (size);
         if (log) {
             glGetShaderInfoLog (shader, size, NULL, log);
-            log_info ("%s", log);
+            logi ("%s", log);
             free (log);
         } else {
-            log_info ("No memory to display shader log!");
+            logi ("No memory to display shader log!");
         }
     } else {
-        log_info ("No shader log available.");
+        logi ("No shader log available.");
     }
 }
 char const *
@@ -416,7 +416,7 @@ go_go_go (
         frame++;
     }
 
-    log_info ("%d frames were done. Have a nice day!", frame);
+    logi ("%d frames were done. Have a nice day!", frame);
 }
 
 struct GL
@@ -426,26 +426,26 @@ init_GL (
     if (SDL_GL_SetAttribute (SDL_GL_CONTEXT_MAJOR_VERSION, 2) != 0 ||
         SDL_GL_SetAttribute (SDL_GL_CONTEXT_MINOR_VERSION, 0) != 0)
     {
-        log_info ("SDL_GL_SetAttribute error: %s.", SDL_GetError ());
+        logi ("SDL_GL_SetAttribute error: %s.", SDL_GetError ());
         return (struct GL) {0};
     }
 
     SDL_GLContext context = SDL_GL_CreateContext (sdl->window);
 
     if (context == NULL) {
-        log_info ("SDL_GL_CreateContext error: %s.", SDL_GetError ());
+        logi ("SDL_GL_CreateContext error: %s.", SDL_GetError ());
         return (struct GL) {0};
     }
 
     #ifdef GLEW
         GLenum glew = glewInit();
         if (glew != GLEW_OK) {
-            log_info ("GLEW error: %s.", glewGetErrorString (glew));
+            logi ("GLEW error: %s.", glewGetErrorString (glew));
             return (struct GL) {0};
         }
 
         if (!GLEW_VERSION_2_0) {
-            log_info ("GL2.0 is not supported.");
+            logi ("GL2.0 is not supported.");
             return (struct GL) {0};
         }
     #endif
@@ -462,7 +462,7 @@ init_IMG (void) {
     int initted = IMG_Init (require);
 
     if ((require & initted) != require) {
-        log_info ("SDL_image error: %s.", IMG_GetError ());
+        logi ("SDL_image error: %s.", IMG_GetError ());
         return (struct IMG) {0};
     }
 
@@ -475,7 +475,7 @@ init_IMG (void) {
 struct SDL
 init_SDL (void) {
     if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
-        log_info ("SDL_Init error: %s.", SDL_GetError ());
+        logi ("SDL_Init error: %s.", SDL_GetError ());
         return (struct SDL) {0};
     }
 
@@ -492,7 +492,7 @@ init_SDL (void) {
         0);
 
     if (window == NULL) {
-        log_info ("SDL_CreateWindow error: %s.", SDL_GetError ());
+        logi ("SDL_CreateWindow error: %s.", SDL_GetError ());
         return (struct SDL) {0};
     }
 
@@ -531,7 +531,7 @@ link_GLprogram (
     glGetProgramiv (program, GL_LINK_STATUS, &code);
 
     if (code == GL_FALSE) {
-        log_info ("Shader linking failed.");
+        logi ("Shader linking failed.");
         glDeleteProgram (program);
         return GL_FALSE;
     }
@@ -559,7 +559,7 @@ load_earth (
         (void) img;
         earth[i] = IMG_Load (earthimg[i]);
         if (earth[i] == NULL) {
-            log_info ("SDL_image error: %s", IMG_GetError ());
+            logi ("SDL_image error: %s", IMG_GetError ());
             return GL_FALSE;
         }
     }
@@ -570,7 +570,7 @@ load_earth (
     if (sdlformat == (Uint32) SDL_PIXELFORMAT_RGB888) return GL_BGRA;
 
     (void) sdl;
-    log_info ("Unexpected texture format: %s",
+    logi ("Unexpected texture format: %s",
         SDL_GetPixelFormatName (sdlformat)); 
     return GL_FALSE;
 }
@@ -583,7 +583,7 @@ load_file (
 
     FILE * fp = fopen (filename, "rb");
     if (fp == NULL) {
-        log_info ("Could not open file %s at all.", filename);
+        logi ("Could not open file %s at all.", filename);
         return NULL;
     }
 
@@ -591,7 +591,7 @@ load_file (
         fseek (fp, 0L, SEEK_END) != 0 ||
         (size = ftell (fp)) < 0
     ) {
-        log_info ("Could not determine how large file %s is exactly.", filename);
+        logi ("Could not determine how large file %s is exactly.", filename);
         fclose (fp);
         return NULL;
     }
@@ -599,7 +599,7 @@ load_file (
     char * contents = malloc ((size_t) size + 1);
 
     if (contents == NULL) {
-        log_info ("Alas, size %ld proved to be too huge for allocation.", size);
+        logi ("Alas, size %ld proved to be too huge for allocation.", size);
         fclose (fp);
         return NULL;
     }
@@ -608,7 +608,7 @@ load_file (
         fseek (fp, 0L, SEEK_SET) != 0 ||
         fread(contents, 1, (size_t) size, fp) != (size_t) size
     ) {
-        log_info ("Contents of file %s could not even be retrieved.", filename);
+        logi ("Contents of file %s could not even be retrieved.", filename);
         fclose (fp);
         free (contents);
         return NULL;
@@ -666,7 +666,7 @@ load_glts (
 
 		at = newline + 1;
         if (N >= maxN) {
-            log_info ("Whoa there, you included more than %u files!", maxN);
+            logi ("Whoa there, you included more than %u files!", maxN);
             goto end;
         }
 	}
@@ -680,7 +680,7 @@ load_glts (
     GLuint fs = gl_shader_from_source (sources, N, GL_FRAGMENT_SHADER);
 
     if (vs == GL_FALSE || fs == GL_FALSE)
-        log_info ("That happened while loading %s just now.", filename);
+        logi ("That happened while loading %s just now.", filename);
 
     program = link_GLprogram (vs, fs, gl);
 
@@ -691,11 +691,11 @@ load_glts (
 
 end:
     if (at != NULL)
-        log_info ("Syntax error while loading a GLTS: %s:byte-%d",
+        logi ("Syntax error while loading a GLTS: %s:byte-%d",
             filename, (int) (at - current_file));
 
 	for (unsigned n = 1; n < N; ++n) {
-        //log_debug ("Source %u: %s", n, sources[n]);
+        //logi ("Source %u: %s", n, sources[n]);
     	free ((char *) sources[n]);
     }
 
@@ -714,7 +714,7 @@ struct glts_cello
     
     it.Apos2d = (GLuint) glGetAttribLocation (it.program, "Apos2d");
     if (it.Apos2d == (GLuint) -1) {
-        log_info ("GL attribute 'Apos2d' not found");
+        logi ("GL attribute 'Apos2d' not found");
     }
 
     it.Umvp = glGetUniformLocation (it.program, "Umvp");
@@ -759,7 +759,7 @@ struct glts_planeta
     //
     it.Apos2d = (GLuint) glGetAttribLocation (it.program, "Apos2d");
     if (it.Apos2d == (GLuint) -1) {
-        log_info ("GL attribute 'Apos2d' not found");
+        logi ("GL attribute 'Apos2d' not found");
     }
 
     it.Umv = glGetUniformLocation (it.program, "Umv");
@@ -971,13 +971,13 @@ parse_galaxy (
 
         /* Yes. Do we have the memory for it? */
         if (left == 0) {
-            log_info ("Exhausted the provided list while parsing a galaxy!");
+            logi ("Exhausted the provided list while parsing a galaxy!");
             return 2;
         }
 
         /* Go for it */
         memcpy (a->name, name, sizeof (name));
-        log_debug ("name = %s", a->name);
+        logi ("name = %s", a->name);
 
         if (sscanf (in, " : { where : %21[^; ]%n", where, & read) < 1)
             goto syntax_error;
@@ -1034,7 +1034,7 @@ parse_galaxy (
 
 syntax_error:
 
-    log_info ("Galaxy-parsing ended up in a tumult!");
+    logi ("Galaxy-parsing ended up in a tumult!");
     return 1;
 }
 
@@ -1204,7 +1204,7 @@ void
 sI (void)
 /* ... where libraries are initalized and put to good use. */
 {
-    log_info ("Revving up.");
+    logi ("Revving up.");
 
     struct SDL sdl = {0};
     struct IMG img = {0};
@@ -1282,7 +1282,7 @@ sII (
     struct galaxy_helper gh [16];
     unsigned galaxy_size = 16;
     parse_galaxy (galaxytext, galaxy, &galaxy_size);
-    log_debug ("Galaxy is %u large", galaxy_size);
+    logi ("Galaxy is %u large", galaxy_size);
 
     free (galaxytext);
 

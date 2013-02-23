@@ -115,14 +115,14 @@ mat4 mat4_scaled ( mat4 const * m, float scale) {
 
 void mat4_print ( mat4 const * m) {
     for (unsigned i = 0; i < 4; ++i) {
-        log_info (VEC4_FMT,
+        logi (VEC4_FMT,
                 m->p[i + 0], m->p[i + 4],
                 m->p[i + 8], m->p[i + 12]);
     }
 }
 
 void vec4_print ( vec4 const * v) {
-    log_info (VEC4_FMT,
+    logi (VEC4_FMT,
             v->p[0], v->p[1],
             v->p[2], v->p[3]);
 }

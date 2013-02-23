@@ -1,6 +1,6 @@
 void
 dodger () {
-    log_info ("Hi, I'm Dodger.");
+    logi ("Hi, I'm Dodger.");
 
     struct socklib lib = init_socklib ();
     if (lib.ready == 0) return;
@@ -10,7 +10,7 @@ dodger () {
     unsigned long number = 0xF00DCAFE;
     int status = send (sock, (void *) &number, sizeof (number), 0);
     if (status <= 0) {
-        log_info("Send has it a bit wrong. %s!", strerror (socket_errno ()));
+        logi("Send has it a bit wrong. %s!", strerror (socket_errno ()));
         goto end;
     }
 
@@ -24,7 +24,7 @@ init_socklib () {
         WSADATA whatever;
         int wstatus = WSAStartup (MAKEWORD (1, 1), &whatever);
         if (wstatus != 0) {
-            log_info ("Sockets gone wrong.");
+            logi ("Sockets gone wrong.");
             return (struct socklib) {.ready = 0};
         }
     #endif
@@ -43,7 +43,7 @@ prepare_queriee_socket (
 
     socklib_t sock = socket (PF_INET, SOCK_DGRAM, 0);
     if (sock == INVALID_SOCKET) {
-        log_info ("My socket has a problem, namely. %s!",
+        logi ("My socket has a problem, namely. %s!",
                 socket_errstr ());
         goto error;
     }
@@ -55,7 +55,7 @@ prepare_queriee_socket (
     status = setsockopt(sock, IPPROTO_IP, IP_ADD_MEMBERSHIP,
             (void *) &imreq, sizeof (imreq));
     if (status < 0) {
-        log_info("Setsockopt has made a grave mistake. %s!",
+        logi("Setsockopt has made a grave mistake. %s!",
                 socket_errstr ());
         goto error;
     }
@@ -67,7 +67,7 @@ prepare_queriee_socket (
 
     status = bind (sock, (const struct sockaddr *) &saddr, sizeof (saddr));
     if (status < 0) {
-        log_info("Bind isn't behaving all too well. %s!",
+        logi("Bind isn't behaving all too well. %s!",
                 socket_errstr () );
         goto error;
     }
@@ -91,7 +91,7 @@ prepare_querier_socket (
 
     socklib_t sock = socket (PF_INET, SOCK_DGRAM, 0);
     if (sock == INVALID_SOCKET) {
-        log_info ("My socket has a problem, namely. %s!",
+        logi ("My socket has a problem, namely. %s!",
                 socket_errstr ());
         goto error;
     }
@@ -103,7 +103,7 @@ prepare_querier_socket (
 
     status = connect (sock, (const struct sockaddr *) &saddr, sizeof (saddr));
     if (status < 0) {
-        log_info("Connect isn't behaving all too well. %s!",
+        logi("Connect isn't behaving all too well. %s!",
                 strerror (socket_errno ()));
         goto error;
     }
@@ -157,7 +157,7 @@ void close_socket (
         socklib_t sock
 ) {
     int status = closesocket (sock);
-    if (status != 0) log_info ("While closing a socket this happened: %s",
+    if (status != 0) logi ("While closing a socket this happened: %s",
             socket_errstr ());
 }
 
