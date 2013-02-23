@@ -2,7 +2,7 @@ varying vec2 Vixy;
 varying vec2 Vuv;
 varying vec3 Vnormal_part1;
 
-#ifdef VS
+#if defined VS
 vec4 vertex () {
     vec4 position = Umvp * vec4 (Apos2d, 0.0, 1.0);
 //    position.z = Udepth * position.w;
@@ -12,7 +12,7 @@ vec4 vertex () {
 
 	return position;
 }
-#else
+#elif defined FS
 float discard_test () {
     float radius = length (Vixy);
     if (radius > 1.0) discard;

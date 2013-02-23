@@ -765,7 +765,6 @@ struct glts_planeta
     assert (it.Umvp != -1);
 
     it.Ucolour = glGetUniformLocation (it.program, "Ucolour");
-    it.Udepth = glGetUniformLocation (it.program, "Udepth");
     it.Uuvscale = glGetUniformLocation (it.program, "Uuvscale");
     it.Utexture = glGetUniformLocation (it.program, "Uexture");
     // ignore some missing uniforms
@@ -941,7 +940,6 @@ void moduleP (
 
         glUniformMatrix4fv (shader->Umvp, 1, GL_FALSE, data->mvp.p);
         glUniformMatrix4fv (shader->Umv, 1, GL_FALSE, data->mv.p);
-        glUniform1f (shader->Udepth, data->depth);
         glUniform1f (shader->Uuvscale, data->uvscale);
         glUniform1i (shader->Utexture, data->texture);
         glUniform3fv (shader->Ucolour, 1, data->colour.p);
@@ -1259,7 +1257,7 @@ sII (
         if (sh_pl[i].program == GL_FALSE) goto end;
     }
 
-    sh_ce = load_glts_cello (gl, "data/shade/test.glts");
+    sh_ce = load_glts_cello (gl, "data/shade/cell.glts");
     if (sh_ce.program == GL_FALSE) goto end;
 
     tex = get_earth_GLtex (gl, sdl, img);

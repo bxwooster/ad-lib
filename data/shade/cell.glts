@@ -1,17 +1,20 @@
 #pragma type cello
-#pragma include simplevf
+#pragma include simple-vf
 
 varying vec2 Vplanar;
-#ifdef FS
+#if defined FS
 vec3 fragment () {
 	float radius = length (Vplanar);
-    float inner = 0.4 + (radius - Uradius_min) / (Uradius_max - Uradius_min);
+    float ambient = 0.4;
+    float inner = ambient + (radius - Uradius_min) / (Uradius_max - Uradius_min);
 
     float dist = length (Vplanar - Ucutout_center);
     if (dist < Ucutout_radius) discard;
-	return 0.8 * Ucolour * inner;
+
+    float brightness = 0.8;
+	return brightness * Ucolour * inner;
 }
-#else
+#elif defined VS
 vec4 vertex () {
     vec4 position = Umvp * vec4 (Apos2d, 0.0, 1.0);
 

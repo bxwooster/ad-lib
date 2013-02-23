@@ -1,8 +1,8 @@
 #pragma type planeta
-#pragma include planet_glue
-#pragma include simplevf
+#pragma include simple-vf
+#pragma include planet-common
 
-#ifdef FS
+#if defined FS
 vec3 fragment () {
     return Ucolour;
 }

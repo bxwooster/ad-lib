@@ -1,11 +1,11 @@
 vec4 vertex ();
 vec3 fragment ();
 
-#ifdef VS
+#if defined VS
 	void main(void) {
 		gl_Position = vertex ();
 	}
-#else
+#elif defined FS
 	void main(void) {
 		gl_FragColor = vec4 (fragment (), 0.5);
 	}

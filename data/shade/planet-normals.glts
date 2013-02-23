@@ -1,6 +1,6 @@
 #pragma type planeta
-#pragma include planet_glue
-#pragma include simplevf
+#pragma include simple-vf
+#pragma include planet-common
 
 #ifdef FS
 vec3 fragment () {

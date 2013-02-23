@@ -1,8 +1,8 @@
 #pragma type planeta
-#pragma include simplevf
-#pragma include planet_glue
+#pragma include simple-vf
+#pragma include planet-common
 
-#ifdef FS
+#if defined FS
 vec3 fragment () {
     float radius = discard_test ();
     float effect = sqrt (1.0 - radius);
@@ -10,9 +10,7 @@ vec3 fragment () {
     vec3 normal = the_normal ();
     vec3 result = textureCube (Utexture, normal).rgb;
 
-    float brightness = 1.0;
-    result += 0.5 * Ucolour;
-    result *= brightness;
+    result += Ucolour;
     result *= effect;
 
 	return result;

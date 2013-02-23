@@ -1,5 +1,5 @@
-#ifdef VS
-attribute vec2 Apos2d;
+#if defined VS
+    attribute vec2 Apos2d;
 #endif
 
 uniform mat4 Umvp;
