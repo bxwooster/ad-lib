@@ -3,11 +3,9 @@ int main (int argc, char * argv []) {
     (void) argv; /* silence the warnings */
 
     logi ("Hi, I'm Roger.");
+    socket_init ();
 
-    struct socklib lib = socket_init ();
-    OK (lib.ready);
-
-    SOCKET sock = socket_queriee (& lib);
+    SOCKET sock = socket_queriee ();
 	OK (sock != INVALID_SOCKET);
 
     unsigned long number;

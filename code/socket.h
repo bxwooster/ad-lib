@@ -1,19 +1,11 @@
-struct socklib {
-    char ready;
-};
-
 #ifndef WINDOWS
-	#define SOCKET int
-    #define INVALID_SOCKET -1
-    #define closesocket close
+	typedef int SOCKET;
 #endif
 
-struct socklib socket_init ();
+void socket_init (void);
     
-SOCKET socket_queriee (struct socklib * lib);
+SOCKET socket_queriee (void);
 
-SOCKET socket_querier (struct socklib * lib);
-
-char const * socket_errstr ();
+SOCKET socket_querier (void);
 
 void socket_close (SOCKET sock);

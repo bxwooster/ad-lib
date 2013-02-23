@@ -1,46 +1,61 @@
-void dodger () {
-    logi ("Hi, I'm Dodger.");
+#ifndef WINDOWS
+  #define INVALID_SOCKET -1
+  #define closesocket close
+#endif
 
-    struct socklib lib = socket_init ();
-    if (lib.ready == 0) return;
+static unsigned const PORT = 57294;
+static char const ADDRESS [] = "224.0.0.178";
 
-    SOCKET sock = socket_querier (&lib);
+void rafael () {
+    logi ("Hi, I'm Rafael.");
+    SOCKET sock = socket_querier ();
 
     unsigned long number = 0xF00DCAFE;
     int status = send (sock, (void *) &number, sizeof (number), 0);
-    if (status <= 0) {
-        logi("Recv has it a bit wrong. %s!", socket_errstr ());
-        goto end;
-    }
+	OK (status > 0);
 
-end:
     socket_close (sock);
 }
 
-struct socklib socket_init () {
-    #ifdef WINDOWS
-        WSADATA whatever;
-        int wstatus = WSAStartup (MAKEWORD (1, 1), &whatever);
-        if (wstatus != 0) {
-            logi ("Sockets gone wrong.");
-            return (struct socklib) {.ready = 0};
-        }
-    #endif
-    return (struct socklib) {.ready = 1};
+void socket_init (void) {
+#ifdef WINDOWS
+	WSADATA whatever;
+	int wstatus = WSAStartup (MAKEWORD (1, 1), &whatever);
+	OK (wstatus == 0);
+#endif
 }
 
-SOCKET socket_queriee (struct socklib * lib) {
-    unsigned const PORT = 57294;
-    char const ADDRESS [] = "224.0.0.178";
-    int status = 0;
+char const * socket_errstr (void) {
+#ifndef WINDOWS
+	return strerror (errno);
+#else
+	int status = WSAGetLastError ();
+	size_t const bufsiz = 1024;
+	char buffer [bufsiz];
+	FormatMessage (
+			FORMAT_MESSAGE_FROM_SYSTEM,
+			0, // internal message table
+			status,
+			1033, // English
+			(LPSTR) &buffer,
+			bufsiz,
+			NULL // no addiotional arguments
+	);
+	size_t len = strlen (buffer);
+	buffer [len - 3] = '\0'; // no dot and CRLF
+	char const * warning_disabler = buffer;
+	return warning_disabler; // note that this is not thread-safe!
+#endif
+}
 
-    (void) lib;
+SOCKET socket_queriee (void) {
+    int status = 0;
 
     SOCKET sock = socket (PF_INET, SOCK_DGRAM, 0);
     if (sock == INVALID_SOCKET) {
         logi ("My socket has a problem, namely. %s!",
                 socket_errstr ());
-        goto error;
+		OK (0);
     }
 
     struct ip_mreq imreq = {0};
@@ -52,7 +67,7 @@ SOCKET socket_queriee (struct socklib * lib) {
     if (status < 0) {
         logi("Setsockopt has made a grave mistake. %s!",
                 socket_errstr ());
-        goto error;
+		OK (0);
     }
 
     struct sockaddr_in saddr = {0};
@@ -64,28 +79,20 @@ SOCKET socket_queriee (struct socklib * lib) {
     if (status < 0) {
         logi("Bind isn't behaving all too well. %s!",
                 socket_errstr () );
-        goto error;
+		OK (0);
     }
 
     return sock;
-
-error:
-    socket_close (sock);
-    return INVALID_SOCKET;
 }
 
-SOCKET socket_querier (struct socklib * lib) {
-    unsigned const PORT = 57294;
-    char const ADDRESS [] = "224.0.0.178";
+SOCKET socket_querier (void) {
     int status = 0;
-
-    (void) lib;
 
     SOCKET sock = socket (PF_INET, SOCK_DGRAM, 0);
     if (sock == INVALID_SOCKET) {
         logi ("My socket has a problem, namely. %s!",
                 socket_errstr ());
-        goto error;
+		OK (0);
     }
 
     struct sockaddr_in saddr = {0};
@@ -97,45 +104,10 @@ SOCKET socket_querier (struct socklib * lib) {
     if (status < 0) {
         logi("Connect isn't behaving all too well. %s!",
                 socket_errstr ());
-        goto error;
+		OK (0);
     }
 
     return sock;
-
-error:
-    socket_close (sock);
-    return INVALID_SOCKET;
-}
-
-int socket_errno () {
-    #ifdef WINDOWS
-        return WSAGetLastError();
-    #else
-        return errno;
-    #endif
-}
-
-char const * socket_errstr () {
-    int status = socket_errno ();
-    #ifndef WINDOWS
-        return strerror (status);
-    #else
-        size_t const bufsiz = 1024;
-        char buffer [bufsiz];
-        FormatMessage (
-                FORMAT_MESSAGE_FROM_SYSTEM,
-                0, // internal message table
-                status,
-                1033, // English
-                (LPSTR) &buffer,
-                bufsiz,
-                NULL // no addiotional arguments
-        );
-        size_t len = strlen (buffer);
-        buffer [len - 3] = '\0'; // no dot and CRLF
-        char const * warning_disabler = buffer;
-        return warning_disabler; // note that this is not thread-safe!
-    #endif
 }
 
 void socket_close (SOCKET sock) {
