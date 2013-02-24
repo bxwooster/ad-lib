@@ -99,21 +99,98 @@ void bind_it (SOCKET sock, unsigned port) {
     }
 }
 
+void udp_wait (SOCKET sock) {
+    char data [1];
+
+    struct sockaddr_in address = {0};
+    socklen_t addrlen = sizeof (address);
+    int status = recvfrom (sock, data, sizeof (data), 0,
+            (void *) & address, & addrlen);
+    OK (status > 0);
+
+    logi ("Got UDP connection from IP %s, port %hu!",
+            inet_ntoa (address.sin_addr),
+            ntohs (address.sin_port));
+    sleep (1);
+
+    status = sendto (sock, data, sizeof (data), 0,
+            (void *) & address, addrlen);
+    OK (status > 0);
+}
+
+void udp_go (SOCKET sock, struct sockaddr_in * remote, socklen_t * remlen) {
+    char data [1];
+
+    int status = send (sock, data, sizeof (data), 0);
+	OK (status > 0);
+
+    struct sockaddr_in address = {0};
+    socklen_t addrlen = sizeof (address);
+	address.sin_family = AF_UNSPEC;
+    /*dis*/connect (sock, (void *) & address, addrlen);
+
+    status = recvfrom (sock, data, sizeof (data), 0,
+            (void *) & address, & addrlen);
+	OK (status > 0);
+
+    logi ("Got returning UDP conn from IP %s, port %hu!",
+            inet_ntoa (address.sin_addr),
+            ntohs (address.sin_port));
+
+    *remote = address;
+    *remlen = addrlen;
+}
+
 SOCKET socket_queriee (void) {
-	SOCKET sock = sock_it ();
+    {
+        SOCKET sock = sock_it ();
 
-	multi_it (sock);
-	bind_it (sock, PORT_E);
+        multi_it (sock);
+        bind_it (sock, PORT_E);
+        udp_wait (sock);
 
-    return sock;
+        socket_close (sock);
+    }
+
+    SOCKET sock = socket (PF_INET, SOCK_STREAM, 0);
+    OK (sock != INVALID_SOCKET);
+    bind_it (sock, PORT_E);
+
+    int status = listen (sock, 1);
+    OK (status == 0);
+
+    struct sockaddr_in address = {0};
+    socklen_t addrlen = sizeof (address);
+    SOCKET real = accept (sock, (void *) & address, & addrlen);
+    OK (real != INVALID_SOCKET);
+    closesocket (sock);
+    
+    return real;
 }
 
 SOCKET socket_querier (void) {
-	SOCKET sock = sock_it ();
+    struct sockaddr_in remote;
+    socklen_t remlen;
+    {
+        SOCKET sock = sock_it ();
 
-	multi_it (sock);
-	bind_it (sock, PORT_R);
-	connect_it (sock);
+        bind_it (sock, PORT_R);
+        connect_it (sock);
+        udp_go (sock, & remote, & remlen);
+
+        socket_close (sock);
+    }
+
+    sleep (1);
+
+    SOCKET sock = socket (PF_INET, SOCK_STREAM, 0);
+    OK (sock != INVALID_SOCKET);
+    bind_it (sock, PORT_R);
+
+    int status = connect (sock, (void *) & remote, remlen);
+    OK (status == 0);
 
     return sock;
 }
+
+//    logi ("%s", socket_errstr ());
