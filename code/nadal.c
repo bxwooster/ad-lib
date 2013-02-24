@@ -2,36 +2,29 @@ int main (int argc, char * argv []) {
     (void) argc;
     (void) argv; /* silence the warnings */
 
+    char data [4] = "yes.";
     logi ("Hi, I'm Rafael.");
     socket_init ();
 
     SOCKET sock = socket_querier ();
 
-    unsigned long number = 0xF00DCAFE;
-    int status = send (sock, (void *) & number, sizeof (number), 0);
-    logi ("Rafael sent.", socket_errstr ());
+    int status = send (sock, (void *) & data, sizeof (data), 0);
 	OK (status > 0);
 
-    number = 0;
-
     struct sockaddr_in address = {0};
-    int addrlen = sizeof (address);
-
+    socklen_t addrlen = sizeof (address);
 	address.sin_family = AF_UNSPEC;
+    /*dis*/connect (sock, (void *) & address, addrlen);
 
-	connect (sock, (void *) & address, addrlen);
-
-	logi ("Rafael listening.", socket_errstr ());
-    status = recvfrom (sock, (void *) & number, sizeof (number), 0,
+    status = recvfrom (sock, (void *) & data, sizeof (data), 0,
             (void *) & address, & addrlen);
 	OK (status > 0);
 
-    logi ("Rafael: Number %x from IP %s, port %hu!", number,
+    logi ("Rafael: Data %.*s from IP %s, port %hu!", sizeof (data), data,
             inet_ntoa (address.sin_addr),
             ntohs (address.sin_port));
 
     socket_close (sock);
-
     logi ("Rafael out.");
     return 0;
 }
