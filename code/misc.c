@@ -47,3 +47,10 @@ char * load_file (char const * filename) {
 
     return contents;
 }
+
+#ifdef WINDOWS
+    unsigned int sleep (unsigned int sec) {
+        Sleep (sec * 1000);
+        return 0; 
+    }
+#endif

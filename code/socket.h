@@ -1,5 +1,7 @@
 #ifndef WINDOWS
 	typedef int SOCKET;
+#else
+	typedef int socklen_t;
 #endif
 
 void socket_init (void);

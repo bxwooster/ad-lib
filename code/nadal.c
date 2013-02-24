@@ -19,7 +19,7 @@ int main (int argc, char * argv []) {
 
 	address.sin_family = AF_UNSPEC;
 
-	connect (sock, & address, addrlen);
+	connect (sock, (void *) & address, addrlen);
 
 	logi ("Rafael listening.", socket_errstr ());
     status = recvfrom (sock, (void *) & number, sizeof (number), 0,
