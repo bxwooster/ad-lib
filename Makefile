@@ -93,7 +93,14 @@ ifneq ($(filter socket,$(files)),)
         link_flags += -lwsock32
         includes += winsock.h
     else
-		includes += sys/socket.h netinet/in.h arpa/inet.h
+	    includes += \
+					sys/socket.h \
+					netinet/in.h \
+					arpa/inet.h \
+
+    endif
+    ifeq ($(platform),linux)
+		defines += _GNU_SOURCE # ip_mreq needs it
     endif
 endif
 
