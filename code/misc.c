@@ -48,7 +48,7 @@ char * load_file (char const * filename) {
     return contents;
 }
 
-#ifdef WINDOWS
+#ifdef WINVER
     unsigned int sleep (unsigned int sec) {
         Sleep (sec * 1000);
         return 0; 

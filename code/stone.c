@@ -1,9 +1,9 @@
 #define M_PI 3.14159265358979323846
 
 /* The Konstants! */
-#define k_turn_transition_delay 1.5f
-#define k_planet_size_minifier 0.9f
-#define k_round_cell_segments 64
+float const k_turn_transition_delay = 1.5f;
+float const k_planet_size_minifier = 0.9f;
+unsigned k_round_cell_segments = 64;
 
 /******************************************************************************/
 
