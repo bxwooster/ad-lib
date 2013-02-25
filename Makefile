@@ -47,6 +47,11 @@ else ifeq ($(program),lunar)
     features += \
                 lua \
 
+else ifeq ($(program),watch)
+
+    files += \
+             misc \
+
 endif
 
 ################################################################################
@@ -86,6 +91,12 @@ link_flags += -lm
 ifeq ($(platform),windows)
     exe_suffix := .exe
 	includes += malloc.h
+endif
+
+ifeq ($(program),watch)
+    ifeq ($(platform),windows)
+        includes += windows.h
+    endif
 endif
 
 ifneq ($(filter socket,$(files)),)
