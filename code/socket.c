@@ -38,12 +38,6 @@ char const * socket_errstr (void) {
 #endif
 }
 
-void socket_close (SOCKET sock) {
-    int status = closesocket (sock);
-    if (status != 0) logi ("While closing a socket this happened: %s",
-            socket_errstr ());
-}
-
 /******************************************************************************/
 
 void connect_it (SOCKET sock) {
@@ -141,7 +135,8 @@ void udp_go (SOCKET sock, struct sockaddr_in * remote, socklen_t * remlen) {
     *remlen = addrlen;
 }
 
-SOCKET socket_queriee (void) {
+void server (void) {
+    // UDP
     {
         SOCKET sock = sock_it ();
 
@@ -149,7 +144,7 @@ SOCKET socket_queriee (void) {
         bind_it (sock, PORT_E);
         udp_wait (sock);
 
-        socket_close (sock);
+        closesocket (sock);
     }
 
     SOCKET sock = socket (PF_INET, SOCK_STREAM, 0);
@@ -165,10 +160,11 @@ SOCKET socket_queriee (void) {
     OK (real != INVALID_SOCKET);
     closesocket (sock);
     
-    return real;
+    sleep (1);
+    closesocket (real);
 }
 
-SOCKET socket_querier (void) {
+void client (void) {
     struct sockaddr_in remote;
     socklen_t remlen;
     {
@@ -178,19 +174,45 @@ SOCKET socket_querier (void) {
         connect_it (sock);
         udp_go (sock, & remote, & remlen);
 
-        socket_close (sock);
+        closesocket (sock);
     }
 
     sleep (1);
 
-    SOCKET sock = socket (PF_INET, SOCK_STREAM, 0);
-    OK (sock != INVALID_SOCKET);
-    bind_it (sock, PORT_R);
+    SOCKET real = socket (PF_INET, SOCK_STREAM, 0);
+    OK (real != INVALID_SOCKET);
+    bind_it (real, PORT_R);
 
-    int status = connect (sock, (void *) & remote, remlen);
+    int status = connect (real, (void *) & remote, remlen);
     OK (status == 0);
 
-    return sock;
+    closesocket (real);
 }
 
+uint8_t const TYPE_PULL = 1;
+
+struct packet {
+    uint8_t type;
+    uint8_t size;
+    uint8_t data [0];
+};
+
+void more_code (void) {
+    SOCKET sock = INVALID_SOCKET;
+
+    char filename [] = "data/galaxy";
+    unsigned size = strlen (filename);
+
+    size_t packlen = sizeof (struct packet) + size;
+    struct packet * pack = malloc (packlen);
+    pack->type = TYPE_PULL;
+    pack->size = size;
+    memcpy (pack->data, filename, size);
+
+    size_t sent = send (sock, (void *) pack, packlen, 0);
+    OK (sent == packlen);
+
+    closesocket (sock);
+
+}
 //    logi ("%s", socket_errstr ());

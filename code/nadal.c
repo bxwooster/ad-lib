@@ -4,9 +4,7 @@ int main (int argc, char * argv []) {
     logi ("Hi, I'm Rafael.");
 
     socket_init ();
-    SOCKET sock = socket_querier ();
-    sleep (5);
-    socket_close (sock);
+    client ();
 
     logi ("Rafael out.");
     return 0;
