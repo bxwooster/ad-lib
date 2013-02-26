@@ -46,23 +46,8 @@ void connect_it (SOCKET sock) {
     saddr.sin_port = htons (PORT_E);
     saddr.sin_addr.s_addr = inet_addr (ADDRESS);
 
-    int status = connect (sock, (const struct sockaddr *) &saddr, sizeof (saddr));
-    if (status < 0) {
-        logi("Connect isn't behaving all too well. %s!",
-                socket_errstr ());
-		OK (0);
-    }
-}
-
-SOCKET sock_it (void) {
-    SOCKET sock = socket (PF_INET, SOCK_DGRAM, 0);
-    if (sock == INVALID_SOCKET) {
-        logi ("My socket has a problem, namely. %s!",
-                socket_errstr ());
-		OK (0);
-    }
-
-	return sock;
+    int status = connect (sock, (void *) &saddr, sizeof (saddr));
+    OK (status == 0);
 }
 
 void multi_it (SOCKET sock) {
@@ -72,11 +57,7 @@ void multi_it (SOCKET sock) {
 
     int status = setsockopt (sock, IPPROTO_IP, IP_ADD_MEMBERSHIP,
             (void *) &imreq, sizeof (imreq));
-    if (status < 0) {
-        logi("Setsockopt has made a grave mistake. %s!",
-                socket_errstr ());
-		OK (0);
-    }
+    OK (status == 0);
 }
 
 void bind_it (SOCKET sock, unsigned port) {
@@ -86,11 +67,7 @@ void bind_it (SOCKET sock, unsigned port) {
     saddr.sin_addr.s_addr = INADDR_ANY;
 
     int status = bind (sock, (const struct sockaddr *) &saddr, sizeof (saddr));
-    if (status < 0) {
-        logi("Bind isn't behaving all too well. %s!",
-                socket_errstr () );
-		OK (0);
-    }
+    OK (status == 0);
 }
 
 void udp_wait (SOCKET sock) {
@@ -138,10 +115,13 @@ void udp_go (SOCKET sock, struct sockaddr_in * remote, socklen_t * remlen) {
 void server (void) {
     // UDP
     {
-        SOCKET sock = sock_it ();
+        SOCKET sock = socket (PF_INET, SOCK_DGRAM, 0);
+        OK (sock != INVALID_SOCKET);
 
         multi_it (sock);
+
         bind_it (sock, PORT_E);
+
         udp_wait (sock);
 
         closesocket (sock);
@@ -149,6 +129,7 @@ void server (void) {
 
     SOCKET sock = socket (PF_INET, SOCK_STREAM, 0);
     OK (sock != INVALID_SOCKET);
+
     bind_it (sock, PORT_E);
 
     int status = listen (sock, 1);
@@ -156,11 +137,16 @@ void server (void) {
 
     struct sockaddr_in address = {0};
     socklen_t addrlen = sizeof (address);
+
     SOCKET real = accept (sock, (void *) & address, & addrlen);
     OK (real != INVALID_SOCKET);
     closesocket (sock);
-    
-    sleep (1);
+
+    logi ("Got TCP connection from IP %s, port %hu",
+            inet_ntoa (address.sin_addr),
+            ntohs (address.sin_port));
+
+    sleep (2);
     closesocket (real);
 }
 
@@ -168,26 +154,34 @@ void client (void) {
     struct sockaddr_in remote;
     socklen_t remlen;
     {
-        SOCKET sock = sock_it ();
+        SOCKET sock = socket (PF_INET, SOCK_DGRAM, 0);
+        OK (sock != INVALID_SOCKET);
 
         bind_it (sock, PORT_R);
+
         connect_it (sock);
+
         udp_go (sock, & remote, & remlen);
 
         closesocket (sock);
     }
 
-    sleep (1);
-
     SOCKET real = socket (PF_INET, SOCK_STREAM, 0);
     OK (real != INVALID_SOCKET);
+
     bind_it (real, PORT_R);
+
+    sleep (1);
 
     int status = connect (real, (void *) & remote, remlen);
     OK (status == 0);
 
+    sleep (1);
+
     closesocket (real);
 }
+
+/******************************************************************************/
 
 uint8_t const TYPE_PULL = 1;
 
@@ -215,4 +209,3 @@ void more_code (void) {
     closesocket (sock);
 
 }
-//    logi ("%s", socket_errstr ());
