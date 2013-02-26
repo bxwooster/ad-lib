@@ -166,18 +166,33 @@ all_source += code/$(program).c
 all_source += $(addprefix code/,$(addsuffix .c,$(files)))
 all_headers += $(addprefix code/,$(addsuffix .h,$(files)))
 
-cc := gcc
 prefixed_defines := $(addprefix -D,$(defines))
 
 base_dir := .build
 platform_dir := $(base_dir)/$(platform)
 output_dir := $(platform_dir)/output
 package_dir := $(platform_dir)/package
+config_dir := .config/$(platform)
+config_include_dir := $(config_dir)/include
+config_lib_dir := $(config_dir)/lib
 
 exe := $(output_dir)/$(program)$(exe_suffix)
 package_archive := $(platform_dir)/package.tar.bz2
 
 include_flags := $(addprefix -include ,$(includes) $(all_headers))
+
+cc := gcc
+cflags := -std=c99 \
+	-Wall \
+	-Wextra \
+	-Wno-missing-field-initializers \
+	-Wno-missing-braces \
+	-I$(config_include_dir) \
+	-L$(config_lib_dir) \
+	$(include_flags) \
+	$(optimization) \
+	$(link_flags) \
+	$(prefixed_defines) \
 
 ################################################################################
 
@@ -205,11 +220,12 @@ export
 
 $(exe): code $(all_source) $(all_headers) | $(output_dir)
 	@echo "Making the executable..."
-	@tools/exe.sh
+	@$(cc) -o $(exe) $(all_source) $(cflags)
 
 $(package_archive): $(exe) | $(package_dir)
-	echo "Making '$(package_archive)'..."
-	@tools/package_archive.sh
+	@echo "Making '$(package_archive)'..."
+	@cp -r $(exe) data mode art $(package_dir)
+	@tar -cj $(package_dir) -f $(package_archive)
 
 $(output_dir): | $(platform_dir)
 	mkdir $(output_dir)
