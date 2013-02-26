@@ -3,7 +3,8 @@
 /* The Konstants! */
 float const k_turn_transition_delay = 1.5f;
 float const k_planet_size_minifier = 0.9f;
-unsigned k_round_cell_segments = 64;
+unsigned const k_round_cell_segments = 64;
+float const k_camera_speed = 0.05f;
 
 /******************************************************************************/
 
@@ -130,6 +131,12 @@ struct input {
         float y;
         uint8_t buttons;
     } mouse;
+    struct {
+        char up;
+        char down;
+        char left;
+        char right;
+    } arrows;
 };
 
 /******************************************************************************/
@@ -462,6 +469,13 @@ advance_framestate (
 
     char lock = (I->mouse.buttons & SDL_BUTTON (1)) != 0;
 
+    float delta = k_camera_speed;
+    // note: need to multiply by Dt, actually
+    if (I->arrows.up) S->mov.column.w.element.y -= delta;
+    if (I->arrows.down) S->mov.column.w.element.y += delta;
+    if (I->arrows.left) S->mov.column.w.element.x -= delta;
+    if (I->arrows.right) S->mov.column.w.element.x += delta;
+
     if (S->lock != 0) {
         float dx = px - S->pan.x;
         float dy = py - S->pan.y;
@@ -646,6 +660,13 @@ poll_SDLevents (
             currently->halt = 1;
         }
     }
+
+    Uint8 * keys = SDL_GetKeyboardState (NULL);
+
+    currently->arrows.up = keys[SDL_SCANCODE_UP];
+    currently->arrows.down = keys[SDL_SCANCODE_DOWN];
+    currently->arrows.left = keys[SDL_SCANCODE_LEFT];
+    currently->arrows.right = keys[SDL_SCANCODE_RIGHT];
 }
 
 mat4
