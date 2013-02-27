@@ -80,7 +80,7 @@ struct stone_engine {
     mat4 mproj;
     struct GLvbo_and_size imposter;
     GLuint cell_vbo;
-    struct planetB * galaxy;
+    struct planet * galaxy;
     struct galaxy_helper * gh;
     unsigned galaxy_size;
     struct planet_DD * planet_memory;
@@ -408,7 +408,7 @@ stone_init (struct GL * gl, struct SDL * sdl, struct IMG * img) {
     E->galaxy_size = 16;
 
     E->galaxy =
-        malloc (E->galaxy_size * sizeof (struct planetB));
+        malloc (E->galaxy_size * sizeof (struct planet));
     E->gh =
         malloc (E->galaxy_size * sizeof (struct galaxy_helper));
     E->planet_memory =
@@ -523,7 +523,7 @@ galaxy_prepare (
     struct galaxy_helper result;
 
     struct framestate const * S = & E->state;
-    struct planetB const * planet = E->galaxy + planet_number;
+    struct planet const * planet = E->galaxy + planet_number;
 
     if (planet_number == 0) {
         result.transform = mat4_identity ();
@@ -569,20 +569,36 @@ generate_frame_DD (
     };
 }
 
+mat4
+planet_dayrotation (
+        struct stone_engine * E,
+        struct planet_day const * day
+) {
+    float theta = (float) ((E->time / day->period) * M_PI * 2.0);
+
+    mat4 out = mat4_identity ();
+    out.column.w.v3 = (vec3) {{0}};
+    return mat4_rotated_aa (& out, & day->axis, theta);
+}
+
 struct planet_DD
 generate_planet_DD (
-    struct planet_ID const * pid,
-    struct frame_DD const * framedata
+        struct stone_engine * E,
+        struct frame_DD * framedata,
+        unsigned planet_number
 ) {
-    mat4 mmodel = pid->mmodel;
-    mat4 mrot = pid->mrot;
+    struct galaxy_helper * helper = E->gh + planet_number;
+    struct planet * planet = E->galaxy + planet_number;
+
+    mat4 mmodel = helper->transform;
+    mat4 mrot = planet_dayrotation (E, & planet->day);
 
     vec3 first = vec3_diff (
         & mmodel.column.w.v3,
         & framedata->viewi.column.w.v3);
 
     float p = vec3_length (& first);
-    float r = pid->size;
+    float r = helper->size;
     float apparent = sqrtf (p * p - r * r) * r / p;
     float apparentratio = apparent / r;
     float offset = (r * r) / p;
@@ -618,7 +634,7 @@ generate_planet_DD (
         hack,
         apparentratio,
         0, // texture, not correct at all
-        pid->colour
+        planet->colour
     };
 
     return data;
@@ -669,36 +685,13 @@ poll_SDLevents (
     currently->arrows.right = keys[SDL_SCANCODE_RIGHT];
 }
 
-mat4
-planet_dayrotation (
-        struct planet_day const * day,
-        struct stone_engine * E
-) {
-    float theta = (float) ((E->time / day->period) * M_PI * 2.0);
-
-    mat4 out = mat4_identity ();
-    out.column.w.v3 = (vec3) {{0}};
-    return mat4_rotated_aa (& out, & day->axis, theta);
-}
-
 void moduleB (struct stone_engine * E, struct frame_DD * framedata) {
     for (unsigned i = 0; i < E->galaxy_size; ++i) {
         E->gh[i] = galaxy_prepare (E, i);
     }
 
     for (unsigned i = 0; i < E->galaxy_size; ++i) {
-        struct planet_ID pid;
-        struct planetB const * planet = E->galaxy + i;
-
-        pid.mmodel = E->gh[i].transform;
-        pid.mrot = planet_dayrotation (& planet->day, E);
-        pid.colour = planet->colour;
-        pid.size = E->gh[i].size;
-
-        E->planet_memory[i] = generate_planet_DD (
-                & pid,
-                framedata
-        );
+        E->planet_memory[i] = generate_planet_DD (E, framedata, i);
     }
 }
 

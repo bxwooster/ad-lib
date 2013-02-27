@@ -16,7 +16,7 @@ int main (int argc, char * argv []) {
 
     gl = init_GL (& sdl);
     OK (gl.ready);
-    
+
     struct stone_engine * E = stone_init (& gl, & sdl, & img);
 
     /* All systems go! */

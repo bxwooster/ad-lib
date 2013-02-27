@@ -3,7 +3,7 @@ struct planet_day {
     float period;
 };
 
-struct planetB {
+struct planet {
     char name [16];
     struct {
         unsigned parent_index;
@@ -18,6 +18,6 @@ struct planetB {
 int // status
 galaxy_parse (
         char const * in,
-        struct planetB galaxy [],
+        struct planet galaxy [],
         unsigned * count
 );

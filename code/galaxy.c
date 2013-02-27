@@ -1,7 +1,7 @@
 int // status
 galaxy_parse (
         char const * in,
-        struct planetB galaxy [],
+        struct planet galaxy [],
         unsigned * count
 ) {
     int read = 0;
@@ -9,7 +9,7 @@ galaxy_parse (
     char name [16];
     char where [22];
 
-    struct planetB * a = galaxy;
+    struct planet * a = galaxy;
     unsigned left = *count;
     *count = 0;
 
