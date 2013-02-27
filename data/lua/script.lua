@@ -1,5 +1,7 @@
--- script.lua
--- Receives a table, returns the sum of its components.
+local ffi = require ("ffi")
+ffi.cdef [[void test (void)]]
+ffi.C.test ()
+-- Sample code below
 io.write("The table the script received has:\n");
 x = 0
 for i = 1, #foo do

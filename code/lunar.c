@@ -1,3 +1,9 @@
+#define API __declspec (dllexport)
+
+API void test (void) {
+    logi ("Yep. It works.");
+}
+
 int main (void) {
     lua_State * L = luaL_newstate ();
 
