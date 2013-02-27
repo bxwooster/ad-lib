@@ -699,6 +699,9 @@ void moduleC (struct stone_engine * E, struct frame_DD * framedata) {
     struct glts_cello const * shader = & E->sh_ce;
 
     glDepthMask (GL_FALSE);
+    glEnable (GL_BLEND);
+    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     glUseProgram (shader->program);
 
     srand(1); // color hack!
@@ -776,9 +779,6 @@ void moduleC (struct stone_engine * E, struct frame_DD * framedata) {
                     (& framedata->viewproj, & transform);
                 glUniformMatrix4fv (shader->Umvp, 1, GL_FALSE, mvp.p);
 
-                glEnable (GL_BLEND);
-                glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
                 glUniform1f (shader->Ucutout_radius,
                         q == j ? 0.0f : E->gh[q].supersize);
                 glUniform2fv (shader->Ucutout_center, 1, cutout_center.p);
@@ -797,8 +797,6 @@ int closest_planet_DD (void const * a, void const * b) {
 }
 
 void moduleP (struct stone_engine * E) {
-    glDisable (GL_BLEND);
-
     qsort (E->planet_memory, E->galaxy_size,
             sizeof (struct planet_DD), closest_planet_DD);
 
@@ -815,7 +813,10 @@ void moduleP (struct stone_engine * E) {
     E->gl->vertices = E->imposter.size;
 
     glDepthMask (GL_TRUE);
+    glDisable (GL_BLEND);
+
     glUseProgram (shader->program);
+
     glVertexAttribPointer (shader->Apos2d, 2, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray (shader->Apos2d);
 
