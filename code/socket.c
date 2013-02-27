@@ -112,6 +112,92 @@ void udp_go (SOCKET sock, struct sockaddr_in * remote, socklen_t * remlen) {
     *remlen = addrlen;
 }
 
+/******************************************************************************/
+
+uint8_t const TYPE_PULL_REQUEST = 1;
+uint8_t const TYPE_PULL_RESPONSE = 2;
+
+struct packet {
+    uint8_t type;
+    uint8_t id;
+    uint8_t size;
+    uint8_t data [0];
+} __attribute__((packed)); 
+
+void client (void) {
+    struct sockaddr_in remote;
+    socklen_t remlen;
+    {
+        SOCKET sock = socket (PF_INET, SOCK_DGRAM, 0);
+        OK (sock != INVALID_SOCKET);
+
+        bind_it (sock, PORT_R);
+
+        connect_it (sock);
+
+        udp_go (sock, & remote, & remlen);
+
+        closesocket (sock);
+    }
+
+    SOCKET real = socket (PF_INET, SOCK_STREAM, 0);
+    OK (real != INVALID_SOCKET);
+
+    bind_it (real, PORT_R);
+
+    sleep (1);
+
+    int status = connect (real, (void *) & remote, remlen);
+    OK (status == 0);
+
+    sleep (1);
+
+    // snippet 1
+    {
+        char filename [] = "data/galaxy";
+        unsigned size = strlen (filename);
+
+        size_t packlen = sizeof (struct packet) + size;
+        struct packet * pack = malloc (packlen);
+        pack->type = TYPE_PULL_REQUEST;
+        pack->id = 1;
+        pack->size = size;
+        memcpy (pack->data, filename, size);
+
+        size_t sent;
+        for (size_t offset = 0; offset < packlen; offset += sent) {
+            char * buffer = (char *) pack + offset;
+            size_t left = packlen - offset;
+            sent = send (real, (void *) buffer, left, 0);
+            OK (sent > 0);
+        }
+
+        free (pack);
+    }
+
+    // snippet 2
+    {
+        char rawbuf [1024];
+        char * buffer = rawbuf;
+        struct packet * pack = (void *) buffer; // alias
+
+        int status = recv (real, (void *) buffer, sizeof (*pack), 0);
+        OK (status == sizeof (*pack));
+        OK (pack->type == TYPE_PULL_RESPONSE);
+        buffer += sizeof (*pack);
+
+        status = recv (real, (void *) buffer, pack->size, 0);
+        OK (status == pack->size);
+        buffer[pack->size] = '\0';
+
+        logi ("Answer is %s", pack->data);
+    }
+
+    sleep (1);
+
+    closesocket (real);
+}
+
 void server (void) {
     // UDP
     {
@@ -146,66 +232,49 @@ void server (void) {
             inet_ntoa (address.sin_addr),
             ntohs (address.sin_port));
 
-    sleep (2);
-    closesocket (real);
-}
-
-void client (void) {
-    struct sockaddr_in remote;
-    socklen_t remlen;
+    // snippet 1
     {
-        SOCKET sock = socket (PF_INET, SOCK_DGRAM, 0);
-        OK (sock != INVALID_SOCKET);
+        char rawbuf [1024];
+        char * buffer = rawbuf;
+        struct packet * pack = (void *) buffer; // alias
 
-        bind_it (sock, PORT_R);
+        int status = recv (real, (void *) buffer, sizeof (*pack), 0);
+        OK (status == sizeof (*pack));
+        OK (pack->type == TYPE_PULL_REQUEST);
+        buffer += sizeof (*pack);
 
-        connect_it (sock);
+        status = recv (real, (void *) buffer, pack->size, 0);
+        OK (status == pack->size);
+        buffer[pack->size] = '\0';
 
-        udp_go (sock, & remote, & remlen);
-
-        closesocket (sock);
+        logi ("Question is %s", pack->data);
     }
 
-    SOCKET real = socket (PF_INET, SOCK_STREAM, 0);
-    OK (real != INVALID_SOCKET);
+    // snippet 2
+    {
+        char answer [] = "ridiculous!";
+        unsigned size = strlen (answer);
 
-    bind_it (real, PORT_R);
+        size_t packlen = sizeof (struct packet) + size;
+        struct packet * pack = malloc (packlen);
+        pack->type = TYPE_PULL_RESPONSE;
+        pack->id = 1;
+        pack->size = size;
+        memcpy (pack->data, answer, size);
 
-    sleep (1);
+        size_t sent;
+        for (size_t offset = 0; offset < packlen; offset += sent) {
+            char * buffer = (char *) pack + offset;
+            size_t left = packlen - offset;
+            sent = send (real, (void *) buffer, left, 0);
+            OK (sent > 0);
+        }
 
-    int status = connect (real, (void *) & remote, remlen);
-    OK (status == 0);
+        free (pack);
+    }
 
     sleep (1);
 
     closesocket (real);
 }
 
-/******************************************************************************/
-
-uint8_t const TYPE_PULL = 1;
-
-struct packet {
-    uint8_t type;
-    uint8_t size;
-    uint8_t data [0];
-};
-
-void more_code (void) {
-    SOCKET sock = INVALID_SOCKET;
-
-    char filename [] = "data/galaxy";
-    unsigned size = strlen (filename);
-
-    size_t packlen = sizeof (struct packet) + size;
-    struct packet * pack = malloc (packlen);
-    pack->type = TYPE_PULL;
-    pack->size = size;
-    memcpy (pack->data, filename, size);
-
-    size_t sent = send (sock, (void *) pack, packlen, 0);
-    OK (sent == packlen);
-
-    closesocket (sock);
-
-}
