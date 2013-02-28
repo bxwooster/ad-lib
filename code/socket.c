@@ -119,7 +119,7 @@ uint8_t const TYPE_PULL_RESPONSE = 2 | 1;
 
 struct packet {
     uint8_t type;
-    uint8_t id;
+    uint32_t id;
     uint32_t size;
     uint8_t data [0];
 } __attribute__((packed)); 
@@ -175,40 +175,44 @@ void client (void) {
 
     sleep (1);
 
-    struct packet original;
-    // snippet 1
-    {
-        char filename [] = "data/galaxy";
-        size_t size = strlen (filename);
+    uint32_t last_id = 0;
+    for (;;) {
+        struct packet original;
+        /* question */
+        {
+            char filename [] = "data/galaxy";
+            size_t size = strlen (filename);
 
-        size_t packlen = sizeof (struct packet) + size;
-        struct packet * pack = malloc (packlen);
-        OK (pack != NULL);
-        pack->type = TYPE_PULL_REQUEST;
-        pack->id = 1;
-        pack->size = htonl (size);
-        memcpy (pack->data, filename, size);
+            size_t packlen = sizeof (struct packet) + size;
+            struct packet * pack = malloc (packlen);
+            OK (pack != NULL);
+            pack->type = TYPE_PULL_REQUEST;
+            pack->id = htonl (++last_id);
+            pack->size = htonl (size);
+            memcpy (pack->data, filename, size);
 
-        send_it (real, pack, packlen);
-        original = *pack;
+            send_it (real, pack, packlen);
+            original = *pack;
 
-        free (pack);
+            free (pack);
+        }
+
+        /* answer */
+        {
+            char rawbuf [1024];
+            struct packet * pack = (void *) rawbuf; // alias
+
+            recv_it (real, pack, 1024);
+
+            OK (pack->id == original.id);
+            OK (pack->type == (original.type | 1));
+
+            pack->data[ntohl (pack->size)] = '\0';
+            logi ("Answer is %s", pack->data);
+        }
+
+        sleep (1);
     }
-
-    {
-        char rawbuf [1024];
-        struct packet * pack = (void *) rawbuf; // alias
-
-        recv_it (real, pack, 1024);
-
-        OK (pack->id == original.id);
-        OK (pack->type == (original.type | 1));
-
-        pack->data[ntohl (pack->size)] = '\0';
-        logi ("Answer is %s", pack->data);
-    }
-
-    sleep (1);
 
     closesocket (real);
 }
@@ -247,36 +251,42 @@ void server (void) {
             inet_ntoa (address.sin_addr),
             ntohs (address.sin_port));
 
-    struct packet original;
-    // snippet 2
-    {
-        char rawbuf [1024];
-        struct packet * pack = (void *) rawbuf; // alias
+    uint32_t last_id = 0;
+    for (;;) {
+        struct packet original;
+        /* question */
+        {
+            char rawbuf [1024];
+            struct packet * pack = (void *) rawbuf; // alias
 
-        recv_it (real, pack, 1024);
-        OK (pack->type == TYPE_PULL_REQUEST);
-        original = *pack;
+            recv_it (real, pack, 1024);
+            OK (pack->type == TYPE_PULL_REQUEST);
+            uint32_t id = ntohl (pack->id);
+            OK (id > last_id);
+            last_id = id;
+            original = *pack;
 
-        pack->data[ntohl (pack->size)] = '\0';
-        logi ("Question is %s", pack->data);
-    }
+            pack->data[ntohl (pack->size)] = '\0';
+            logi ("Question is %s", pack->data);
+        }
 
-    // snippet 1
-    {
-        char answer [] = "ridiculous!";
-        unsigned size = strlen (answer);
+        /* answer */
+        {
+            char answer [] = "ridiculous!";
+            unsigned size = strlen (answer);
 
-        size_t packlen = sizeof (struct packet) + size;
-        struct packet * pack = malloc (packlen);
-        OK (pack != NULL);
-        pack->type = original.type | 1;
-        pack->id = original.id;
-        pack->size = htonl (size);
-        memcpy (pack->data, answer, size);
+            size_t packlen = sizeof (struct packet) + size;
+            struct packet * pack = malloc (packlen);
+            OK (pack != NULL);
+            pack->type = original.type | 1;
+            pack->id = original.id;
+            pack->size = htonl (size);
+            memcpy (pack->data, answer, size);
 
-        send_it (real, pack, packlen);
+            send_it (real, pack, packlen);
 
-        free (pack);
+            free (pack);
+        }
     }
 
     sleep (1);
