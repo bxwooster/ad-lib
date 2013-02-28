@@ -208,7 +208,7 @@ void client (void) {
             OK (pack->type == (original.type | 1));
 
             pack->data[ntohl (pack->size)] = '\0';
-            logi ("Answer is %s", pack->data);
+            logi ("Answer (truncated to 10c) is %.10s", pack->data);
         }
 
         sleep (1);
@@ -255,6 +255,7 @@ void server (void) {
     for (;;) {
         struct packet original;
         /* question */
+        char * question;
         {
             char rawbuf [1024];
             struct packet * pack = (void *) rawbuf; // alias
@@ -268,11 +269,12 @@ void server (void) {
 
             pack->data[ntohl (pack->size)] = '\0';
             logi ("Question is %s", pack->data);
+            question = (char *) pack->data;
         }
 
         /* answer */
         {
-            char answer [] = "ridiculous!";
+            char * answer = load_file (question);
             unsigned size = strlen (answer);
 
             size_t packlen = sizeof (struct packet) + size;
