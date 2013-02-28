@@ -1,9 +1,8 @@
-tags
 *.swp
-.tags
+.ctags
 /.build/
-/art/
 /.config/
+/art/
 .DS_Store
 project.xcworkspace/
 xcuserdata/

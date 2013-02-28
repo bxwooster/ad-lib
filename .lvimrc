@@ -3,8 +3,9 @@ if exists('s:guard') == 0 " guard
 let s:guard = 1
 let s:thispath = expand('<sfile>:p:h')
 let s:flags = '--c-kinds=fgstuv'
+let s:file = './.ctags'
 
-set tags=./.tags;
+set tags=./.ctags;
 
 function s:sys(cmd)
   let pref = 'cd ' . s:thispath . '; '
@@ -15,7 +16,7 @@ function s:sys(cmd)
 endfunction
 
 function AL_make(what)
-  execute 'make -C' . s:thispath . '/.. ' . a:what
+  execute 'make -C' . s:thispath . '/. ' . a:what
 endfunction
 
 function AL_update_tags()
@@ -30,13 +31,13 @@ function AL_update_tags()
     let cmd = 'sed -i "/' . efile . '/d" tags'
     call s:sys(cmd)
 
-    let cmd = 'ctags -f .tags -a ' . s:flags . ' "' . file . '"'
+    let cmd = 'ctags -f ' . s:file . ' -a ' . s:flags . ' "' . file . '"'
     call s:sys(cmd)
 endfunction
 
 function AL_do_tags()
   if filereadable(s:thispath . '/ctags') == 0
-    let cmd = 'ctags -f .tags -R ' . s:flags . ' *'
+    let cmd = 'ctags -f ' . s:file . ' -R ' . s:flags . ' code'
     call s:sys(cmd)
   endif
 endfunction
