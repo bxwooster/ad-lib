@@ -32,12 +32,14 @@ else ifeq ($(program),nadal)
     files += \
              misc \
              socket \
+             hot \
 
 else ifeq ($(program),federer)
 
     files += \
              misc \
              socket \
+             hot \
 
 else ifeq ($(program),lunar)
 
