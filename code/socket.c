@@ -114,15 +114,38 @@ void udp_go (SOCKET sock, struct sockaddr_in * remote, socklen_t * remlen) {
 
 /******************************************************************************/
 
-uint8_t const TYPE_PULL_REQUEST = 1;
-uint8_t const TYPE_PULL_RESPONSE = 2;
+uint8_t const TYPE_PULL_REQUEST  = 2 | 0;
+uint8_t const TYPE_PULL_RESPONSE = 2 | 1;
 
 struct packet {
     uint8_t type;
     uint8_t id;
-    uint8_t size;
+    uint32_t size;
     uint8_t data [0];
 } __attribute__((packed)); 
+
+void send_it (SOCKET real, struct packet * pack, size_t packlen) {
+    size_t sent;
+    for (size_t offset = 0; offset < packlen; offset += sent) {
+        char * buffer = (char *) pack + offset;
+        size_t left = packlen - offset;
+        sent = send (real, (void *) buffer, left, 0);
+        OK (sent > 0);
+    }
+}
+
+void recv_it (SOCKET real, struct packet * pack, size_t maxlen) {
+    char * buffer = (void *) pack;
+    OK (maxlen > sizeof (*pack));
+
+    int status = recv (real, (void *) buffer, sizeof (*pack), 0);
+    OK (status == sizeof (*pack));
+    buffer += sizeof (*pack);
+
+    size_t size = ntohl (pack->size);
+    ssize_t recd = recv (real, (void *) buffer, size, 0);
+    OK ((size_t) recd == size);
+}
 
 void client (void) {
     struct sockaddr_in remote;
@@ -152,44 +175,36 @@ void client (void) {
 
     sleep (1);
 
+    struct packet original;
     // snippet 1
     {
         char filename [] = "data/galaxy";
-        unsigned size = strlen (filename);
+        size_t size = strlen (filename);
 
         size_t packlen = sizeof (struct packet) + size;
         struct packet * pack = malloc (packlen);
+        OK (pack != NULL);
         pack->type = TYPE_PULL_REQUEST;
         pack->id = 1;
-        pack->size = size;
+        pack->size = htonl (size);
         memcpy (pack->data, filename, size);
 
-        size_t sent;
-        for (size_t offset = 0; offset < packlen; offset += sent) {
-            char * buffer = (char *) pack + offset;
-            size_t left = packlen - offset;
-            sent = send (real, (void *) buffer, left, 0);
-            OK (sent > 0);
-        }
+        send_it (real, pack, packlen);
+        original = *pack;
 
         free (pack);
     }
 
-    // snippet 2
     {
         char rawbuf [1024];
-        char * buffer = rawbuf;
-        struct packet * pack = (void *) buffer; // alias
+        struct packet * pack = (void *) rawbuf; // alias
 
-        int status = recv (real, (void *) buffer, sizeof (*pack), 0);
-        OK (status == sizeof (*pack));
-        OK (pack->type == TYPE_PULL_RESPONSE);
-        buffer += sizeof (*pack);
+        recv_it (real, pack, 1024);
 
-        status = recv (real, (void *) buffer, pack->size, 0);
-        OK (status == pack->size);
-        buffer[pack->size] = '\0';
+        OK (pack->id == original.id);
+        OK (pack->type == (original.type | 1));
 
+        pack->data[ntohl (pack->size)] = '\0';
         logi ("Answer is %s", pack->data);
     }
 
@@ -232,43 +247,34 @@ void server (void) {
             inet_ntoa (address.sin_addr),
             ntohs (address.sin_port));
 
-    // snippet 1
+    struct packet original;
+    // snippet 2
     {
         char rawbuf [1024];
-        char * buffer = rawbuf;
-        struct packet * pack = (void *) buffer; // alias
+        struct packet * pack = (void *) rawbuf; // alias
 
-        int status = recv (real, (void *) buffer, sizeof (*pack), 0);
-        OK (status == sizeof (*pack));
+        recv_it (real, pack, 1024);
         OK (pack->type == TYPE_PULL_REQUEST);
-        buffer += sizeof (*pack);
+        original = *pack;
 
-        status = recv (real, (void *) buffer, pack->size, 0);
-        OK (status == pack->size);
-        buffer[pack->size] = '\0';
-
+        pack->data[ntohl (pack->size)] = '\0';
         logi ("Question is %s", pack->data);
     }
 
-    // snippet 2
+    // snippet 1
     {
         char answer [] = "ridiculous!";
         unsigned size = strlen (answer);
 
         size_t packlen = sizeof (struct packet) + size;
         struct packet * pack = malloc (packlen);
-        pack->type = TYPE_PULL_RESPONSE;
-        pack->id = 1;
-        pack->size = size;
+        OK (pack != NULL);
+        pack->type = original.type | 1;
+        pack->id = original.id;
+        pack->size = htonl (size);
         memcpy (pack->data, answer, size);
 
-        size_t sent;
-        for (size_t offset = 0; offset < packlen; offset += sent) {
-            char * buffer = (char *) pack + offset;
-            size_t left = packlen - offset;
-            sent = send (real, (void *) buffer, left, 0);
-            OK (sent > 0);
-        }
+        send_it (real, pack, packlen);
 
         free (pack);
     }
