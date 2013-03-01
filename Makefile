@@ -22,6 +22,7 @@ ifeq ($(program),cosmos)
              libs \
              glts \
              galaxy \
+             util \
              stone \
              socket \
              hot \
