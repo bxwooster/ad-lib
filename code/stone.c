@@ -8,7 +8,9 @@ stony_advance (
         struct stone_engine * E,
         struct input const * I
 ) {
-    struct framestate * S = & E->state;
+    struct framestate * S = E->S;
+
+    S->time = (double) SDL_GetTicks () / 1000;
 
     float dx = I->mouse.x - S->mouse.x;
     float dy = I->mouse.y - S->mouse.y;
@@ -73,10 +75,10 @@ stony_advance (
 
     if (I->next_turn && !S->turn_transition) {
         S->turn_transition = 1;
-        S->turn_transition_ends = E->time + k_turn_transition_delay;
+        S->turn_transition_ends = S->time + k_turn_transition_delay;
     }
 
-    if (S->turn_transition && E->time > S->turn_transition_ends) {
+    if (S->turn_transition && S->time > S->turn_transition_ends) {
         S->turn++;
         S->turn_transition = 0;
     }
@@ -84,8 +86,13 @@ stony_advance (
     S->turn_tail = 0.0f;
     if (S->turn_transition) {
         float ttd = k_turn_transition_delay;
-        S->turn_tail = (E->time - S->turn_transition_ends + ttd) / ttd;
+        S->turn_tail = (S->time - S->turn_transition_ends + ttd) / ttd;
     }
+
+    S->viewi = mat4_multiply (& S->mov, & S->rot);
+
+    mat4 mview = mat4_inverted_rtonly (& S->viewi);
+    S->viewproj = mat4_multiply (& S->proj, & mview);
 }
 
 void
@@ -135,7 +142,7 @@ stony_poll_input (
 
 void stone_moduleB (struct stone_engine * E) {
     for (unsigned i = 0; i < E->G->size; ++i) {
-        struct framestate const * S = & E->state;
+        struct framestate const * S = E->S;
         struct planet const * planet = E->G->planets + i;
 
         if (i == 0) {
@@ -171,7 +178,7 @@ void stone_moduleB (struct stone_engine * E) {
 
         mat4 mmodel = g1->transform;
 
-        float theta = (float) ((E->time / P->day.period) * M_PI * 2.0);
+        float theta = (float) ((E->S->time / P->day.period) * M_PI * 2.0);
 
         mat4 out = mat4_identity ();
         out.column.w.v3 = (vec3) {{0}};
@@ -179,7 +186,7 @@ void stone_moduleB (struct stone_engine * E) {
 
         vec3 first = vec3_diff (
             & mmodel.column.w.v3,
-            & E->viewi.column.w.v3);
+            & E->S->viewi.column.w.v3);
 
         float p = vec3_length (& first);
         float r = g1->size;
@@ -210,7 +217,7 @@ void stone_moduleB (struct stone_engine * E) {
         mmodel = mat4_moved (& mmodel, & move);
         mmodel = mat4_scaled (& mmodel, apparent);
 
-        mat4 mvp = mat4_multiply (& E->viewproj, & mmodel);
+        mat4 mvp = mat4_multiply (& E->S->viewproj, & mmodel);
 
         struct stone_G2 * G2 = E->G2 + i;
         G2->mvp = mvp;
@@ -273,7 +280,7 @@ void stone_moduleC (struct stone_engine * E) {
             glEnableVertexAttribArray (shader->Apos2d);
 
             for (unsigned p = 0; p < orbit_size; ++p) {
-                float posish = 0.5 + p + E->state.turn + E->state.turn_tail;
+                float posish = 0.5 + p + E->S->turn + E->S->turn_tail;
 
                 glUniform1f (shader->Uradius_min, r1);
                 glUniform1f (shader->Uradius_max, r2);
@@ -303,7 +310,7 @@ void stone_moduleC (struct stone_engine * E) {
                     (& cutout, & (vec4) {0,0,0,1});
 
                 mat4 mvp = mat4_multiply
-                    (& E->viewproj, & transform);
+                    (& E->S->viewproj, & transform);
                 glUniformMatrix4fv (shader->Umvp, 1, GL_FALSE, mvp.p);
 
                 glUniform1f (shader->Ucutout_radius,
@@ -328,9 +335,9 @@ void stone_moduleP (struct stone_engine * E) {
             sizeof (struct stone_G2), stone_G2_cmp);
 
     unsigned choice = 0;
-    if (E->state.show_wireframe) {
+    if (E->S->show_wireframe) {
         choice = 2;
-    } else if (E->state.show_normals) {
+    } else if (E->S->show_normals) {
         choice = 1;
     }
 
@@ -410,29 +417,28 @@ stone_init (struct GL * gl, struct SDL * sdl, struct IMG * img) {
     glGenBuffers (1, & E->cell_vbo);
     OK (E->cell_vbo != GL_FALSE);
 
+    E->S = malloc (sizeof (*E->S));
+    OK (E->S != NULL);
+
     float fov = 60.0f;
-    E->mproj = util_projection (sdl->width, sdl->height, fov);
+    E->S->proj = util_projection (sdl->width, sdl->height, fov);
 
     mat4 one = mat4_identity ();
 
     vec3 move = {{0.0f, 1.7f, 1.0f}};
-    E->state.mov = mat4_moved (& one, & move);
+    E->S->mov = mat4_moved (& one, & move);
     
     vec3 axis = {{1.0f, 0.0f, 0.0f}};
     float angle = M_PI * 0.7;
-    E->state.rot = mat4_rotated_aa (& one, & axis, angle);
+    E->S->rot = mat4_rotated_aa (& one, & axis, angle);
 
-    E->state.show_normals = 1;
-    E->time = 0.0;
+    E->S->show_normals = 1;
+    E->S->time = 0.0;
 
     E->G = NULL;
     E->G1 = NULL;
     E->G2 = NULL;
     hot_pull (E->H, "data/galaxy", galaxy_hot, (void *) E);
-
-    glActiveTexture (GL_TEXTURE0);
-    glEnable (GL_DEPTH_TEST);
-    glViewport (0, 0, E->sdl->width, E->sdl->height);
 
     return E;
 }
@@ -453,18 +459,21 @@ void stone_destroy (struct stone_engine * E) {
 
     glDeleteProgram (E->sh_ce.program);
 
+    free (E->S);
     free (E);
 }
 
 char stone_frame (struct stone_engine * E) {
-    hot_check (E->H);
+    glActiveTexture (GL_TEXTURE0);
+    glEnable (GL_DEPTH_TEST);
+    glViewport (0, 0, E->sdl->width, E->sdl->height);
 
     glDepthMask (GL_TRUE);
     glClearColor (0.0, 0.0, 0.0, 0.0);
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     #ifndef GLES
-        GLenum poly_mode = E->state.show_wireframe ? GL_LINE : GL_FILL;
+        GLenum poly_mode = E->S->show_wireframe ? GL_LINE : GL_FILL;
         glPolygonMode(GL_FRONT_AND_BACK, poly_mode);
     #endif
 
@@ -473,23 +482,17 @@ char stone_frame (struct stone_engine * E) {
         logi ("There occurred a GL error, # %d.", error);
     }
 
-    E->time = (double) SDL_GetTicks () / 1000;
-
     struct input physical;
     stony_poll_input (E, & physical);
-    if (physical.halt) return 1;
-
     stony_advance (E, & physical);
-
-    E->viewi = mat4_multiply (& E->state.mov, & E->state.rot);
-    mat4 view = mat4_inverted_rtonly (& E->viewi);
-    E->viewproj = mat4_multiply (& E->mproj, & view);
 
     stone_moduleB (E);
     stone_moduleP (E);
     stone_moduleC (E);
 
     SDL_GL_SwapWindow (E->sdl->window);
+    
+    hot_check (E->H);
 
-    return 0;
+    return physical.halt;
 }

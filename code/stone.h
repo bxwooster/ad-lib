@@ -34,9 +34,13 @@ struct framestate {
     float turn_tail;
     int turn_transition;
     double turn_transition_ends;
+
+    mat4 proj;
+    mat4 viewi;
+    mat4 viewproj;
+
+    double time;
 };
-
-
 
 struct stone_G1 {
     mat4 transform;
@@ -53,29 +57,20 @@ struct stone_G2 {
     vec3 colour;
 };
 
-
-
 struct stone_engine {
+    struct GL * gl;
+    struct SDL * sdl;
     struct hot_player * H;
 
     struct galaxy * G;
     struct stone_G1 * G1;
     struct stone_G2 * G2;
 
+    GLuint tex;
     GLuint cell_vbo;
     struct GLvbo_and_size imposter;
     struct glts_planeta sh_pl [3];
     struct glts_cello sh_ce;
 
-    GLuint tex;
-    mat4 mproj;
-
-    struct GL * gl;
-    struct SDL * sdl;
-
-    struct framestate state;
-    double time;
-
-    mat4 viewi;
-    mat4 viewproj;
+    struct framestate * S;
 };
