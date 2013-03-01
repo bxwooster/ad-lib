@@ -4,7 +4,7 @@ int main (int argc, char * argv []) {
 
     logi ("Hi, I'm Rafael.");
     socket_init ();
-    SOCKET real = hot_player ();
+    SOCKET real = hot_player_socket ();
 
     for (;;) {
         hot_play (real, "data/galaxy");

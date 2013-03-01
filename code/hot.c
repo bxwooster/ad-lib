@@ -109,7 +109,7 @@ void recv_it (SOCKET real, struct packet * pack, size_t maxlen) {
     OK ((size_t) recd == size);
 }
 
-SOCKET hot_player (void) {
+SOCKET hot_player_socket (void) {
     struct sockaddr_in remote;
     socklen_t remlen;
     {
@@ -138,46 +138,7 @@ SOCKET hot_player (void) {
     return real;
 }
 
-char * hot_play (SOCKET real, char * filename) {
-    static uint32_t last_id = 0;
-    struct packet original;
-
-    /* question */
-    {
-        size_t size = strlen (filename);
-
-        size_t packlen = sizeof (struct packet) + size;
-        struct packet * pack = malloc (packlen);
-        OK (pack != NULL);
-        pack->type = TYPE_PULL_REQUEST;
-        pack->id = htonl (++last_id);
-        pack->size = htonl (size);
-        memcpy (pack->data, filename, size);
-
-        send_it (real, pack, packlen);
-        original = *pack;
-
-        free (pack);
-    }
-
-    /* answer */
-    {
-        char rawbuf [1024];
-        struct packet * pack = (void *) rawbuf; // alias
-
-        recv_it (real, pack, 1024);
-
-        OK (pack->id == original.id);
-        OK (pack->type == (original.type | 1));
-
-        pack->data[ntohl (pack->size)] = '\0';
-        logi ("Answer (truncated to 10c) is %.10s", pack->data);
-
-        return (char *) pack->data; // unsafe like hell
-    }
-}
-
-SOCKET hot_server (void) {
+SOCKET hot_server_socket (void) {
     // UDP
     {
         SOCKET sock = socket (PF_INET, SOCK_DGRAM, 0);
@@ -256,3 +217,125 @@ void hot_serve (SOCKET real) {
         free (pack);
     }
 }
+
+char * hot_play (SOCKET real, char * filename) {
+    static uint32_t last_id = 0;
+    struct packet original;
+
+    /* question */
+    {
+        size_t size = strlen (filename);
+
+        size_t packlen = sizeof (struct packet) + size;
+        struct packet * pack = malloc (packlen);
+        OK (pack != NULL);
+        pack->type = TYPE_PULL_REQUEST;
+        pack->id = htonl (++last_id);
+        pack->size = htonl (size);
+        memcpy (pack->data, filename, size);
+
+        send_it (real, pack, packlen);
+        original = *pack;
+
+        free (pack);
+    }
+
+    /* answer */
+    {
+        char rawbuf [1024];
+        struct packet * pack = (void *) rawbuf; // alias
+
+        recv_it (real, pack, 1024);
+
+        OK (pack->id == original.id);
+        OK (pack->type == (original.type | 1));
+
+        pack->data[ntohl (pack->size)] = '\0';
+        logi ("Answer (truncated to 10c) is %.10s", pack->data);
+
+        return (char *) pack->data; // unsafe like hell
+    }
+}
+
+struct thing {
+    uint32_t id;
+    char * filename;
+    hot_callback call;
+    void * data;
+};
+
+struct hot_player {
+    SOCKET real;
+    uint32_t last_id;
+
+    struct thing * things;
+    size_t count;
+    size_t capacity;
+};
+
+struct hot_player * hot_new_player (void) {
+    struct hot_player * H = malloc (sizeof (*H));
+    OK (H != NULL);
+    
+    H->real = hot_player_socket ();
+    H->last_id = 0;
+    H->things = NULL;
+    H->count = 0;
+    H->capacity = 0;
+
+    return H;
+}
+
+void hot_del_player (struct hot_player * H) {
+    closesocket (H->real);
+    for (size_t i = 0; i < H->count; i++) {
+        free (H->things[i].filename);
+    }
+    free (H->things);
+    free (H);
+}
+
+uint32_t hot_pull (struct hot_player * H,
+        char * filename, hot_callback call, void * data) {
+    H->count++;
+    if (H->capacity < H->count) {
+        H->capacity += 16;
+        H->things = realloc (H->things, sizeof (struct thing) * H->capacity);
+        OK (H->things != NULL);
+    }
+
+    struct thing * T = H->things + H->count - 1;
+
+    T->id = H->last_id++;
+    T->call = call;
+    T->data = data;
+
+    size_t filename_size = strlen (filename);
+    size_t nullterm = 1;
+    T->filename = malloc (filename_size + nullterm);
+    OK (T->filename != NULL);
+    memcpy (T->filename, filename, filename_size);
+    T->filename[filename_size] = '\0';
+
+    // temporary part below:
+    
+    char * answer = hot_play (H->real, T->filename);
+    // note that answer's lifetime is short
+
+    T->call (T->data, answer);
+
+    return T->id;
+}
+
+uint32_t hot_pull_test (struct hot_player * H,
+        char * filename, hot_callback call, void * data) {
+    (void) H;
+    char * contents = load_file (filename);
+    call (data, contents);
+    free (contents);
+
+    return 0;
+}
+
+    
+
