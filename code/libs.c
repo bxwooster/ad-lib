@@ -16,18 +16,16 @@ init_GL (
         return (struct GL) {0};
     }
 
-    #ifdef GLEW
-        GLenum glew = glewInit();
-        if (glew != GLEW_OK) {
-            logi ("GLEW error: %s.", glewGetErrorString (glew));
-            return (struct GL) {0};
-        }
+#ifdef GLEW
+    GLenum glew = glewInit();
+    OK_ELSE (glew == GLEW_OK) {
+        logi ("GLEW error: %s.", glewGetErrorString (glew));
+    }
 
-        if (!GLEW_VERSION_2_0) {
-            logi ("GL2.0 is not supported.");
-            return (struct GL) {0};
-        }
-    #endif
+    OK_ELSE (GLEW_VERSION_2_0) {
+        logi ("GL2.0 is not supported.");
+    }
+#endif
 
     return (struct GL) {
         .context = context,

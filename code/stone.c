@@ -472,9 +472,8 @@ char stone_frame (struct stone_engine * E) {
     #endif
 
     GLuint error = glGetError ();
-    if (error != 0) {
+    OK_ELSE (error == 0) {
         logi ("There occurred a GL error, # %d.", error);
-        OK (0);
     }
 
     E->time = (double) SDL_GetTicks () / 1000;
