@@ -1,4 +1,4 @@
-int main (int argc, char * argv []) {
+int nadal (int argc, char * argv []) {
     (void) argc;
     (void) argv; /* silence the warnings */
 

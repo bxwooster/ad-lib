@@ -1,8 +1,9 @@
-program ?= cosmos
+P ?= cosmos
 profile ?= develop
 platform ?= native
+program := $(P)
 
-files :=
+files := misc
 features :=
 
 defines :=
@@ -17,7 +18,6 @@ all_headers :=
 ifeq ($(program),cosmos)
 
     files += \
-             misc \
              vecmat \
              libs \
              glts \
@@ -34,29 +34,19 @@ ifeq ($(program),cosmos)
 else ifeq ($(program),nadal)
 
     files += \
-             misc \
              socket \
              hot \
 
 else ifeq ($(program),federer)
 
     files += \
-             misc \
              socket \
              hot \
 
 else ifeq ($(program),lunar)
 
-    files += \
-             misc \
-
     features += \
                 lua \
-
-else ifeq ($(program),watch)
-
-    files += \
-             misc \
 
 endif
 
@@ -168,9 +158,9 @@ else ifeq ($(profile),release)
     optimization := -Os -Werror
 endif
 
-all_source += code/$(program).c
-all_source += $(addprefix code/,$(addsuffix .c,$(files)))
-all_headers += $(shell find $(addprefix code/,$(addsuffix .h,$(files))))
+files += $(program)
+all_source += $(shell find 2>/dev/null $(addprefix code/,$(addsuffix .c,$(files))))
+all_headers += $(shell find 2>/dev/null $(addprefix code/,$(addsuffix .h,$(files))))
 
 prefixed_defines := $(addprefix -D,$(defines))
 
@@ -183,6 +173,7 @@ config_include_dir := $(config_dir)/include
 config_lib_dir := $(config_dir)/lib
 
 superheader := $(output_dir)/super$(program).h
+main := $(output_dir)/main$(program).c
 exe := $(output_dir)/$(program)$(exe_suffix)
 package_archive := $(platform_dir)/package.tar.bz2
 
@@ -225,10 +216,17 @@ prepare: $(source_c) $(source_h) $(source_ext_h)
 SHELL := bash
 export
 
-$(exe): code $(all_source) $(all_headers) | $(output_dir)
-	makeheaders -h $(all_source) > $(superheader)
+$(exe): $(all_source) $(all_headers) $(superheader) $(main) | $(output_dir)
 	@echo "Making the executable..."
-	$(cc) -o $(exe) $(all_source) $(cflags)
+	$(cc) -o $(exe) $(all_source) $(main) $(cflags)
+
+$(superheader): $(all_source) | $(output_dir)
+	@echo "Making superheader..."
+	@makeheaders -h $(all_source) > $(superheader)
+
+$(main): | $(output_dir)
+	@echo "Making mainfile..."
+	@echo "int main(int c,char*v[]) {return $(program)(c,v);}" > $(main)
 
 $(package_archive): $(exe) | $(package_dir)
 	@echo "Making '$(package_archive)'..."

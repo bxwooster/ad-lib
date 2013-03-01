@@ -1,4 +1,4 @@
-int main (int argc, char * argv []) {
+int watch (int argc, char * argv []) {
     (void) argc;
     (void) argv;
 
