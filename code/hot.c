@@ -277,7 +277,11 @@ struct hot_player * hot_new_player (void) {
     struct hot_player * H = malloc (sizeof (*H));
     OK (H != NULL);
     
+#ifndef HOTLOCAL
     H->real = hot_player_socket ();
+#else
+    H->real = INVALID_SOCKET;
+#endif
     H->last_id = 0;
     H->things = NULL;
     H->count = 0;
@@ -319,6 +323,14 @@ uint32_t hot_pull (struct hot_player * H,
 
     // temporary part below:
     
+#ifdef HOTLOCAL
+    char * contents = load_file (filename);
+    call (data, contents);
+    free (contents);
+
+    return 0;
+#endif
+    
     char * answer = hot_play (H->real, T->filename);
     // note that answer's lifetime is short
 
@@ -326,16 +338,3 @@ uint32_t hot_pull (struct hot_player * H,
 
     return T->id;
 }
-
-uint32_t hot_pull_test (struct hot_player * H,
-        char * filename, hot_callback call, void * data) {
-    (void) H;
-    char * contents = load_file (filename);
-    call (data, contents);
-    free (contents);
-
-    return 0;
-}
-
-    
-

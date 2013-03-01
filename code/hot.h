@@ -25,5 +25,5 @@ void hot_del_player (struct hot_player * H);
 uint32_t hot_pull (struct hot_player * H,
         char * filename, hot_callback call, void * data);
 
-uint32_t hot_pull_test (struct hot_player * H,
-        char * filename, hot_callback call, void * data);
+void hot_check (struct hot_player * H);
+

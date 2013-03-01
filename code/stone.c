@@ -97,6 +97,8 @@ struct stone_engine {
     struct SDL * sdl;
     struct framestate state;
     double time;
+
+    struct hot_player * H;
 };
 
 struct galaxy_helper {
@@ -365,11 +367,20 @@ void to_common_draw_GLstate (
     glViewport (0, 0, E->sdl->width, E->sdl->height);
 }
 
+/* adapter */
+void galaxy_hot (void * data, char * contents) {
+    struct stone_engine * E = data;
+    galaxy_parse (contents, E->galaxy.planets, & E->galaxy.size);
+    logi ("Galaxy is %u large", E->galaxy.size);
+}
+
 struct stone_engine *
 stone_init (struct GL * gl, struct SDL * sdl, struct IMG * img) {
     struct stone_engine * E = malloc (sizeof (*E));
     E->gl = gl;
     E->sdl = sdl;
+
+    E->H = hot_new_player ();
 
     char const * glts_names [] = {
         "data/shade/planet.glts",
@@ -408,11 +419,7 @@ stone_init (struct GL * gl, struct SDL * sdl, struct IMG * img) {
     E->state = initial_framestate ();
     E->time = 0.0;
 
-    char * galaxytext = load_file ("data/galaxy");
-    OK (galaxytext != NULL);
-    galaxy_parse (galaxytext, E->galaxy.planets, & E->galaxy.size);
-    logi ("Galaxy is %u large", E->galaxy.size);
-    free (galaxytext);
+    hot_pull (E->H, "data/galaxy", galaxy_hot, (void *) E);
 
     to_common_draw_GLstate (E);
 
@@ -870,6 +877,7 @@ void stone_destroy (struct stone_engine * E) {
     free (E->gh);
     free (E->galaxy.planets);
     free (E->planet_memory);
+    hot_del_player (E->H);
 
     glDeleteBuffers (1, & E->cell_vbo);
     glDeleteBuffers (1, & E->imposter.vbo);

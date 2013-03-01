@@ -23,9 +23,13 @@ ifeq ($(program),cosmos)
              glts \
              galaxy \
              stone \
+             socket \
+             hot \
 
     features += \
                 SDLGL \
+
+	defines += HOTLOCAL
 
 else ifeq ($(program),nadal)
 
@@ -222,7 +226,7 @@ export
 
 $(exe): code $(all_source) $(all_headers) | $(output_dir)
 	@echo "Making the executable..."
-	@$(cc) -o $(exe) $(all_source) $(cflags)
+	$(cc) -o $(exe) $(all_source) $(cflags)
 
 $(package_archive): $(exe) | $(package_dir)
 	@echo "Making '$(package_archive)'..."
