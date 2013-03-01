@@ -18,29 +18,24 @@ struct framestate {
     double turn_transition_ends;
 };
 
-struct GLvbo_and_size {
-    GLuint vbo;
-    GLsizei size;
-};
-
-struct galaxy {
-    struct planet * planets;
-    unsigned size;
-};
-
 struct stone_engine {
-    mat4 mproj;
-    struct GLvbo_and_size imposter;
-    GLuint cell_vbo;
-
     struct galaxy * G;
     struct galaxy_helper * gh;
     struct planet_DD * planet_memory;
+
+    struct GLvbo_and_size imposter;
+    GLuint cell_vbo;
+
     struct glts_planeta sh_pl [3];
     struct glts_cello sh_ce;
+
     GLuint tex;
+
+    mat4 mproj;
+
     struct GL * gl;
     struct SDL * sdl;
+
     struct framestate state;
     double time;
 

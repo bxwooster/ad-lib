@@ -14,3 +14,8 @@ struct planet {
 	vec3 colour;
     struct planet_day day;
 };
+
+struct galaxy {
+    struct planet * planets;
+    unsigned size;
+};

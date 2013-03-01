@@ -23,7 +23,7 @@ int cosmos (int argc, char * argv []) {
     unsigned long frame = 0;
 
     for (;;) {
-        char status = stone_do_frame (E);
+        char status = stone_frame (E);
         if (status) break;
         frame++;
     }

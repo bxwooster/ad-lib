@@ -1,99 +1,7 @@
-/* The Konstants! */
 float const k_turn_transition_delay = 1.5f;
 float const k_planet_size_minifier = 0.9f;
 unsigned const k_round_cell_segments = 64;
 float const k_camera_speed = 0.05f;
-
-/******************************************************************************/
-
-void
-camera_initial (struct framestate * S) {
-    mat4 one = mat4_identity ();
-
-    vec3 move = {{0.0f, 1.7f, 1.0f}};
-    S->mov = mat4_moved (& one, & move);
-    
-    vec3 axis = {{1.0f, 0.0f, 0.0f}};
-    S->rot = mat4_rotated_aa (& one, & axis, M_PI * 0.7);
-}
-
-struct framestate
-initial_framestate (void) {
-    struct framestate out = {0};
-    camera_initial (& out);
-    out.show_normals = 1;
-    return out;
-}
-
-/* hot adapter */
-void galaxy_hot (void * data, char * contents) {
-    struct stone_engine * E = data;
-    
-    free (E->gh);
-    free (E->planet_memory);
-    if (E->G != NULL) galaxy_del (E->G);
-
-    E->G = galaxy_parse (contents);
-
-    E->gh = malloc (E->G->size * sizeof (struct galaxy_helper));
-    OK (E->gh != NULL);
-
-    E->planet_memory = malloc (E->G->size * sizeof (struct planet_DD));
-    OK (E->planet_memory != NULL);
-}
-
-struct stone_engine *
-stone_init (struct GL * gl, struct SDL * sdl, struct IMG * img) {
-    struct stone_engine * E = malloc (sizeof (*E));
-    OK (E != NULL);
-
-    E->gl = gl;
-    E->sdl = sdl;
-    (void) img;
-
-    E->H = hot_new_player ();
-
-    char const * glts_names [] = {
-        "data/shade/planet.glts",
-        "data/shade/planet-normals.glts",
-        "data/shade/planet-wireframe.glts",
-    };
-    for (unsigned i = 0; i < 3; ++i) {
-        E->sh_pl[i] = glts_load_planeta (gl, glts_names[i]);
-        OK (E->sh_pl[i].program != GL_FALSE);
-    }
-
-    E->sh_ce = glts_load_cello (gl, "data/shade/cell.glts");
-    OK (E->sh_ce.program != GL_FALSE);
-
-    E->tex = util_earth ();
-    OK (E->tex != GL_FALSE);
-
-    E->imposter = util_imposter ();
-    OK (E->imposter.vbo != GL_FALSE);
-
-    glGenBuffers (1, & E->cell_vbo);
-    OK (E->cell_vbo != GL_FALSE);
-
-    float fov = 60.0f;
-    E->mproj = util_projection (sdl->width, sdl->height, fov);
-
-    E->state = initial_framestate ();
-    E->time = 0.0;
-
-    E->gh = NULL;
-    E->planet_memory = NULL;
-    E->G = NULL;
-    hot_pull (E->H, "data/galaxy", galaxy_hot, (void *) E);
-
-    glActiveTexture (GL_TEXTURE0);
-    glEnable (GL_DEPTH_TEST);
-    glViewport (0, 0, E->sdl->width, E->sdl->height);
-
-    return E;
-}
-
-/******************************************************************************/
 
 void
 advance_framestate (
@@ -498,48 +406,81 @@ void moduleP (struct stone_engine * E) {
     }
 }
 
-int GL_check_errors (void) {
-    GLuint error = glGetError ();
-    if (error != 0) {
-        logi ("There occurred a GL error, # %d.", error);
-        return 0;
-    }
+/* hot adapter */
+void galaxy_hot (void * data, char * contents) {
+    struct stone_engine * E = data;
+    
+    free (E->gh);
+    free (E->planet_memory);
+    if (E->G != NULL) galaxy_del (E->G);
 
-    return 1;
+    E->G = galaxy_parse (contents);
+
+    E->gh = malloc (E->G->size * sizeof (struct galaxy_helper));
+    OK (E->gh != NULL);
+
+    E->planet_memory = malloc (E->G->size * sizeof (struct planet_DD));
+    OK (E->planet_memory != NULL);
 }
 
-char stone_do_frame (struct stone_engine * E) {
-    hot_check (E->H);
+struct stone_engine *
+stone_init (struct GL * gl, struct SDL * sdl, struct IMG * img) {
+    struct stone_engine * E = malloc (sizeof (*E));
+    OK (E != NULL);
 
-    glDepthMask (GL_TRUE);
-    glClearColor (0.0, 0.0, 0.0, 0.0);
-    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    E->gl = gl;
+    E->sdl = sdl;
+    (void) img;
 
-    #ifndef GLES
-        GLenum poly_mode = E->state.show_wireframe ? GL_LINE : GL_FILL;
-        glPolygonMode(GL_FRONT_AND_BACK, poly_mode);
-    #endif
+    E->H = hot_new_player ();
 
-    OK (GL_check_errors ());
+    char const * glts_names [] = {
+        "data/shade/planet.glts",
+        "data/shade/planet-normals.glts",
+        "data/shade/planet-wireframe.glts",
+    };
+    for (unsigned i = 0; i < 3; ++i) {
+        E->sh_pl[i] = glts_load_planeta (gl, glts_names[i]);
+        OK (E->sh_pl[i].program != GL_FALSE);
+    }
 
-    E->time = (double) SDL_GetTicks () / 1000;
+    E->sh_ce = glts_load_cello (gl, "data/shade/cell.glts");
+    OK (E->sh_ce.program != GL_FALSE);
 
-    struct input physical;
-    poll_SDLevents (E, & physical);
-    if (physical.halt) return 1;
+    E->tex = util_earth ();
+    OK (E->tex != GL_FALSE);
 
-    advance_framestate (E, & physical);
+    E->imposter = util_imposter ();
+    OK (E->imposter.vbo != GL_FALSE);
 
-    struct frame_DD framedata =
-        generate_frame_DD (& E->mproj, & E->state);
+    glGenBuffers (1, & E->cell_vbo);
+    OK (E->cell_vbo != GL_FALSE);
 
-    moduleB (E, & framedata);
-    moduleP (E);
-    moduleC (E, & framedata);
+    float fov = 60.0f;
+    E->mproj = util_projection (sdl->width, sdl->height, fov);
 
-    SDL_GL_SwapWindow (E->sdl->window);
+    mat4 one = mat4_identity ();
 
-    return 0;
+    vec3 move = {{0.0f, 1.7f, 1.0f}};
+    E->state.mov = mat4_moved (& one, & move);
+    
+    vec3 axis = {{1.0f, 0.0f, 0.0f}};
+    float angle = M_PI * 0.7;
+    E->state.rot = mat4_rotated_aa (& one, & axis, angle);
+
+    E->state.show_normals = 1;
+    E->time = 0.0;
+
+    E->gh = NULL;
+    E->planet_memory = NULL;
+    E->G = NULL;
+    hot_pull (E->H, "data/galaxy", galaxy_hot, (void *) E);
+
+    glActiveTexture (GL_TEXTURE0);
+    glEnable (GL_DEPTH_TEST);
+    glViewport (0, 0, E->sdl->width, E->sdl->height);
+
+    return E;
 }
 
 void stone_destroy (struct stone_engine * E) {
@@ -561,3 +502,40 @@ void stone_destroy (struct stone_engine * E) {
     free (E);
 }
 
+char stone_frame (struct stone_engine * E) {
+    hot_check (E->H);
+
+    glDepthMask (GL_TRUE);
+    glClearColor (0.0, 0.0, 0.0, 0.0);
+    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    #ifndef GLES
+        GLenum poly_mode = E->state.show_wireframe ? GL_LINE : GL_FILL;
+        glPolygonMode(GL_FRONT_AND_BACK, poly_mode);
+    #endif
+
+    GLuint error = glGetError ();
+    if (error != 0) {
+        logi ("There occurred a GL error, # %d.", error);
+        OK (0);
+    }
+
+    E->time = (double) SDL_GetTicks () / 1000;
+
+    struct input physical;
+    poll_SDLevents (E, & physical);
+    if (physical.halt) return 1;
+
+    advance_framestate (E, & physical);
+
+    struct frame_DD framedata =
+        generate_frame_DD (& E->mproj, & E->state);
+
+    moduleB (E, & framedata);
+    moduleP (E);
+    moduleC (E, & framedata);
+
+    SDL_GL_SwapWindow (E->sdl->window);
+
+    return 0;
+}
