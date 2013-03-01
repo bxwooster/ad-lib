@@ -24,13 +24,16 @@ ifeq ($(program),cosmos)
              galaxy \
              stone \
              socket \
-             watch \
              hot \
 
     features += \
                 SDLGL \
 
-	defines += HOTLOCAL
+    ifeq ($(platform),windows)
+        defines += HOTLOCAL
+        files += watch
+    endif
+
 
 else ifeq ($(program),nadal)
 
@@ -71,23 +74,23 @@ PLATFORM := $(shell echo $(platform) | tr a-z A-Z)
 
 defines += $(PLATFORM)
 includes += \
-			math.h \
-			float.h \
-			stdio.h \
-			errno.h \
-			assert.h \
-			stdlib.h \
-			stdarg.h \
-			assert.h \
-			dirent.h \
-			string.h \
-			unistd.h \
+            math.h \
+            float.h \
+            stdio.h \
+            errno.h \
+            assert.h \
+            stdlib.h \
+            stdarg.h \
+            assert.h \
+            dirent.h \
+            string.h \
+            unistd.h \
 
 link_flags += -lm
 
 ifeq ($(platform),windows)
     exe_suffix := .exe
-	includes += malloc.h
+    includes += malloc.h
 endif
 
 ifeq ($(program),watch)
@@ -101,14 +104,14 @@ ifneq ($(filter socket,$(files)),)
         link_flags += -lwsock32
         includes += winsock.h
     else
-	    includes += \
-					sys/socket.h \
-					netinet/in.h \
-					arpa/inet.h \
+        includes += \
+                    sys/socket.h \
+                    netinet/in.h \
+                    arpa/inet.h \
 
     endif
     ifeq ($(platform),linux)
-		defines += _GNU_SOURCE # ip_mreq needs it
+        defines += _GNU_SOURCE # ip_mreq needs it
     endif
 endif
 
@@ -182,16 +185,16 @@ include_flags := $(addprefix -include ,$(includes) $(all_headers) $(superheader)
 
 cc := gcc
 cflags := -std=c99 \
-	-Wall \
-	-Wextra \
-	-Wno-missing-field-initializers \
-	-Wno-missing-braces \
-	-I$(config_include_dir) \
-	-L$(config_lib_dir) \
-	$(include_flags) \
-	$(optimization) \
-	$(link_flags) \
-	$(prefixed_defines) \
+    -Wall \
+    -Wextra \
+    -Wno-missing-field-initializers \
+    -Wno-missing-braces \
+    -I$(config_include_dir) \
+    -L$(config_lib_dir) \
+    $(include_flags) \
+    $(optimization) \
+    $(link_flags) \
+    $(prefixed_defines) \
 
 ################################################################################
 

@@ -17,7 +17,7 @@ struct hot_thing {
 struct hot_player {
 #ifdef HOTLOCAL
     struct watcher * W;
-#else
+#elif defined HOTREMOTE
     SOCKET real;
 #endif
     uint32_t last_id;

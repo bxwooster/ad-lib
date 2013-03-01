@@ -257,9 +257,9 @@ struct hot_player * hot_new_player (void) {
     struct hot_player * H = malloc (sizeof (*H));
     OK (H != NULL);
     
-#ifndef HOTLOCAL
+#ifdef HOTREMOTE
     H->real = hot_player_socket ();
-#else
+#elif defined HOTLOCAL
     H->W = watch_init ();
 #endif
     H->last_id = 0;
@@ -271,9 +271,9 @@ struct hot_player * hot_new_player (void) {
 }
 
 void hot_del_player (struct hot_player * H) {
-#ifndef HOTLOCAL
+#ifdef HOTREMOTE
     closesocket (H->real);
-#else
+#elif defined HOTLOCAL
     watch_del (H->W);
 #endif
     for (size_t i = 0; i < H->count; i++) {
@@ -307,7 +307,7 @@ uint32_t hot_pull (struct hot_player * H,
     T->filename[filename_size] = '\0';
 
     // temporary part below:
-#ifdef HOTLOCAL
+#ifndef HOTREMOTE
     char * contents = load_file (filename);
     call (data, contents);
     free (contents);
@@ -338,8 +338,9 @@ void hot_watchcall (void * data, char * filename) {
 }
 
 void hot_check (struct hot_player * H) {
-#ifndef HOTLOCAL
-#error - not implemented
-#endif
+#ifdef HOTREMOTE
+    // do nothing, not implemented
+#elif defined HOTLOCAL
     watch_update (H->W, hot_watchcall, H);
+#endif
 }
