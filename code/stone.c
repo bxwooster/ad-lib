@@ -272,13 +272,25 @@ void to_common_draw_GLstate (
 /* adapter */
 void galaxy_hot (void * data, char * contents) {
     struct stone_engine * E = data;
-    galaxy_parse (contents, E->galaxy.planets, & E->galaxy.size);
-    logi ("Galaxy is %u large", E->galaxy.size);
+    
+    free (E->gh);
+    free (E->planet_memory);
+    if (E->G != NULL) galaxy_del (E->G);
+
+    E->G = galaxy_parse (contents);
+
+    E->gh = malloc (E->G->size * sizeof (struct galaxy_helper));
+    OK (E->gh != NULL);
+
+    E->planet_memory = malloc (E->G->size * sizeof (struct planet_DD));
+    OK (E->planet_memory != NULL);
 }
 
 struct stone_engine *
 stone_init (struct GL * gl, struct SDL * sdl, struct IMG * img) {
     struct stone_engine * E = malloc (sizeof (*E));
+    OK (E != NULL);
+
     E->gl = gl;
     E->sdl = sdl;
 
@@ -309,18 +321,12 @@ stone_init (struct GL * gl, struct SDL * sdl, struct IMG * img) {
     float fov = 60.0f;
     E->mproj = standard_projection (sdl->width, sdl->height, fov);
 
-    E->galaxy.size = 16;
-
-    E->galaxy.planets =
-        malloc (E->galaxy.size * sizeof (struct planet));
-    E->gh =
-        malloc (E->galaxy.size * sizeof (struct galaxy_helper));
-    E->planet_memory =
-        malloc (E->galaxy.size * sizeof (struct planet_DD));
-
     E->state = initial_framestate ();
     E->time = 0.0;
 
+    E->gh = NULL;
+    E->planet_memory = NULL;
+    E->G = NULL;
     hot_pull (E->H, "data/galaxy", galaxy_hot, (void *) E);
 
     to_common_draw_GLstate (E);
@@ -423,7 +429,7 @@ galaxy_prepare (
     struct galaxy_helper result;
 
     struct framestate const * S = & E->state;
-    struct planet const * planet = E->galaxy.planets + planet_number;
+    struct planet const * planet = E->G->planets + planet_number;
 
     if (planet_number == 0) {
         result.transform = mat4_identity ();
@@ -488,7 +494,7 @@ generate_planet_DD (
         unsigned planet_number
 ) {
     struct galaxy_helper * helper = E->gh + planet_number;
-    struct planet * planet = E->galaxy.planets + planet_number;
+    struct planet * planet = E->G->planets + planet_number;
 
     mat4 mmodel = helper->transform;
     mat4 mrot = planet_dayrotation (E, & planet->day);
@@ -586,11 +592,11 @@ poll_SDLevents (
 }
 
 void moduleB (struct stone_engine * E, struct frame_DD * framedata) {
-    for (unsigned i = 0; i < E->galaxy.size; ++i) {
+    for (unsigned i = 0; i < E->G->size; ++i) {
         E->gh[i] = galaxy_prepare (E, i);
     }
 
-    for (unsigned i = 0; i < E->galaxy.size; ++i) {
+    for (unsigned i = 0; i < E->G->size; ++i) {
         E->planet_memory[i] = generate_planet_DD (E, framedata, i);
     }
 }
@@ -606,8 +612,8 @@ void moduleC (struct stone_engine * E, struct frame_DD * framedata) {
 
     srand(1); // color hack!
 
-    for (unsigned j = 0; j < E->galaxy.size; ++j) {
-        for (unsigned k = 0; k < E->galaxy.planets[j].orbit_count; ++k) {
+    for (unsigned j = 0; j < E->G->size; ++j) {
+        for (unsigned k = 0; k < E->G->planets[j].orbit_count; ++k) {
             unsigned orbit_size = k + 3; //!!
             float angle = 2*M_PI / orbit_size;
             unsigned N = k_round_cell_segments / (float) orbit_size;
@@ -618,7 +624,7 @@ void moduleC (struct stone_engine * E, struct frame_DD * framedata) {
 
             float s1 = E->gh[j].size;
             float s2 = E->gh[j].supersize;
-            float sd = (s2 - s1) / E->galaxy.planets[j].orbit_count;
+            float sd = (s2 - s1) / E->G->planets[j].orbit_count;
             float r1 = s1 + sd * k;
             float r2 = s1 + sd * (k + 1);
             for (unsigned i = 0; i < N; ++i) {
@@ -658,14 +664,14 @@ void moduleC (struct stone_engine * E, struct frame_DD * framedata) {
                 glUniform3fv (shader->Ucolour, 1, colour.p);
 
                 unsigned q;
-                for (q = j; q < E->galaxy.size; q++) {
-                    if (E->galaxy.planets[q].where.parent_index == j &&
-                        E->galaxy.planets[q].where.orbit_number == k + 1 &&
-                        E->galaxy.planets[q].where.orbit_slot == p + 1) {
+                for (q = j; q < E->G->size; q++) {
+                    if (E->G->planets[q].where.parent_index == j &&
+                        E->G->planets[q].where.orbit_number == k + 1 &&
+                        E->G->planets[q].where.orbit_slot == p + 1) {
                         break;
                     }
                 }
-                if (q == E->galaxy.size) q = j; //no-op
+                if (q == E->G->size) q = j; //no-op
 
                 mat4 transform = mat4_rotated_aa
                     (& E->gh[j].transform, & (vec3) {0,0,1}, -angle * (posish));
@@ -697,7 +703,7 @@ int closest_planet_DD (void const * a, void const * b) {
 }
 
 void moduleP (struct stone_engine * E) {
-    qsort (E->planet_memory, E->galaxy.size,
+    qsort (E->planet_memory, E->G->size,
             sizeof (struct planet_DD), closest_planet_DD);
 
     unsigned choice = 0;
@@ -720,7 +726,7 @@ void moduleP (struct stone_engine * E) {
     glVertexAttribPointer (shader->Apos2d, 2, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray (shader->Apos2d);
 
-    for (unsigned i = 0; i < E->galaxy.size; ++i) {
+    for (unsigned i = 0; i < E->G->size; ++i) {
         struct planet_DD * data = E->planet_memory + i;
 
         glUniformMatrix4fv (shader->Umvp, 1, GL_FALSE, data->mvp.p);
@@ -779,8 +785,8 @@ char stone_do_frame (struct stone_engine * E) {
 
 void stone_destroy (struct stone_engine * E) {
     free (E->gh);
-    free (E->galaxy.planets);
     free (E->planet_memory);
+    galaxy_del (E->G);
     hot_del_player (E->H);
 
     glDeleteBuffers (1, & E->cell_vbo);

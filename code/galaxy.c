@@ -1,28 +1,32 @@
-int // status
-galaxy_parse (
-        char const * in,
-        struct planet galaxy [],
-        unsigned * count
-) {
-    int read = 0;
+void galaxy_del (struct galaxy * G) {
+    free (G->planets);
+    free (G);
+}
+
+struct galaxy * galaxy_parse (char const * text) {
+    struct galaxy * G = malloc (sizeof (*G));
+    OK (G != NULL);
+
+    G->size = 0;
+    G->planets = NULL;
 
     char name [16];
     char where [22];
 
-    struct planet * a = galaxy;
-    unsigned left = *count;
-    *count = 0;
+    int read = 0;
+    char const * in = text;
 
     for (;;) {
         /* Is there one more? */
         if (sscanf (in, " it's %15[^: ]%n", name, & read) < 1) break;
         in += read;
 
-        /* Yes. Do we have the memory for it? */
-        if (left == 0) {
-            logi ("Exhausted the provided list while parsing a galaxy!");
-            return 2;
-        }
+        /* Yes. We have the memory for it! All the memory, in fact */
+        G->size++;
+        G->planets = realloc (G->planets, G->size * (sizeof (struct planet)));
+        OK (G->planets != NULL);
+
+        struct planet * a = G->planets + G->size - 1;
 
         /* Go for it */
         memcpy (a->name, name, sizeof (name));
@@ -39,8 +43,8 @@ galaxy_parse (
                         & a->where.orbit_slot, & read) < 3) goto syntax_error;
             if (where[read] != '\0') goto syntax_error;
 
-            for (unsigned i = 0; i < *count; ++i) {
-                if (strcmp (name, galaxy[i].name) == 0) {
+            for (unsigned i = 0; i < G->size - 1; ++i) {
+                if (strcmp (name, G->planets[i].name) == 0) {
                     a->where.parent_index = i;
                     break;
                 }
@@ -73,17 +77,17 @@ galaxy_parse (
 
         sscanf (in, " ; } ; } ;%n", & read);
         in += read;
-        
-        (*count)++;
-        left--;
-        a++;
     };
 
-    return 0;
+    logi ("Galaxy is %u large", G->size);
+    
+    return G;
 
 syntax_error:
 
-    logi ("Galaxy-parsing ended up in a tumult!");
-    return 1;
+    logi ("Galaxy: syntax error @ %d", (int) (in - text));
+    galaxy_del (G);
+
+    return NULL;
 }
 

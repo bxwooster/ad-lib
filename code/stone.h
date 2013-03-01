@@ -23,16 +23,17 @@ struct GLvbo_and_size {
     GLsizei size;
 };
 
+struct galaxy {
+    struct planet * planets;
+    unsigned size;
+};
+
 struct stone_engine {
     mat4 mproj;
     struct GLvbo_and_size imposter;
     GLuint cell_vbo;
 
-    struct {
-        struct planet * planets;
-        unsigned size;
-    } galaxy;
-
+    struct galaxy * G;
     struct galaxy_helper * gh;
     struct planet_DD * planet_memory;
     struct glts_planeta sh_pl [3];
