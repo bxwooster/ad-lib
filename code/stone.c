@@ -291,20 +291,6 @@ prepare_imposter (
     return (struct GLvbo_and_size) {vbo, vertices};
 }
 
-float
-get_fov (void) {
-   char * string = load_file ("data/settings/fov");
-   if (string == NULL) return 0.0f;
-
-    float fov = atof (string);
-
-    if (fov == 0.0f) {
-        logi ("Can't read FOV.");
-    }
-
-    return fov;
-}
-
 mat4
 projection_from_afn (
 		float aspect_ratio,
@@ -403,8 +389,7 @@ stone_init (struct GL * gl, struct SDL * sdl, struct IMG * img) {
     glGenBuffers (1, & E->cell_vbo);
     OK (E->cell_vbo != GL_FALSE);
 
-    float fov = get_fov ();
-    OK (fov != 0.0f);
+    float fov = 60.0f;
     E->mproj = standard_projection (sdl->width, sdl->height, fov);
 
     E->galaxy_size = 16;
