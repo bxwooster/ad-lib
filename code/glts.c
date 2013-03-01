@@ -191,7 +191,8 @@ struct glts_cello glts_load_cello (struct GL * gl, char const * filename) {
     struct glts_cello it;
 
     it.program = glts_load (gl, filename, "cello", "");
-    // we could check that program's not GL_FALSE, but we won't.
+    OK (it.program != GL_FALSE);
+
     it.Apos2d = (GLuint) glGetAttribLocation (it.program, "Apos2d");
     if (it.Apos2d == (GLuint) -1) {
         logi ("GL attribute 'Apos2d' not found");
@@ -213,7 +214,8 @@ struct glts_planeta glts_load_planeta (struct GL * gl, char const * filename) {
     struct glts_planeta it;
 
     it.program = glts_load (gl, filename, "planeta", "");
-    // we could check that program's not GL_FALSE, but we won't.
+    OK (it.program != GL_FALSE);
+
     it.Apos2d = (GLuint) glGetAttribLocation (it.program, "Apos2d");
     if (it.Apos2d == (GLuint) -1) {
         logi ("GL attribute 'Apos2d' not found");

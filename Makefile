@@ -24,6 +24,7 @@ ifeq ($(program),cosmos)
              galaxy \
              util \
              stone \
+             state \
              socket \
              hot \
 

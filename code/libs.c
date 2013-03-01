@@ -1,23 +1,21 @@
-struct GL
-init_GL (
-        struct SDL const * sdl
-) {
-    if (SDL_GL_SetAttribute (SDL_GL_CONTEXT_MAJOR_VERSION, 2) != 0 ||
-        SDL_GL_SetAttribute (SDL_GL_CONTEXT_MINOR_VERSION, 0) != 0)
-    {
+struct GL * init_GL (struct SDL const * sdl) {
+    char attr =
+        SDL_GL_SetAttribute (SDL_GL_CONTEXT_MAJOR_VERSION, 2) != 0 ||
+        SDL_GL_SetAttribute (SDL_GL_CONTEXT_MINOR_VERSION, 0) != 0;
+
+    OK_ELSE (attr == 0) {
         logi ("SDL_GL_SetAttribute error: %s.", SDL_GetError ());
-        return (struct GL) {0};
     }
 
     SDL_GLContext context = SDL_GL_CreateContext (sdl->window);
 
-    if (context == NULL) {
+    OK_ELSE (context != NULL) {
         logi ("SDL_GL_CreateContext error: %s.", SDL_GetError ());
-        return (struct GL) {0};
     }
 
 #ifdef GLEW
     GLenum glew = glewInit();
+
     OK_ELSE (glew == GLEW_OK) {
         logi ("GLEW error: %s.", glewGetErrorString (glew));
     }
@@ -27,33 +25,24 @@ init_GL (
     }
 #endif
 
-    return (struct GL) {
-        .context = context,
-        .ready = 1,
-    };
+    struct GL * gl = malloc (sizeof (*gl));
+    gl->context = context;
+
+    return gl;
 }
 
-struct IMG
-init_IMG (void) {
+void init_IMG (void) {
     int require = IMG_INIT_JPG;
     int initted = IMG_Init (require);
 
-    if ((require & initted) != require) {
+    OK_ELSE ((require & initted) == require) {
         logi ("SDL_image error: %s.", IMG_GetError ());
-        return (struct IMG) {0};
     }
-
-    return (struct IMG) {
-        .type_jpg = 1,
-        .ready = 1,
-    };
 }
 
-struct SDL
-init_SDL (void) {
-    if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
+struct SDL * init_SDL (void) {
+    OK_ELSE (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_TIMER) >= 0) {
         logi ("SDL_Init error: %s.", SDL_GetError ());
-        return (struct SDL) {0};
     }
 
     unsigned width = 1024;
@@ -68,52 +57,30 @@ init_SDL (void) {
         //SDL_WINDOW_SHOWN);
         0);
 
-    if (window == NULL) {
+    OK_ELSE (window != NULL) {
         logi ("SDL_CreateWindow error: %s.", SDL_GetError ());
-        return (struct SDL) {0};
     }
 
-    return (struct SDL) {
-        .subsystem_video = 1,
-        .subsystem_timer = 1,
-        .window = window,
-        .width = width,
-        .height = height,
-        .ready = 1,
-    };
+    struct SDL * sdl = malloc (sizeof (*sdl));
+    OK (sdl != NULL);
+
+    sdl->window = window;
+    sdl->width = width;
+    sdl->height = height;
+
+    return sdl;
 }
 
-void
-exit_GL (
-        struct GL * gl,
-        struct SDL * sdl
-) {
-    (void) sdl;
-    if (gl->context != NULL) {
-        SDL_GL_DeleteContext (gl->context);
-    }
-    gl->ready = 0;
+void exit_GL (struct GL * gl) {
+    SDL_GL_DeleteContext (gl->context);
+    free (gl);
 }
 
-void
-exit_IMG (
-        struct IMG * img
-) {
-    if (img->ready) {
-        IMG_Quit ();
-        img->ready = 0;
-    }
-}
-
-void
-exit_SDL (
-        struct SDL * sdl
-) {
+void exit_SDL (struct SDL * sdl) {
     if (sdl->window != NULL) {
         SDL_DestroyWindow (sdl->window);
     }
-    if (sdl->ready) {
-        SDL_Quit ();
-        sdl->ready = 0;
-    }
+
+    SDL_Quit ();
+    free (sdl);
 }

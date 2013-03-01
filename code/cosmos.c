@@ -4,37 +4,28 @@ int cosmos (int argc, char * argv []) {
 
     logi ("Revving up.");
 
-    struct SDL sdl = {0};
-    struct IMG img = {0};
-    struct GL  gl  = {0};
+    init_IMG ();
+    struct SDL * sdl = init_SDL ();
+    struct GL * gl = init_GL (sdl);
 
-    img = init_IMG ();
-    OK (img.ready);
-
-    sdl = init_SDL ();
-    OK (sdl.ready);
-
-    gl = init_GL (& sdl);
-    OK (gl.ready);
-
-    struct stone_engine * E = stone_init (& gl, & sdl, & img);
+    struct stone_engine * E = stone_init (gl, sdl);
 
     /* All systems go! */
     unsigned long frame = 0;
 
     for (;;) {
-        char status = stone_frame (E);
-        if (status) break;
         frame++;
+        char status = stone_frame (E);
+        if (status != 0) break;
     }
 
     logi ("%d frames were done. Have a nice day!", frame);
 
     stone_destroy (E);
 
-    exit_GL (& gl, & sdl);
-    exit_SDL (& sdl);
-    exit_IMG (& img);
+    exit_GL (gl);
+    exit_SDL (sdl);
+    IMG_Quit ();
 
     return 0;
 }

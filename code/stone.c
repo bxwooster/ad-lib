@@ -1,146 +1,7 @@
-float const k_turn_transition_delay = 1.5f;
 float const k_planet_size_minifier = 0.9f;
-float const k_camera_speed = 0.05f;
 unsigned const k_round_cell_segments = 64;
 
-void
-stony_advance (
-        struct stone_engine * E,
-        struct input const * I
-) {
-    struct framestate * S = E->S;
-
-    S->time = (double) SDL_GetTicks () / 1000;
-
-    float dx = I->mouse.x - S->mouse.x;
-    float dy = I->mouse.y - S->mouse.y;
-    /* still something is broken with arbitrary rotations */
-    dx = 0;
-
-    if (I->mouse.buttons & SDL_BUTTON (2)) {
-        S->mov.column.w.element.z *= exp(dy);
-    }
-
-    if (I->mouse.buttons & SDL_BUTTON (3)) {
-        vec3 rot = {{dy, dx, 0.0f}};
-        float angle = sqrt (dx*dx + dy*dy);
-        if (angle > 0) {
-            S->rot = mat4_rotated_aa (& S->rot, & rot, -angle);
-        }
-    }
-
-    S->mouse.x = I->mouse.x;
-    S->mouse.y = I->mouse.y;
-
-    float q = 1.0f / tanf (M_PI / 180 / 2 * 60.0);
-    vec4 view = {-I->mouse.x / q, I->mouse.y / q, 1.0, 0.0};
-    mat4 invrot = mat4_inverted_rtonly (& S->rot);
-    /* need this be inverted? */
-    view = vec4_multiply (& invrot, & view);
-
-    float ratio = S->mov.column.w.element.z / view.element.z;
-    float px = view.element.x * ratio + S->mov.column.w.element.x;
-    float py = view.element.y * ratio + S->mov.column.w.element.y;
-
-    char lock = (I->mouse.buttons & SDL_BUTTON (1)) != 0;
-
-    float delta = k_camera_speed;
-    // note: need to multiply by Dt, actually
-    if (I->arrows.up) S->mov.column.w.element.y -= delta;
-    if (I->arrows.down) S->mov.column.w.element.y += delta;
-    if (I->arrows.left) S->mov.column.w.element.x -= delta;
-    if (I->arrows.right) S->mov.column.w.element.x += delta;
-
-    if (S->lock != 0) {
-        float dx = px - S->pan.x;
-        float dy = py - S->pan.y;
-
-        S->mov.column.w.element.x -= dx;
-        S->mov.column.w.element.y -= dy;
-
-        if (!lock) S->lock = 0;
-    }
-    else {
-        if (lock) {
-            S->lock = 1;
-            S->pan.x = px;
-            S->pan.y = py;
-
-            logi ("Locked @ %f - %f", px, py);
-        }
-    }
-
-    S->show_normals ^= I->toggle_normals;
-    S->show_wireframe ^= I->toggle_wireframe;
-
-    if (I->next_turn && !S->turn_transition) {
-        S->turn_transition = 1;
-        S->turn_transition_ends = S->time + k_turn_transition_delay;
-    }
-
-    if (S->turn_transition && S->time > S->turn_transition_ends) {
-        S->turn++;
-        S->turn_transition = 0;
-    }
-    
-    S->turn_tail = 0.0f;
-    if (S->turn_transition) {
-        float ttd = k_turn_transition_delay;
-        S->turn_tail = (S->time - S->turn_transition_ends + ttd) / ttd;
-    }
-
-    S->viewi = mat4_multiply (& S->mov, & S->rot);
-
-    mat4 mview = mat4_inverted_rtonly (& S->viewi);
-    S->viewproj = mat4_multiply (& S->proj, & mview);
-}
-
-void
-stony_poll_input (
-        struct stone_engine * E,
-        struct input * currently
-) {
-    memset (currently, 0, sizeof (*currently));
-
-    int x, y;
-    currently->mouse.buttons = SDL_GetMouseState (& x, & y);
-
-    float hw = E->sdl->width / 2;
-    float hh = E->sdl->height / 2;
-
-    currently->mouse.x = (x - hw) / hw;
-    currently->mouse.y = (y - hh) / hw;
-
-    SDL_Event event;
-    while (SDL_PollEvent (&event)) {
-        if (event.type == SDL_KEYDOWN) {
-            SDL_Keycode key = event.key.keysym.sym;
-            if (key == SDLK_ESCAPE) {
-                currently->halt = 1;
-            }
-            else if (key == SDLK_w) {
-                currently->toggle_wireframe = 1;
-            }
-            else if (key == SDLK_n) {
-                currently->toggle_normals = 1;
-            }
-            else if (key == SDLK_SPACE) {
-                currently->next_turn = 1;
-            }
-        } else if (event.type == SDL_QUIT) {
-            currently->halt = 1;
-        }
-    }
-
-    Uint8 * keys = SDL_GetKeyboardState (NULL);
-
-    currently->arrows.up = keys[SDL_SCANCODE_UP];
-    currently->arrows.down = keys[SDL_SCANCODE_DOWN];
-    currently->arrows.left = keys[SDL_SCANCODE_LEFT];
-    currently->arrows.right = keys[SDL_SCANCODE_RIGHT];
-}
-
-void stone_moduleB (struct stone_engine * E) {
+void stone_A (struct stone_engine * E) {
     for (unsigned i = 0; i < E->G->size; ++i) {
         struct framestate const * S = E->S;
         struct planet const * planet = E->G->planets + i;
@@ -229,7 +90,103 @@ void stone_moduleB (struct stone_engine * E) {
     }
 }
 
-void stone_moduleC (struct stone_engine * E) {
+int stone_G2_cmp (void const * a, void const * b) {
+    float a_depth = ((struct stone_G2 const *) a)->depth;
+    float b_depth = ((struct stone_G2 const *) b)->depth;
+
+    return (a_depth > b_depth) ? -1 : 1;
+}
+
+void stone_B (struct stone_engine * E) {
+    qsort (E->G2, E->G->size,
+            sizeof (struct stone_G2), stone_G2_cmp);
+
+    unsigned choice = 0;
+    if (E->S->show_wireframe) {
+        choice = 2;
+    } else if (E->S->show_normals) {
+        choice = 1;
+    }
+
+    struct glts_planeta const * shader = E->sh_pl + choice;
+
+    glBindBuffer (GL_ARRAY_BUFFER, E->imposter.vbo);
+    E->gl->vertices = E->imposter.size;
+
+    glDepthMask (GL_TRUE);
+    glDisable (GL_BLEND);
+
+    glUseProgram (shader->program);
+
+    glVertexAttribPointer (shader->Apos2d, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray (shader->Apos2d);
+
+    for (unsigned i = 0; i < E->G->size; ++i) {
+        struct stone_G2 * G2 = E->G2 + i;
+
+        glUniformMatrix4fv (shader->Umvp, 1, GL_FALSE, G2->mvp.p);
+        glUniformMatrix4fv (shader->Umv, 1, GL_FALSE, G2->mv.p);
+        glUniform1f (shader->Uuvscale, G2->uvscale);
+        glUniform1i (shader->Utexture, G2->texture);
+        glUniform3fv (shader->Ucolour, 1, G2->colour.p);
+
+        glDrawArrays (GL_TRIANGLES, 0, E->gl->vertices);
+    }
+}
+
+/* hot adapter */
+void galaxy_hot (void * data, char * contents) {
+    struct stone_engine * E = data;
+    
+    free (E->G1);
+    free (E->G2);
+
+    if (E->G != NULL) galaxy_del (E->G);
+    E->G = galaxy_parse (contents);
+
+    E->G1 = malloc (E->G->size * sizeof (struct stone_G1));
+    E->G2 = malloc (E->G->size * sizeof (struct stone_G2));
+
+    OK (E->G1 != NULL);
+    OK (E->G2 != NULL);
+}
+
+struct stone_engine *
+stone_init (struct GL * gl, struct SDL * sdl) {
+    struct stone_engine * E = malloc (sizeof (*E));
+    OK (E != NULL);
+
+    E->gl = gl;
+    E->sdl = sdl;
+    E->H = hot_new_player ();
+
+    E->G = NULL;
+    E->G1 = NULL;
+    E->G2 = NULL;
+    hot_pull (E->H, "data/galaxy", galaxy_hot, (void *) E);
+
+    E->S = state_init (E);
+
+    E->tex = util_earth ();
+    glGenBuffers (1, & E->cell_vbo);
+    E->imposter = util_imposter ();
+    
+    char const * glts_names [] = {
+        "data/shade/planet.glts",
+        "data/shade/planet-normals.glts",
+        "data/shade/planet-wireframe.glts",
+    };
+
+    for (unsigned i = 0; i < 3; ++i) {
+        E->sh_pl[i] = glts_load_planeta (gl, glts_names[i]);
+    }
+
+    E->sh_ce = glts_load_cello (gl, "data/shade/cell.glts");
+
+    return E;
+}
+
+void stone_C (struct stone_engine * E) {
     struct glts_cello const * shader = & E->sh_ce;
 
     glDepthMask (GL_FALSE);
@@ -323,130 +280,11 @@ void stone_moduleC (struct stone_engine * E) {
    }
 }
 
-int stone_G2_cmp (void const * a, void const * b) {
-    float a_depth = ((struct stone_G2 const *) a)->depth;
-    float b_depth = ((struct stone_G2 const *) b)->depth;
-
-    return (a_depth > b_depth) ? -1 : 1;
-}
-
-void stone_moduleP (struct stone_engine * E) {
-    qsort (E->G2, E->G->size,
-            sizeof (struct stone_G2), stone_G2_cmp);
-
-    unsigned choice = 0;
-    if (E->S->show_wireframe) {
-        choice = 2;
-    } else if (E->S->show_normals) {
-        choice = 1;
-    }
-
-    struct glts_planeta const * shader = E->sh_pl + choice;
-
-    glBindBuffer (GL_ARRAY_BUFFER, E->imposter.vbo);
-    E->gl->vertices = E->imposter.size;
-
-    glDepthMask (GL_TRUE);
-    glDisable (GL_BLEND);
-
-    glUseProgram (shader->program);
-
-    glVertexAttribPointer (shader->Apos2d, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray (shader->Apos2d);
-
-    for (unsigned i = 0; i < E->G->size; ++i) {
-        struct stone_G2 * G2 = E->G2 + i;
-
-        glUniformMatrix4fv (shader->Umvp, 1, GL_FALSE, G2->mvp.p);
-        glUniformMatrix4fv (shader->Umv, 1, GL_FALSE, G2->mv.p);
-        glUniform1f (shader->Uuvscale, G2->uvscale);
-        glUniform1i (shader->Utexture, G2->texture);
-        glUniform3fv (shader->Ucolour, 1, G2->colour.p);
-
-        glDrawArrays (GL_TRIANGLES, 0, E->gl->vertices);
-    }
-}
-
-/* hot adapter */
-void galaxy_hot (void * data, char * contents) {
-    struct stone_engine * E = data;
-    
-    free (E->G1);
-    free (E->G2);
-
-    if (E->G != NULL) galaxy_del (E->G);
-    E->G = galaxy_parse (contents);
-
-    E->G1 = malloc (E->G->size * sizeof (struct stone_G1));
-    E->G2 = malloc (E->G->size * sizeof (struct stone_G2));
-
-    OK (E->G1 != NULL);
-    OK (E->G2 != NULL);
-}
-
-struct stone_engine *
-stone_init (struct GL * gl, struct SDL * sdl, struct IMG * img) {
-    struct stone_engine * E = malloc (sizeof (*E));
-    OK (E != NULL);
-
-    E->gl = gl;
-    E->sdl = sdl;
-    (void) img;
-
-    E->H = hot_new_player ();
-
-    char const * glts_names [] = {
-        "data/shade/planet.glts",
-        "data/shade/planet-normals.glts",
-        "data/shade/planet-wireframe.glts",
-    };
-    for (unsigned i = 0; i < 3; ++i) {
-        E->sh_pl[i] = glts_load_planeta (gl, glts_names[i]);
-        OK (E->sh_pl[i].program != GL_FALSE);
-    }
-
-    E->sh_ce = glts_load_cello (gl, "data/shade/cell.glts");
-    OK (E->sh_ce.program != GL_FALSE);
-
-    E->tex = util_earth ();
-    OK (E->tex != GL_FALSE);
-
-    E->imposter = util_imposter ();
-    OK (E->imposter.vbo != GL_FALSE);
-
-    glGenBuffers (1, & E->cell_vbo);
-    OK (E->cell_vbo != GL_FALSE);
-
-    E->S = malloc (sizeof (*E->S));
-    OK (E->S != NULL);
-
-    float fov = 60.0f;
-    E->S->proj = util_projection (sdl->width, sdl->height, fov);
-
-    mat4 one = mat4_identity ();
-
-    vec3 move = {{0.0f, 1.7f, 1.0f}};
-    E->S->mov = mat4_moved (& one, & move);
-    
-    vec3 axis = {{1.0f, 0.0f, 0.0f}};
-    float angle = M_PI * 0.7;
-    E->S->rot = mat4_rotated_aa (& one, & axis, angle);
-
-    E->S->show_normals = 1;
-    E->S->time = 0.0;
-
-    E->G = NULL;
-    E->G1 = NULL;
-    E->G2 = NULL;
-    hot_pull (E->H, "data/galaxy", galaxy_hot, (void *) E);
-
-    return E;
-}
-
 void stone_destroy (struct stone_engine * E) {
     free (E->G1);
     free (E->G2);
     galaxy_del (E->G);
+    state_del (E->S);
     hot_del_player (E->H);
 
     glDeleteBuffers (1, & E->cell_vbo);
@@ -459,13 +297,11 @@ void stone_destroy (struct stone_engine * E) {
 
     glDeleteProgram (E->sh_ce.program);
 
-    free (E->S);
     free (E);
 }
 
-char stone_frame (struct stone_engine * E) {
-    glActiveTexture (GL_TEXTURE0);
-    glEnable (GL_DEPTH_TEST);
+void stone_frame_gl (struct stone_engine * E) {
+    glActiveTexture (GL_TEXTURE0); glEnable (GL_DEPTH_TEST);
     glViewport (0, 0, E->sdl->width, E->sdl->height);
 
     glDepthMask (GL_TRUE);
@@ -481,18 +317,22 @@ char stone_frame (struct stone_engine * E) {
     OK_ELSE (error == 0) {
         logi ("There occurred a GL error, # %d.", error);
     }
+}
 
-    struct input physical;
-    stony_poll_input (E, & physical);
-    stony_advance (E, & physical);
+char stone_frame (struct stone_engine * E) {
+    stone_frame_gl (E);
 
-    stone_moduleB (E);
-    stone_moduleP (E);
-    stone_moduleC (E);
+    struct inputstate I [1];
+    state_poll_input (E, I);
+    state_advance (E->S, I);
+
+    stone_A (E);
+    stone_B (E);
+    stone_C (E);
 
     SDL_GL_SwapWindow (E->sdl->window);
-    
-    hot_check (E->H);
 
-    return physical.halt;
+    hot_check (E->H);
+    
+    return I->halt;
 }
