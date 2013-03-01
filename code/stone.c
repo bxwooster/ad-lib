@@ -17,7 +17,7 @@ struct glts_cello glts_load_cello (struct GL * gl, char const * filename) {
     }
 
     it.Umvp = glGetUniformLocation (it.program, "Umvp");
-    assert (it.Umvp != -1);
+    OK (it.Umvp != -1);
 
     it.Ucolour = glGetUniformLocation (it.program, "Ucolour");
     it.Ucutout_center = glGetUniformLocation (it.program, "Ucutout_center");
@@ -40,7 +40,7 @@ struct glts_planeta glts_load_planeta (struct GL * gl, char const * filename) {
 
     it.Umv = glGetUniformLocation (it.program, "Umv");
     it.Umvp = glGetUniformLocation (it.program, "Umvp");
-    assert (it.Umvp != -1);
+    OK (it.Umvp != -1);
 
     it.Ucolour = glGetUniformLocation (it.program, "Ucolour");
     it.Uuvscale = glGetUniformLocation (it.program, "Uuvscale");
