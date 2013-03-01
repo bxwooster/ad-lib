@@ -1,3 +1,5 @@
+#define BUFSIZE (64 * 1024)
+
 struct watcher * watch_init (void) {
     struct watcher * W = malloc (sizeof (*W));
     OK (W != NULL);
@@ -14,46 +16,61 @@ struct watcher * watch_init (void) {
     W->over = (OVERLAPPED) {0};
     W->over.hEvent = W->event;
 
+    W->buffer = malloc (BUFSIZE);
+    OK (W->buffer != NULL);
+
+    watch_internal (W);
+
     return W;
 }
 
 void watch_del (struct watcher * W) {
     CloseHandle (W->dir);
     CloseHandle (W->event);
+    free (W->buffer);
     free (W);
 }
 
-void watch_update (struct watcher * W, watch_callback call, void * data) {
-    size_t const SIZE = 1024 * 64;
-    char buffer [SIZE];
-
-    char name [MAX_PATH];
+void watch_internal (struct watcher * W) {
     DWORD bytes_returned;
 
-    for (;;) {
-        int code = ReadDirectoryChangesW (W->dir, buffer, SIZE, 1,
-                FILE_NOTIFY_CHANGE_LAST_WRITE, & bytes_returned, & W->over, NULL);
-        OK (code);
+    int code = ReadDirectoryChangesW (W->dir, W->buffer, BUFSIZE, 1,
+            FILE_NOTIFY_CHANGE_LAST_WRITE, & bytes_returned, & W->over, NULL);
+    OK (code != 0);
+}
 
-        DWORD result = WaitForMultipleObjects (1, & W->event, 0, 0);
-        OK (result == 0 || result == WAIT_TIMEOUT);
-        if (result == 0) {
-            int offset = 0;
-            FILE_NOTIFY_INFORMATION * info;
+void watch_update (struct watcher * W, watch_callback call, void * data) {
+    char name [MAX_PATH];
 
-            do {
-                info = (void *) (buffer + offset);
-                int size = WideCharToMultiByte (CP_ACP, 0, info->FileName,
-                        info->FileNameLength / 2, name, MAX_PATH - 1, NULL, NULL);
-                OK (size > 0);
-                name [size] = '\0';
+    DWORD bytes_returned;
+    int code = GetOverlappedResult (W->dir, & W->over, & bytes_returned, 0);
+    OK (code != 0 || GetLastError () == ERROR_IO_INCOMPLETE);
 
-                /* the best bit */
-                call (data, name);
+    if (code != 0)
+    {
+        int offset = 0;
+        FILE_NOTIFY_INFORMATION * info;
 
-                offset += info->NextEntryOffset;
-            } while (info->NextEntryOffset != 0);
-        }
+        do {
+            info = (void *) (W->buffer + offset);
+            int size = WideCharToMultiByte (CP_ACP, 0, info->FileName,
+                    info->FileNameLength / 2, name, MAX_PATH - 1, NULL, NULL);
+            OK (size > 0);
+            name [size] = '\0';
+
+            /* the slashes are all Windows-wrong */
+            char * slash = name;
+            while ((slash = strchr (slash, '\\')) != NULL) {
+                *slash = '/';
+            }
+
+            /* the best bit */
+            call (data, name);
+
+            offset += info->NextEntryOffset;
+        } while (info->NextEntryOffset != 0);
+
+        watch_internal (W);
     }
 }
 

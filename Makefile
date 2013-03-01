@@ -24,6 +24,7 @@ ifeq ($(program),cosmos)
              galaxy \
              stone \
              socket \
+             watch \
              hot \
 
     features += \

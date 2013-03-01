@@ -253,22 +253,6 @@ char * hot_play (SOCKET real, char * filename) {
     }
 }
 
-struct thing {
-    uint32_t id;
-    char * filename;
-    hot_callback call;
-    void * data;
-};
-
-struct hot_player {
-    SOCKET real;
-    uint32_t last_id;
-
-    struct thing * things;
-    size_t count;
-    size_t capacity;
-};
-
 struct hot_player * hot_new_player (void) {
     struct hot_player * H = malloc (sizeof (*H));
     OK (H != NULL);
@@ -276,7 +260,7 @@ struct hot_player * hot_new_player (void) {
 #ifndef HOTLOCAL
     H->real = hot_player_socket ();
 #else
-    H->real = INVALID_SOCKET;
+    H->W = watch_init ();
 #endif
     H->last_id = 0;
     H->things = NULL;
@@ -287,7 +271,11 @@ struct hot_player * hot_new_player (void) {
 }
 
 void hot_del_player (struct hot_player * H) {
+#ifndef HOTLOCAL
     closesocket (H->real);
+#else
+    watch_del (H->W);
+#endif
     for (size_t i = 0; i < H->count; i++) {
         free (H->things[i].filename);
     }
@@ -300,11 +288,12 @@ uint32_t hot_pull (struct hot_player * H,
     H->count++;
     if (H->capacity < H->count) {
         H->capacity += 16;
-        H->things = realloc (H->things, sizeof (struct thing) * H->capacity);
+        H->things = realloc (H->things,
+               sizeof (struct hot_thing) * H->capacity);
         OK (H->things != NULL);
     }
 
-    struct thing * T = H->things + H->count - 1;
+    struct hot_thing * T = H->things + H->count - 1;
 
     T->id = H->last_id++;
     T->call = call;
@@ -318,22 +307,39 @@ uint32_t hot_pull (struct hot_player * H,
     T->filename[filename_size] = '\0';
 
     // temporary part below:
-    
 #ifdef HOTLOCAL
     char * contents = load_file (filename);
     call (data, contents);
     free (contents);
 
     return 0;
-#endif
-    
+#else
     char * answer = hot_play (H->real, T->filename);
     // note that answer's lifetime is short
 
     T->call (T->data, answer);
 
     return T->id;
+#endif
+}
+
+void hot_watchcall (void * data, char * filename) {
+    struct hot_player * H = data;
+
+    for (size_t i = 0; i < H->count; i++) {
+        struct hot_thing * T = H->things + i;
+
+        if (0 == strcmp (T->filename, filename)) {
+            char * answer = load_file (T->filename);
+            // note that answer's lifetime is short
+            T->call (T->data, answer);
+        }
+    }
 }
 
 void hot_check (struct hot_player * H) {
+#ifndef HOTLOCAL
+#error - not implemented
+#endif
+    watch_update (H->W, hot_watchcall, H);
 }

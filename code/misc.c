@@ -7,6 +7,15 @@ void logi (char const * fmt, ...) {
     va_end (args);
 }
 
+void debug (char const * fmt, ...) {
+    va_list args;
+    va_start (args, fmt);
+    fprintf (stdout, "<#> ");
+    vfprintf (stdout, fmt, args);
+    fprintf (stdout, "\n");
+    va_end (args);
+}
+
 char * /* contents */ load_file (char const * filename) {
     long size = -1;
 

@@ -744,6 +744,8 @@ int GL_check_errors (void) {
 }
 
 char stone_do_frame (struct stone_engine * E) {
+    hot_check (E->H);
+
     glDepthMask (GL_TRUE);
     glClearColor (0.0, 0.0, 0.0, 0.0);
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -771,8 +773,6 @@ char stone_do_frame (struct stone_engine * E) {
     moduleC (E, & framedata);
 
     SDL_GL_SwapWindow (E->sdl->window);
-
-    hot_check (E->H);
 
     return 0;
 }

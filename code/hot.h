@@ -6,3 +6,24 @@ struct packet {
 } __attribute__((packed)); 
 
 typedef void (*hot_callback) (void *, char *);
+
+struct hot_thing {
+    uint32_t id;
+    char * filename;
+    hot_callback call;
+    void * data;
+};
+
+struct hot_player {
+#ifdef HOTLOCAL
+    struct watcher * W;
+#else
+    SOCKET real;
+#endif
+    uint32_t last_id;
+
+    struct hot_thing * things;
+    size_t count;
+    size_t capacity;
+};
+
