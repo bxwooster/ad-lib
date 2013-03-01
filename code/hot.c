@@ -338,3 +338,8 @@ uint32_t hot_pull (struct hot_player * H,
 
     return T->id;
 }
+
+
+void hot_check (struct hot_player * H) {
+
+}
