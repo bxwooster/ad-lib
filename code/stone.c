@@ -216,15 +216,7 @@ initial_framestate (void) {
     return out;
 }
 
-void to_common_draw_GLstate (
-        struct stone_engine * E
-) {
-    glActiveTexture (GL_TEXTURE0);
-    glEnable (GL_DEPTH_TEST);
-    glViewport (0, 0, E->sdl->width, E->sdl->height);
-}
-
-/* adapter */
+/* hot adapter */
 void galaxy_hot (void * data, char * contents) {
     struct stone_engine * E = data;
     
@@ -284,7 +276,9 @@ stone_init (struct GL * gl, struct SDL * sdl, struct IMG * img) {
     E->G = NULL;
     hot_pull (E->H, "data/galaxy", galaxy_hot, (void *) E);
 
-    to_common_draw_GLstate (E);
+    glActiveTexture (GL_TEXTURE0);
+    glEnable (GL_DEPTH_TEST);
+    glViewport (0, 0, E->sdl->width, E->sdl->height);
 
     return E;
 }
