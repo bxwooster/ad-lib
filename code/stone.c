@@ -1,7 +1,3 @@
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
-
 /* The Konstants! */
 float const k_turn_transition_delay = 1.5f;
 float const k_planet_size_minifier = 0.9f;
