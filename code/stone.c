@@ -1,10 +1,10 @@
 float const k_turn_transition_delay = 1.5f;
 float const k_planet_size_minifier = 0.9f;
-unsigned const k_round_cell_segments = 64;
 float const k_camera_speed = 0.05f;
+unsigned const k_round_cell_segments = 64;
 
 void
-advance_framestate (
+stony_advance (
         struct stone_engine * E,
         struct input const * I
 ) {
@@ -88,133 +88,8 @@ advance_framestate (
     }
 }
 
-struct galaxy_helper
-galaxy_prepare (
-        struct stone_engine * E,
-        unsigned planet_number
-) {
-    struct galaxy_helper result;
-
-    struct framestate const * S = & E->state;
-    struct planet const * planet = E->G->planets + planet_number;
-
-    if (planet_number == 0) {
-        result.transform = mat4_identity ();
-        result.supersize = 1.0f;
-    } else {
-        unsigned parent = planet->where.parent_index;
-        assert (parent < planet_number);
-
-        float float_slot = planet->where.orbit_slot +
-            S->turn + S->turn_tail;
-
-        unsigned orbit_slots = planet->where.orbit_number - 1 + 3;
-        float alpha = (2.0f * M_PI * float_slot) / orbit_slots;
-
-        float distance = E->gh[parent].size *
-            (planet->where.orbit_number + 0.5f);
-
-        vec3 offset = {{0}};
-        offset.element.x = sinf (alpha) * distance;
-        offset.element.y = cosf (alpha) * distance;
-
-        result.transform = mat4_moved (& E->gh[parent].transform, & offset);
-        result.supersize = E->gh[parent].size * 0.5 * k_planet_size_minifier;
-    }
-
-    result.size = result.supersize / (planet->orbit_count + 1);
-
-    return result;
-}
-
-struct frame_DD
-generate_frame_DD (
-        mat4 const * proj,
-        struct framestate const * S
-) {
-    mat4 viewi = mat4_multiply (& S->mov, & S->rot);
-    mat4 view = mat4_inverted_rtonly (& viewi);
-    mat4 viewproj = mat4_multiply (proj, & view);
-
-    return (struct frame_DD) {
-        viewi,
-        viewproj
-    };
-}
-
-mat4
-planet_dayrotation (
-        struct stone_engine * E,
-        struct planet_day const * day
-) {
-    float theta = (float) ((E->time / day->period) * M_PI * 2.0);
-
-    mat4 out = mat4_identity ();
-    out.column.w.v3 = (vec3) {{0}};
-    return mat4_rotated_aa (& out, & day->axis, theta);
-}
-
-struct planet_DD
-generate_planet_DD (
-        struct stone_engine * E,
-        struct frame_DD * framedata,
-        unsigned planet_number
-) {
-    struct galaxy_helper * helper = E->gh + planet_number;
-    struct planet * planet = E->G->planets + planet_number;
-
-    mat4 mmodel = helper->transform;
-    mat4 mrot = planet_dayrotation (E, & planet->day);
-
-    vec3 first = vec3_diff (
-        & mmodel.column.w.v3,
-        & framedata->viewi.column.w.v3);
-
-    float p = vec3_length (& first);
-    float r = helper->size;
-    float apparent = sqrtf (p * p - r * r) * r / p;
-    float apparentratio = apparent / r;
-    float offset = (r * r) / p;
-    float tosurface = p - r;
-    float hack = logf (tosurface) / 1000.0f;
-
-    vec3 unit_x = {{1.0f, 0.0f, 0.0f}};
-    vec3 unit_y = {{0.0f, 1.0f, 0.0f}};
-
-    vec3 second = first.element.x < first.element.y ?
-        vec3_product (& first, & unit_x) :
-        vec3_product (& first, & unit_y) ;
-
-    vec3 third = vec3_product (& first, & second);
-
-    mat4 rotation = {.p[15] = 1.0f};
-    rotation.column.z.v3 = vec3_normalized (& first);
-    rotation.column.x.v3 = vec3_normalized (& second);
-    rotation.column.y.v3 = vec3_normalized (& third);
-    mmodel = mat4_multiply (& mmodel, & rotation);
-
-    mrot = mat4_multiply (& mrot, & mmodel);
-
-    vec3 move = {{0.0f, 0.0f, -offset}};
-    mmodel = mat4_moved (& mmodel, & move);
-    mmodel = mat4_scaled (& mmodel, apparent);
-
-    mat4 mvp = mat4_multiply (& framedata->viewproj, & mmodel);
-
-    struct planet_DD data = {
-        mvp,
-        mrot,
-        hack,
-        apparentratio,
-        0, // texture, not correct at all
-        planet->colour
-    };
-
-    return data;
-}
-
 void
-poll_SDLevents (
+stony_poll_input (
         struct stone_engine * E,
         struct input * currently
 ) {
@@ -258,17 +133,99 @@ poll_SDLevents (
     currently->arrows.right = keys[SDL_SCANCODE_RIGHT];
 }
 
-void moduleB (struct stone_engine * E, struct frame_DD * framedata) {
+void stone_moduleB (struct stone_engine * E) {
     for (unsigned i = 0; i < E->G->size; ++i) {
-        E->gh[i] = galaxy_prepare (E, i);
+        struct framestate const * S = & E->state;
+        struct planet const * planet = E->G->planets + i;
+
+        if (i == 0) {
+            E->gh[i].transform = mat4_identity ();
+            E->gh[i].supersize = 1.0f;
+        } else {
+            unsigned parent = planet->where.parent_index;
+            assert (parent < i);
+
+            float float_slot = planet->where.orbit_slot +
+                S->turn + S->turn_tail;
+
+            unsigned orbit_slots = planet->where.orbit_number - 1 + 3;
+            float alpha = (2.0f * M_PI * float_slot) / orbit_slots;
+
+            float distance = E->gh[parent].size *
+                (planet->where.orbit_number + 0.5f);
+
+            vec3 offset = {{0}};
+            offset.element.x = sinf (alpha) * distance;
+            offset.element.y = cosf (alpha) * distance;
+
+            E->gh[i].transform = mat4_moved (& E->gh[parent].transform, & offset);
+            E->gh[i].supersize = E->gh[parent].size * 0.5 * k_planet_size_minifier;
+        }
+
+        E->gh[i].size = E->gh[i].supersize / (planet->orbit_count + 1);
     }
 
     for (unsigned i = 0; i < E->G->size; ++i) {
-        E->planet_memory[i] = generate_planet_DD (E, framedata, i);
+        struct galaxy_helper * helper = E->gh + i;
+        struct planet * planet = E->G->planets + i;
+
+        mat4 mmodel = helper->transform;
+
+        float theta = (float) ((E->time / planet->day.period) * M_PI * 2.0);
+
+        mat4 out = mat4_identity ();
+        out.column.w.v3 = (vec3) {{0}};
+        mat4 mrot = mat4_rotated_aa (& out, & planet->day.axis, theta);
+
+        vec3 first = vec3_diff (
+            & mmodel.column.w.v3,
+            & E->viewi.column.w.v3);
+
+        float p = vec3_length (& first);
+        float r = helper->size;
+        float apparent = sqrtf (p * p - r * r) * r / p;
+        float apparentratio = apparent / r;
+        float offset = (r * r) / p;
+        float tosurface = p - r;
+        float hack = logf (tosurface) / 1000.0f;
+
+        vec3 unit_x = {{1.0f, 0.0f, 0.0f}};
+        vec3 unit_y = {{0.0f, 1.0f, 0.0f}};
+
+        vec3 second = first.element.x < first.element.y ?
+            vec3_product (& first, & unit_x) :
+            vec3_product (& first, & unit_y) ;
+
+        vec3 third = vec3_product (& first, & second);
+
+        mat4 rotation = {.p[15] = 1.0f};
+        rotation.column.z.v3 = vec3_normalized (& first);
+        rotation.column.x.v3 = vec3_normalized (& second);
+        rotation.column.y.v3 = vec3_normalized (& third);
+        mmodel = mat4_multiply (& mmodel, & rotation);
+
+        mrot = mat4_multiply (& mrot, & mmodel);
+
+        vec3 move = {{0.0f, 0.0f, -offset}};
+        mmodel = mat4_moved (& mmodel, & move);
+        mmodel = mat4_scaled (& mmodel, apparent);
+
+        mat4 mvp = mat4_multiply (& E->viewproj, & mmodel);
+
+        struct planet_DD data = {
+            mvp,
+            mrot,
+            hack,
+            apparentratio,
+            0, // texture, not correct at all
+            planet->colour
+        };
+
+        E->planet_memory[i] = data;
     }
 }
 
-void moduleC (struct stone_engine * E, struct frame_DD * framedata) {
+void stone_moduleC (struct stone_engine * E) {
     struct glts_cello const * shader = & E->sh_ce;
 
     glDepthMask (GL_FALSE);
@@ -349,7 +306,7 @@ void moduleC (struct stone_engine * E, struct frame_DD * framedata) {
                     (& cutout, & (vec4) {0,0,0,1});
 
                 mat4 mvp = mat4_multiply
-                    (& framedata->viewproj, & transform);
+                    (& E->viewproj, & transform);
                 glUniformMatrix4fv (shader->Umvp, 1, GL_FALSE, mvp.p);
 
                 glUniform1f (shader->Ucutout_radius,
@@ -369,7 +326,7 @@ int closest_planet_DD (void const * a, void const * b) {
     return (a_depth > b_depth) ? -1 : 1;
 }
 
-void moduleP (struct stone_engine * E) {
+void stone_moduleP (struct stone_engine * E) {
     qsort (E->planet_memory, E->G->size,
             sizeof (struct planet_DD), closest_planet_DD);
 
@@ -523,17 +480,18 @@ char stone_frame (struct stone_engine * E) {
     E->time = (double) SDL_GetTicks () / 1000;
 
     struct input physical;
-    poll_SDLevents (E, & physical);
+    stony_poll_input (E, & physical);
     if (physical.halt) return 1;
 
-    advance_framestate (E, & physical);
+    stony_advance (E, & physical);
 
-    struct frame_DD framedata =
-        generate_frame_DD (& E->mproj, & E->state);
+    E->viewi = mat4_multiply (& E->state.mov, & E->state.rot);
+    mat4 view = mat4_inverted_rtonly (& E->viewi);
+    E->viewproj = mat4_multiply (& E->mproj, & view);
 
-    moduleB (E, & framedata);
-    moduleP (E);
-    moduleC (E, & framedata);
+    stone_moduleB (E);
+    stone_moduleP (E);
+    stone_moduleC (E);
 
     SDL_GL_SwapWindow (E->sdl->window);
 

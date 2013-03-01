@@ -338,6 +338,7 @@ void hot_watchcall (void * data, char * filename) {
 }
 
 void hot_check (struct hot_player * H) {
+    (void) H;
 #ifdef HOTREMOTE
     // do nothing, not implemented
 #elif defined HOTLOCAL

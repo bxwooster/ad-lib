@@ -39,6 +39,9 @@ struct stone_engine {
     struct framestate state;
     double time;
 
+    mat4 viewi;
+    mat4 viewproj;
+
     struct hot_player * H;
 };
 
@@ -63,11 +66,6 @@ struct planet_DD {
     float uvscale;
     GLuint texture;
     vec3 colour;
-};
-
-struct frame_DD { // atrocious name
-    mat4 viewi;
-    mat4 viewproj;
 };
 
 struct input {
