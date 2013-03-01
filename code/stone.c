@@ -139,8 +139,8 @@ void stone_moduleB (struct stone_engine * E) {
         struct planet const * planet = E->G->planets + i;
 
         if (i == 0) {
-            E->gh[i].transform = mat4_identity ();
-            E->gh[i].supersize = 1.0f;
+            E->G1[i].transform = mat4_identity ();
+            E->G1[i].supersize = 1.0f;
         } else {
             unsigned parent = planet->where.parent_index;
             assert (parent < i);
@@ -151,38 +151,38 @@ void stone_moduleB (struct stone_engine * E) {
             unsigned orbit_slots = planet->where.orbit_number - 1 + 3;
             float alpha = (2.0f * M_PI * float_slot) / orbit_slots;
 
-            float distance = E->gh[parent].size *
+            float distance = E->G1[parent].size *
                 (planet->where.orbit_number + 0.5f);
 
             vec3 offset = {{0}};
             offset.element.x = sinf (alpha) * distance;
             offset.element.y = cosf (alpha) * distance;
 
-            E->gh[i].transform = mat4_moved (& E->gh[parent].transform, & offset);
-            E->gh[i].supersize = E->gh[parent].size * 0.5 * k_planet_size_minifier;
+            E->G1[i].transform = mat4_moved (& E->G1[parent].transform, & offset);
+            E->G1[i].supersize = E->G1[parent].size * 0.5 * k_planet_size_minifier;
         }
 
-        E->gh[i].size = E->gh[i].supersize / (planet->orbit_count + 1);
+        E->G1[i].size = E->G1[i].supersize / (planet->orbit_count + 1);
     }
 
     for (unsigned i = 0; i < E->G->size; ++i) {
-        struct galaxy_helper * helper = E->gh + i;
-        struct planet * planet = E->G->planets + i;
+        struct planet * P = E->G->planets + i;
+        struct stone_G1 * g1 = E->G1 + i;
 
-        mat4 mmodel = helper->transform;
+        mat4 mmodel = g1->transform;
 
-        float theta = (float) ((E->time / planet->day.period) * M_PI * 2.0);
+        float theta = (float) ((E->time / P->day.period) * M_PI * 2.0);
 
         mat4 out = mat4_identity ();
         out.column.w.v3 = (vec3) {{0}};
-        mat4 mrot = mat4_rotated_aa (& out, & planet->day.axis, theta);
+        mat4 mrot = mat4_rotated_aa (& out, & P->day.axis, theta);
 
         vec3 first = vec3_diff (
             & mmodel.column.w.v3,
             & E->viewi.column.w.v3);
 
         float p = vec3_length (& first);
-        float r = helper->size;
+        float r = g1->size;
         float apparent = sqrtf (p * p - r * r) * r / p;
         float apparentratio = apparent / r;
         float offset = (r * r) / p;
@@ -212,16 +212,13 @@ void stone_moduleB (struct stone_engine * E) {
 
         mat4 mvp = mat4_multiply (& E->viewproj, & mmodel);
 
-        struct planet_DD data = {
-            mvp,
-            mrot,
-            hack,
-            apparentratio,
-            0, // texture, not correct at all
-            planet->colour
-        };
-
-        E->planet_memory[i] = data;
+        struct stone_G2 * G2 = E->G2 + i;
+        G2->mvp = mvp;
+        G2->mv = mrot;
+        G2->depth = hack;
+        G2->uvscale = apparentratio;
+        G2->texture = E->tex;
+        G2->colour = P->colour;
     }
 }
 
@@ -246,8 +243,8 @@ void stone_moduleC (struct stone_engine * E) {
                 float y;
             } tris [N] [6];
 
-            float s1 = E->gh[j].size;
-            float s2 = E->gh[j].supersize;
+            float s1 = E->G1[j].size;
+            float s2 = E->G1[j].supersize;
             float sd = (s2 - s1) / E->G->planets[j].orbit_count;
             float r1 = s1 + sd * k;
             float r2 = s1 + sd * (k + 1);
@@ -298,10 +295,10 @@ void stone_moduleC (struct stone_engine * E) {
                 if (q == E->G->size) q = j; //no-op
 
                 mat4 transform = mat4_rotated_aa
-                    (& E->gh[j].transform, & (vec3) {0,0,1}, -angle * (posish));
+                    (& E->G1[j].transform, & (vec3) {0,0,1}, -angle * (posish));
 
                 mat4 cutout = mat4_inverted_rtonly (& transform);
-                cutout = mat4_multiply (&cutout, & E->gh[q].transform);
+                cutout = mat4_multiply (&cutout, & E->G1[q].transform);
                 vec4 cutout_center = vec4_multiply
                     (& cutout, & (vec4) {0,0,0,1});
 
@@ -310,7 +307,7 @@ void stone_moduleC (struct stone_engine * E) {
                 glUniformMatrix4fv (shader->Umvp, 1, GL_FALSE, mvp.p);
 
                 glUniform1f (shader->Ucutout_radius,
-                        q == j ? 0.0f : E->gh[q].supersize);
+                        q == j ? 0.0f : E->G1[q].supersize);
                 glUniform2fv (shader->Ucutout_center, 1, cutout_center.p);
 
                 glDrawArrays (GL_TRIANGLES, 0, 2 * N * 3);
@@ -319,16 +316,16 @@ void stone_moduleC (struct stone_engine * E) {
    }
 }
 
-int closest_planet_DD (void const * a, void const * b) {
-    float a_depth = ((struct planet_DD const *) a)->depth;
-    float b_depth = ((struct planet_DD const *) b)->depth;
+int stone_G2_cmp (void const * a, void const * b) {
+    float a_depth = ((struct stone_G2 const *) a)->depth;
+    float b_depth = ((struct stone_G2 const *) b)->depth;
 
     return (a_depth > b_depth) ? -1 : 1;
 }
 
 void stone_moduleP (struct stone_engine * E) {
-    qsort (E->planet_memory, E->G->size,
-            sizeof (struct planet_DD), closest_planet_DD);
+    qsort (E->G2, E->G->size,
+            sizeof (struct stone_G2), stone_G2_cmp);
 
     unsigned choice = 0;
     if (E->state.show_wireframe) {
@@ -351,13 +348,13 @@ void stone_moduleP (struct stone_engine * E) {
     glEnableVertexAttribArray (shader->Apos2d);
 
     for (unsigned i = 0; i < E->G->size; ++i) {
-        struct planet_DD * data = E->planet_memory + i;
+        struct stone_G2 * G2 = E->G2 + i;
 
-        glUniformMatrix4fv (shader->Umvp, 1, GL_FALSE, data->mvp.p);
-        glUniformMatrix4fv (shader->Umv, 1, GL_FALSE, data->mv.p);
-        glUniform1f (shader->Uuvscale, data->uvscale);
-        glUniform1i (shader->Utexture, data->texture);
-        glUniform3fv (shader->Ucolour, 1, data->colour.p);
+        glUniformMatrix4fv (shader->Umvp, 1, GL_FALSE, G2->mvp.p);
+        glUniformMatrix4fv (shader->Umv, 1, GL_FALSE, G2->mv.p);
+        glUniform1f (shader->Uuvscale, G2->uvscale);
+        glUniform1i (shader->Utexture, G2->texture);
+        glUniform3fv (shader->Ucolour, 1, G2->colour.p);
 
         glDrawArrays (GL_TRIANGLES, 0, E->gl->vertices);
     }
@@ -367,17 +364,17 @@ void stone_moduleP (struct stone_engine * E) {
 void galaxy_hot (void * data, char * contents) {
     struct stone_engine * E = data;
     
-    free (E->gh);
-    free (E->planet_memory);
-    if (E->G != NULL) galaxy_del (E->G);
+    free (E->G1);
+    free (E->G2);
 
+    if (E->G != NULL) galaxy_del (E->G);
     E->G = galaxy_parse (contents);
 
-    E->gh = malloc (E->G->size * sizeof (struct galaxy_helper));
-    OK (E->gh != NULL);
+    E->G1 = malloc (E->G->size * sizeof (struct stone_G1));
+    E->G2 = malloc (E->G->size * sizeof (struct stone_G2));
 
-    E->planet_memory = malloc (E->G->size * sizeof (struct planet_DD));
-    OK (E->planet_memory != NULL);
+    OK (E->G1 != NULL);
+    OK (E->G2 != NULL);
 }
 
 struct stone_engine *
@@ -428,9 +425,9 @@ stone_init (struct GL * gl, struct SDL * sdl, struct IMG * img) {
     E->state.show_normals = 1;
     E->time = 0.0;
 
-    E->gh = NULL;
-    E->planet_memory = NULL;
     E->G = NULL;
+    E->G1 = NULL;
+    E->G2 = NULL;
     hot_pull (E->H, "data/galaxy", galaxy_hot, (void *) E);
 
     glActiveTexture (GL_TEXTURE0);
@@ -441,8 +438,8 @@ stone_init (struct GL * gl, struct SDL * sdl, struct IMG * img) {
 }
 
 void stone_destroy (struct stone_engine * E) {
-    free (E->gh);
-    free (E->planet_memory);
+    free (E->G1);
+    free (E->G2);
     galaxy_del (E->G);
     hot_del_player (E->H);
 
