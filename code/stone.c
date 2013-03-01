@@ -772,6 +772,8 @@ char stone_do_frame (struct stone_engine * E) {
 
     SDL_GL_SwapWindow (E->sdl->window);
 
+    hot_check (E->H);
+
     return 0;
 }
 
