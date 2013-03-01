@@ -8,11 +8,3 @@
   #define INVALID_SOCKET -1
   #define closesocket close
 #endif
-
-void socket_init (void);
-    
-char const * socket_errstr (void);
-
-void server (void);
-
-void client (void);

@@ -18,24 +18,3 @@ struct glts_cello {
     GLint Uradius_min;
     GLint Uradius_max;
 };
-
-GLuint // program
-glts_load (
-            struct GL * gl,
-            char const * filename,
-            char const * typename,
-			char const * typecode
-);
-
-struct glts_cello
-  glts_load_cello (
-            struct GL * gl,
-            char const * filename
-
-);
-
-struct glts_planeta
-  glts_load_planeta (
-            struct GL * gl,
-            char const * filename
-);

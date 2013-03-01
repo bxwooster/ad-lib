@@ -14,10 +14,3 @@ struct planet {
 	vec3 colour;
     struct planet_day day;
 };
-
-int // status
-galaxy_parse (
-        char const * in,
-        struct planet galaxy [],
-        unsigned * count
-);

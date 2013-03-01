@@ -7,7 +7,7 @@ void logi (char const * fmt, ...) {
     va_end (args);
 }
 
-char * load_file (char const * filename) {
+char * /* contents */ load_file (char const * filename) {
     long size = -1;
 
     FILE * fp = fopen (filename, "rb");

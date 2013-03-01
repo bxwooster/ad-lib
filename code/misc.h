@@ -12,11 +12,3 @@
 	    logi ("@ %s", __INFO__); \
 		exit (1); \
 	} } while (0)
-
-void logi (char const * fmt, ...);
-
-char * /* contents */ load_file( char const * filename);
-
-#ifdef WINDOWS
-    unsigned int sleep (unsigned int sec);
-#endif

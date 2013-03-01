@@ -79,13 +79,6 @@ void udp_go (SOCKET sock, struct sockaddr_in * remote, socklen_t * remlen) {
 uint8_t const TYPE_PULL_REQUEST  = 2 | 0;
 uint8_t const TYPE_PULL_RESPONSE = 2 | 1;
 
-struct packet {
-    uint8_t type;
-    uint32_t id;
-    uint32_t size;
-    uint8_t data [0];
-} __attribute__((packed)); 
-
 void send_it (SOCKET real, struct packet * pack, size_t packlen) {
     size_t sent;
     for (size_t offset = 0; offset < packlen; offset += sent) {
@@ -177,6 +170,8 @@ SOCKET hot_server_socket (void) {
 }
 
 void hot_serve (SOCKET real) {
+/* non-blocking. does everything that's pending */
+/* right now will block if socket has no incoming data */
     static uint32_t last_id = 0;
 
     struct packet original;
@@ -219,6 +214,7 @@ void hot_serve (SOCKET real) {
 }
 
 char * hot_play (SOCKET real, char * filename) {
+/* temporary */
     static uint32_t last_id = 0;
     struct packet original;
 
@@ -339,7 +335,5 @@ uint32_t hot_pull (struct hot_player * H,
     return T->id;
 }
 
-
 void hot_check (struct hot_player * H) {
-
 }

@@ -170,7 +170,7 @@ endif
 
 all_source += code/$(program).c
 all_source += $(addprefix code/,$(addsuffix .c,$(files)))
-all_headers += $(addprefix code/,$(addsuffix .h,$(files)))
+all_headers += $(shell find $(addprefix code/,$(addsuffix .h,$(files))))
 
 prefixed_defines := $(addprefix -D,$(defines))
 
@@ -182,10 +182,11 @@ config_dir := .config/$(platform)
 config_include_dir := $(config_dir)/include
 config_lib_dir := $(config_dir)/lib
 
+superheader := $(output_dir)/super$(program).h
 exe := $(output_dir)/$(program)$(exe_suffix)
 package_archive := $(platform_dir)/package.tar.bz2
 
-include_flags := $(addprefix -include ,$(includes) $(all_headers))
+include_flags := $(addprefix -include ,$(includes) $(all_headers) $(superheader))
 
 cc := gcc
 cflags := -std=c99 \
@@ -225,6 +226,7 @@ SHELL := bash
 export
 
 $(exe): code $(all_source) $(all_headers) | $(output_dir)
+	makeheaders -h $(all_source) > $(superheader)
 	@echo "Making the executable..."
 	$(cc) -o $(exe) $(all_source) $(cflags)
 
