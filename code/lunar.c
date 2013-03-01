@@ -1,10 +1,10 @@
-#define API __declspec (dllexport)
-
 API void test (void) {
     logi ("Yep. It works.");
 }
 
-int main (void) {
+int lunar (int argc, char * argv []) {
+    (void) argc;
+    (void) argv;
     lua_State * L = luaL_newstate ();
 
     luaL_openlibs (L);
