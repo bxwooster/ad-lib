@@ -31,13 +31,12 @@ void log_it (
     char * log;
     if (size > 0) {
         log = malloc (size);
-        if (log) {
-            glGetShaderInfoLog (shader, size, NULL, log);
-            logi ("%s", log);
-            free (log);
-        } else {
-            logi ("No memory to display shader log!");
-        }
+        OK (log);
+
+        glGetShaderInfoLog (shader, size, NULL, log);
+        logi ("%s", log);
+
+        free (log);
     } else {
         logi ("No shader log available.");
     }
@@ -75,7 +74,7 @@ do_it (
     if (code == GL_FALSE) {
         logi ("Shader source:\n");
         for (unsigned i = 0; i < all_count; i++)
-            logi ("// piece %d:\n%s", i, all_pieces[i]);
+            logi ("Piece %d:\n%s", i, all_pieces[i]);
         log_it (shader);
         glDeleteShader (shader);
         shader = GL_FALSE;
@@ -186,4 +185,47 @@ end:
     }
 
     return program;        
+}
+
+struct glts_cello glts_load_cello (struct GL * gl, char const * filename) {
+    struct glts_cello it;
+
+    it.program = glts_load (gl, filename, "cello", "");
+    // we could check that program's not GL_FALSE, but we won't.
+    it.Apos2d = (GLuint) glGetAttribLocation (it.program, "Apos2d");
+    if (it.Apos2d == (GLuint) -1) {
+        logi ("GL attribute 'Apos2d' not found");
+    }
+
+    it.Umvp = glGetUniformLocation (it.program, "Umvp");
+    OK (it.Umvp != -1);
+
+    it.Ucolour = glGetUniformLocation (it.program, "Ucolour");
+    it.Ucutout_center = glGetUniformLocation (it.program, "Ucutout_center");
+    it.Ucutout_radius = glGetUniformLocation (it.program, "Ucutout_radius");
+    it.Uradius_min = glGetUniformLocation (it.program, "Uradius_min");
+    it.Uradius_max = glGetUniformLocation (it.program, "Uradius_max");
+
+    return it;
+}
+
+struct glts_planeta glts_load_planeta (struct GL * gl, char const * filename) {
+    struct glts_planeta it;
+
+    it.program = glts_load (gl, filename, "planeta", "");
+    // we could check that program's not GL_FALSE, but we won't.
+    it.Apos2d = (GLuint) glGetAttribLocation (it.program, "Apos2d");
+    if (it.Apos2d == (GLuint) -1) {
+        logi ("GL attribute 'Apos2d' not found");
+    }
+
+    it.Umv = glGetUniformLocation (it.program, "Umv");
+    it.Umvp = glGetUniformLocation (it.program, "Umvp");
+    OK (it.Umvp != -1);
+
+    it.Ucolour = glGetUniformLocation (it.program, "Ucolour");
+    it.Uuvscale = glGetUniformLocation (it.program, "Uuvscale");
+    it.Utexture = glGetUniformLocation (it.program, "Uexture");
+    // ignore some missing uniforms
+    return it;
 }
