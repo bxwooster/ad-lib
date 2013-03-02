@@ -118,9 +118,14 @@ ifeq ($(platform),windows)
 endif
 
 ifneq ($(filter lua,$(features)),)
-    includes += lauxlib.h lua.h lualib.h
+    includes += luajit-2.0/lauxlib.h luajit-2.0/lua.h luajit-2.0/lualib.h
     ifeq ($(platform),windows)
         link_flags += -llua51
+    else
+        link_flags += -lluajit-5.1
+    endif
+    ifeq ($(platform),darwin)
+        link_flags += -pagezero_size 10000 -image_base 100000000
     endif
 endif
 
