@@ -1,6 +1,16 @@
 float const k_planet_size_minifier = 0.9f;
 unsigned const k_round_cell_segments = 64;
 
+char * GPLANETS [] = {
+    "data/shade/planet.glts",
+    "data/shade/planet-normals.glts",
+    "data/shade/planet-wireframe.glts",
+};
+
+char CELL [] = "data/shade/cell.glts";
+char STATELUA [] = "lua/state.lua";
+char GALAXY [] = "data/galaxy";
+
 void stone_A (struct stone_engine * E) {
     for (unsigned i = 0; i < E->G->size; ++i) {
         struct framestate const * S = E->S;
@@ -255,8 +265,6 @@ void lua_hot (void * data, char * text) {
     lua_setglobal (E->L, "state");
 }
 
-char CELL [] = "data/shade/cell.glts";
-
 void cell_hot (void * data, char * text) {
     struct stone_engine * E = data;
 
@@ -264,12 +272,6 @@ void cell_hot (void * data, char * text) {
 
     E->gcell = glts_load_cello (CELL, text);
 }
-
-char * GPLANETS [] = {
-    "data/shade/planet.glts",
-    "data/shade/planet-normals.glts",
-    "data/shade/planet-wireframe.glts",
-};
 
 void planet_hot (void * data, char * text) {
     struct stone_engine * E = *((void **) data + 0);
@@ -293,16 +295,16 @@ stone_init (struct GL * gl, struct SDL * sdl) {
     E->gl = gl;
     E->sdl = sdl;
     E->H = hot_new_player ();
-    
+
     E->L = luaL_newstate ();
     OK (E->L != NULL);
     luaL_openlibs (E->L);
-    hot_pull (E->H, "lua/state.lua", lua_hot, E, 0);
+    hot_pull (E->H, STATELUA, lua_hot, E, 0);
 
     E->G = NULL;
     E->G1 = NULL;
     E->G2 = NULL;
-    hot_pull (E->H, "data/galaxy", galaxy_hot, E, 0);
+    hot_pull (E->H, GALAXY, galaxy_hot, E, 0);
 
     E->S = state_init (E);
 
