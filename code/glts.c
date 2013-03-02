@@ -1,11 +1,8 @@
 GLuint // program
 link_it (
         GLuint vs,
-        GLuint fs,
-        struct GL * gl
+        GLuint fs
 ) {
-    (void) gl;
-
     GLuint program = glCreateProgram ();
     glAttachShader (program, vs);
     glAttachShader (program, fs);
@@ -105,10 +102,10 @@ load_it (
 
 GLuint // program
 glts_load (
-            struct GL * gl,
-            char const * filename,
-            char const * typename,
-			char const * typecode
+        char * filename,
+        char const * text,
+        char const * typename,
+        char const * typecode
 ) {
     GLuint program = GL_FALSE;
     unsigned maxN = 256;
@@ -117,7 +114,7 @@ glts_load (
 
     /* load initial .glts file */
     const char * at;
-    const char * current_file = at = load_file (filename);
+    const char * current_file = at = text;
 	if (current_file == NULL) goto end;
 
     /* first line must be the following: */
@@ -167,7 +164,7 @@ glts_load (
     if (vs == GL_FALSE || fs == GL_FALSE)
         logi ("That happened while loading %s just now.", filename);
 
-    program = link_it (vs, fs, gl);
+    program = link_it (vs, fs);
 
     glDeleteShader (vs);
     glDeleteShader (fs);
@@ -179,18 +176,17 @@ end:
         logi ("Syntax error while loading a GLTS: %s:byte-%d",
             filename, (int) (at - current_file));
 
-	for (unsigned n = 1; n < N; ++n) {
-        //logi ("Source %u: %s", n, sources[n]);
+	for (unsigned n = 1; n < N - 1; ++n) {
     	free ((char *) sources[n]);
     }
 
     return program;        
 }
 
-struct glts_cello glts_load_cello (struct GL * gl, char const * filename) {
+struct glts_cello glts_load_cello (char * filename, char * text) {
     struct glts_cello it;
 
-    it.program = glts_load (gl, filename, "cello", "");
+    it.program = glts_load (filename, text, "cello", "");
     OK (it.program != GL_FALSE);
 
     it.Apos2d = (GLuint) glGetAttribLocation (it.program, "Apos2d");
@@ -210,10 +206,10 @@ struct glts_cello glts_load_cello (struct GL * gl, char const * filename) {
     return it;
 }
 
-struct glts_planeta glts_load_planeta (struct GL * gl, char const * filename) {
+struct glts_planeta glts_load_planeta (char * filename, char * text) {
     struct glts_planeta it;
 
-    it.program = glts_load (gl, filename, "planeta", "");
+    it.program = glts_load (filename, text, "planeta", "");
     OK (it.program != GL_FALSE);
 
     it.Apos2d = (GLuint) glGetAttribLocation (it.program, "Apos2d");

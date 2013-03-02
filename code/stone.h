@@ -30,6 +30,6 @@ struct stone_engine {
     GLuint tex;
     GLuint cell_vbo;
     struct GLvbo_and_size imposter;
-    struct glts_planeta sh_pl [3];
-    struct glts_cello sh_ce;
+    struct glts_planeta gplanets [3];
+    struct glts_cello gcell;
 };

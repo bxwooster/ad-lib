@@ -108,7 +108,7 @@ void stone_B (struct stone_engine * E) {
         choice = 1;
     }
 
-    struct glts_planeta const * shader = E->sh_pl + choice;
+    struct glts_planeta const * shader = E->gplanets + choice;
 
     glBindBuffer (GL_ARRAY_BUFFER, E->imposter.vbo);
     E->gl->vertices = E->imposter.size;
@@ -135,7 +135,7 @@ void stone_B (struct stone_engine * E) {
 }
 
 void stone_C (struct stone_engine * E) {
-    struct glts_cello const * shader = & E->sh_ce;
+    struct glts_cello const * shader = & E->gcell;
 
     glDepthMask (GL_FALSE);
     glEnable (GL_BLEND);
@@ -232,10 +232,10 @@ void stone_C (struct stone_engine * E) {
 void galaxy_hot (void * data, char * contents) {
     struct stone_engine * E = data;
     
-    free (E->G1);
-    free (E->G2);
+    free (E->G1); /* Dup. */
+    free (E->G2); /* Dup. */
 
-    if (E->G != NULL) galaxy_del (E->G);
+    if (E->G != NULL) galaxy_del (E->G); /* Dup. */
     E->G = galaxy_parse (contents);
 
     E->G1 = malloc (E->G->size * sizeof (struct stone_G1));
@@ -243,10 +243,6 @@ void galaxy_hot (void * data, char * contents) {
 
     OK (E->G1 != NULL);
     OK (E->G2 != NULL);
-}
-
-API void test (void) {
-    logi ("Yep. It works.");
 }
 
 void lua_hot (void * data, char * text) {
@@ -257,6 +253,20 @@ void lua_hot (void * data, char * text) {
         logi ("Couldn't load file: %s", lua_tostring (E->L, -1));
     }
     lua_setglobal (E->L, "state");
+}
+
+char CELL [] = "data/shade/cell.glts";
+
+void cell_hot (void * data, char * text) {
+    struct stone_engine * E = data;
+
+    glDeleteProgram (E->gcell.program); /* Dup. */
+
+    E->gcell = glts_load_cello (CELL, text);
+}
+
+API void test (void) {
+    logi ("Yep. It works.");
 }
 
 struct stone_engine *
@@ -284,17 +294,21 @@ stone_init (struct GL * gl, struct SDL * sdl) {
     glGenBuffers (1, & E->cell_vbo);
     E->imposter = util_imposter ();
     
-    char const * glts_names [] = {
+    char * glts_names [] = {
         "data/shade/planet.glts",
         "data/shade/planet-normals.glts",
         "data/shade/planet-wireframe.glts",
     };
 
     for (unsigned i = 0; i < 3; ++i) {
-        E->sh_pl[i] = glts_load_planeta (gl, glts_names[i]);
+        char * text = load_file (glts_names[i]);
+        E->gplanets[i] = glts_load_planeta (glts_names[i], text);
+        free (text);
     }
 
-    E->sh_ce = glts_load_cello (gl, "data/shade/cell.glts");
+    E->gcell = (struct glts_cello) {0};
+    E->gcell.program = GL_FALSE;
+    hot_pull (E->H, CELL, cell_hot, E);
 
     return E;
 }
@@ -312,10 +326,10 @@ void stone_destroy (struct stone_engine * E) {
     glDeleteTextures (1, & E->tex);
 
     for (unsigned i = 0; i < 3; ++i) {
-        glDeleteProgram (E->sh_pl[i].program);
+        glDeleteProgram (E->gplanets[i].program);
     }
 
-    glDeleteProgram (E->sh_ce.program);
+    glDeleteProgram (E->gcell.program);
 
     free (E);
 }
