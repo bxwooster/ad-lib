@@ -330,6 +330,7 @@ void hot_watchcall (void * data, char * filename) {
         struct hot_thing * T = H->things + i;
 
         if (0 == strcmp (T->filename, filename)) {
+            logi ("Whoa! %s is updated!", filename);
             char * answer = load_file (T->filename);
             // note that answer's lifetime is short
             T->call (T->data, answer);

@@ -15,6 +15,22 @@ all_headers :=
 
 ################################################################################
 
+ifeq ($(platform),native)
+    ifeq ($(shell uname),Linux)
+        platform := linux
+    else ifeq ($(shell uname),Darwin)
+        platform := darwin
+    else ifeq ($(shell uname -o),Msys)
+        platform := windows
+    else
+        $(error Could not determine native platform!)
+    endif
+endif
+
+PLATFORM := $(shell echo $(platform) | tr a-z A-Z) 
+
+################################################################################
+
 ifeq ($(program),cosmos)
 
     files += \
@@ -51,22 +67,6 @@ else ifeq ($(program),federer)
              hot \
 
 endif
-
-################################################################################
-
-ifeq ($(platform),native)
-    ifeq ($(shell uname),Linux)
-        platform := linux
-    else ifeq ($(shell uname),Darwin)
-        platform := darwin
-    else ifeq ($(shell uname -o),Msys)
-        platform := windows
-    else
-        $(error Could not determine native platform!)
-    endif
-endif
-
-PLATFORM := $(shell echo $(platform) | tr a-z A-Z) 
 
 ################################################################################
 

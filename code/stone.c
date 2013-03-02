@@ -249,6 +249,16 @@ API void test (void) {
     logi ("Yep. It works.");
 }
 
+void lua_hot (void * data, char * text) {
+    struct stone_engine * E = data;
+
+    int status = luaL_loadstring (E->L, text);
+    OK_ELSE (status == 0) {
+        logi ("Couldn't load file: %s", lua_tostring (E->L, -1));
+    }
+    lua_setglobal (E->L, "state");
+}
+
 struct stone_engine *
 stone_init (struct GL * gl, struct SDL * sdl) {
     struct stone_engine * E = malloc (sizeof (*E));
@@ -261,13 +271,7 @@ stone_init (struct GL * gl, struct SDL * sdl) {
     E->L = luaL_newstate ();
     OK (E->L != NULL);
     luaL_openlibs (E->L);
-
-    char * text = load_file ("lua/state.lua");
-    int status = luaL_loadstring (E->L, text);
-    OK_ELSE (status == 0) {
-        logi ("Couldn't load file: %s", lua_tostring (E->L, -1));
-    }
-    lua_setglobal (E->L, "state");
+    hot_pull (E->H, "lua/state.lua", lua_hot, (void *) E);
 
     E->G = NULL;
     E->G1 = NULL;
