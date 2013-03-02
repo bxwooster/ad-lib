@@ -265,6 +265,22 @@ void cell_hot (void * data, char * text) {
     E->gcell = glts_load_cello (CELL, text);
 }
 
+char * GPLANETS [] = {
+    "data/shade/planet.glts",
+    "data/shade/planet-normals.glts",
+    "data/shade/planet-wireframe.glts",
+};
+
+void planet_hot (void * data, char * text) {
+    struct stone_engine * E = *((void **) data + 0);
+    struct glts_planeta * P = *((void **) data + 1);
+
+    glDeleteProgram (P->program); /* Dup. */
+
+    int index = P - &E->gplanets[0];
+    *P = glts_load_planeta (GPLANETS[index], text);
+}
+
 API void test (void) {
     logi ("Yep. It works.");
 }
@@ -281,12 +297,12 @@ stone_init (struct GL * gl, struct SDL * sdl) {
     E->L = luaL_newstate ();
     OK (E->L != NULL);
     luaL_openlibs (E->L);
-    hot_pull (E->H, "lua/state.lua", lua_hot, (void *) E);
+    hot_pull (E->H, "lua/state.lua", lua_hot, E, 0);
 
     E->G = NULL;
     E->G1 = NULL;
     E->G2 = NULL;
-    hot_pull (E->H, "data/galaxy", galaxy_hot, (void *) E);
+    hot_pull (E->H, "data/galaxy", galaxy_hot, E, 0);
 
     E->S = state_init (E);
 
@@ -294,21 +310,16 @@ stone_init (struct GL * gl, struct SDL * sdl) {
     glGenBuffers (1, & E->cell_vbo);
     E->imposter = util_imposter ();
     
-    char * glts_names [] = {
-        "data/shade/planet.glts",
-        "data/shade/planet-normals.glts",
-        "data/shade/planet-wireframe.glts",
-    };
-
     for (unsigned i = 0; i < 3; ++i) {
-        char * text = load_file (glts_names[i]);
-        E->gplanets[i] = glts_load_planeta (glts_names[i], text);
-        free (text);
+        void * EnP [] = { E, &E->gplanets[0] + i };
+        E->gplanets[i] = (struct glts_planeta) {0};
+        E->gplanets[i].program = GL_FALSE;
+        hot_pull (E->H, GPLANETS[i], planet_hot, EnP, sizeof (EnP));
     }
 
     E->gcell = (struct glts_cello) {0};
     E->gcell.program = GL_FALSE;
-    hot_pull (E->H, CELL, cell_hot, E);
+    hot_pull (E->H, CELL, cell_hot, E, 0);
 
     return E;
 }

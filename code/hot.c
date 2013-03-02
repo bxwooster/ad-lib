@@ -278,13 +278,16 @@ void hot_del_player (struct hot_player * H) {
 #endif
     for (size_t i = 0; i < H->count; i++) {
         free (H->things[i].filename);
+        if (H->things[i].size > 0) {
+            free (H->things[i].data);
+        }
     }
     free (H->things);
     free (H);
 }
 
 uint32_t hot_pull (struct hot_player * H,
-        char * filename, hot_callback call, void * data) {
+        char * filename, hot_callback call, void * data, size_t size) {
     H->count++;
     if (H->capacity < H->count) {
         H->capacity += 16;
@@ -297,7 +300,14 @@ uint32_t hot_pull (struct hot_player * H,
 
     T->id = H->last_id++;
     T->call = call;
-    T->data = data;
+    if (size == 0) {
+        T->data = data;
+    } else {
+        T->data = malloc (size);
+        OK (T->data);
+        memcpy (T->data, data, size);
+    }
+    T->size = size;
 
     size_t filename_size = strlen (filename);
     size_t nullterm = 1;

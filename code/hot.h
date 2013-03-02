@@ -12,6 +12,7 @@ struct hot_thing {
     char * filename;
     hot_callback call;
     void * data;
+    size_t size;
 };
 
 struct hot_player {
