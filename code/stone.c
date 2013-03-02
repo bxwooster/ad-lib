@@ -134,58 +134,6 @@ void stone_B (struct stone_engine * E) {
     }
 }
 
-/* hot adapter */
-void galaxy_hot (void * data, char * contents) {
-    struct stone_engine * E = data;
-    
-    free (E->G1);
-    free (E->G2);
-
-    if (E->G != NULL) galaxy_del (E->G);
-    E->G = galaxy_parse (contents);
-
-    E->G1 = malloc (E->G->size * sizeof (struct stone_G1));
-    E->G2 = malloc (E->G->size * sizeof (struct stone_G2));
-
-    OK (E->G1 != NULL);
-    OK (E->G2 != NULL);
-}
-
-struct stone_engine *
-stone_init (struct GL * gl, struct SDL * sdl) {
-    struct stone_engine * E = malloc (sizeof (*E));
-    OK (E != NULL);
-
-    E->gl = gl;
-    E->sdl = sdl;
-    E->H = hot_new_player ();
-
-    E->G = NULL;
-    E->G1 = NULL;
-    E->G2 = NULL;
-    hot_pull (E->H, "data/galaxy", galaxy_hot, (void *) E);
-
-    E->S = state_init (E);
-
-    E->tex = util_earth ();
-    glGenBuffers (1, & E->cell_vbo);
-    E->imposter = util_imposter ();
-    
-    char const * glts_names [] = {
-        "data/shade/planet.glts",
-        "data/shade/planet-normals.glts",
-        "data/shade/planet-wireframe.glts",
-    };
-
-    for (unsigned i = 0; i < 3; ++i) {
-        E->sh_pl[i] = glts_load_planeta (gl, glts_names[i]);
-    }
-
-    E->sh_ce = glts_load_cello (gl, "data/shade/cell.glts");
-
-    return E;
-}
-
 void stone_C (struct stone_engine * E) {
     struct glts_cello const * shader = & E->sh_ce;
 
@@ -280,12 +228,80 @@ void stone_C (struct stone_engine * E) {
    }
 }
 
+/* hot adapter */
+void galaxy_hot (void * data, char * contents) {
+    struct stone_engine * E = data;
+    
+    free (E->G1);
+    free (E->G2);
+
+    if (E->G != NULL) galaxy_del (E->G);
+    E->G = galaxy_parse (contents);
+
+    E->G1 = malloc (E->G->size * sizeof (struct stone_G1));
+    E->G2 = malloc (E->G->size * sizeof (struct stone_G2));
+
+    OK (E->G1 != NULL);
+    OK (E->G2 != NULL);
+}
+
+API void test (void) {
+    logi ("Yep. It works.");
+}
+
+struct stone_engine *
+stone_init (struct GL * gl, struct SDL * sdl) {
+    struct stone_engine * E = malloc (sizeof (*E));
+    OK (E != NULL);
+
+    E->gl = gl;
+    E->sdl = sdl;
+    E->H = hot_new_player ();
+    
+    E->L = luaL_newstate ();
+    OK (E->L != NULL);
+    luaL_openlibs (E->L);
+
+    char * text = load_file ("lua/state.lua");
+    int status = luaL_loadstring (E->L, text);
+    OK_ELSE (status == 0) {
+        logi ("Couldn't load file: %s", lua_tostring (E->L, -1));
+    }
+    lua_setglobal (E->L, "state");
+
+    E->G = NULL;
+    E->G1 = NULL;
+    E->G2 = NULL;
+    hot_pull (E->H, "data/galaxy", galaxy_hot, (void *) E);
+
+    E->S = state_init (E);
+
+    E->tex = util_earth ();
+    glGenBuffers (1, & E->cell_vbo);
+    E->imposter = util_imposter ();
+    
+    char const * glts_names [] = {
+        "data/shade/planet.glts",
+        "data/shade/planet-normals.glts",
+        "data/shade/planet-wireframe.glts",
+    };
+
+    for (unsigned i = 0; i < 3; ++i) {
+        E->sh_pl[i] = glts_load_planeta (gl, glts_names[i]);
+    }
+
+    E->sh_ce = glts_load_cello (gl, "data/shade/cell.glts");
+
+    return E;
+}
+
 void stone_destroy (struct stone_engine * E) {
     free (E->G1);
     free (E->G2);
     galaxy_del (E->G);
     state_del (E->S);
     hot_del_player (E->H);
+    lua_close (E->L);
 
     glDeleteBuffers (1, & E->cell_vbo);
     glDeleteBuffers (1, & E->imposter.vbo);
@@ -320,6 +336,12 @@ void stone_frame_gl (struct stone_engine * E) {
 }
 
 char stone_frame (struct stone_engine * E) {
+    lua_getglobal (E->L, "state");
+    int result = lua_pcall (E->L, 0, 0, 0);
+    OK_ELSE (result == 0) {
+        logi ("Failed to run script: %s", lua_tostring (E->L, -1));
+    }
+
     stone_frame_gl (E);
 
     struct inputstate I [1];

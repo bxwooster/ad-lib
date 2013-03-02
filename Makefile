@@ -30,6 +30,7 @@ ifeq ($(program),cosmos)
 
     features += \
                 SDLGL \
+                lua \
 
     ifeq ($(platform),windows)
         defines += HOTLOCAL
@@ -48,11 +49,6 @@ else ifeq ($(program),federer)
     files += \
              socket \
              hot \
-
-else ifeq ($(program),lunar)
-
-    features += \
-                lua \
 
 endif
 

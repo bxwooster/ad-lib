@@ -1,3 +1,5 @@
+#define API __declspec (dllexport)
+
 struct stone_G1 {
     mat4 transform;
     float supersize;
@@ -17,6 +19,7 @@ struct stone_engine {
     struct GL * gl;
     struct SDL * sdl;
     struct hot_player * H;
+    lua_State * L;
 
     struct galaxy * G;
     struct stone_G1 * G1;
