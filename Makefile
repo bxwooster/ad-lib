@@ -127,6 +127,9 @@ ifneq ($(filter lua,$(features)),)
     ifeq ($(platform),darwin)
         link_flags += -pagezero_size 10000 -image_base 100000000
     endif
+    ifeq ($(platform),linux)
+        link_flags += -rdynamic
+    endif
 endif
 
 ifneq ($(filter SDLGL,$(features)),)
