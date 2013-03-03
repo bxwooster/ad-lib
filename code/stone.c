@@ -262,7 +262,7 @@ void galaxy_hot (void * data, char * contents) {
 void lua_hot (void * data, char * text) {
     struct stone_engine * E = data;
 
-    int status = luaL_loadstring (E->L, text);
+    int status = luaL_loadbuffer (E->L, text, strlen (text), "state");
     if (status != 0) {
         logi ("Couldn't load file: %s", lua_tostring (E->L, -1));
     } else {
