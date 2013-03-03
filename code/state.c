@@ -1,3 +1,4 @@
+float const k_fov = 60.0f;
 float const k_camera_speed = 0.05f;
 float const k_turn_transition_delay = 1.5f;
 
@@ -6,14 +7,13 @@ struct framestate * state_init (struct stone_engine * E) {
     OK (S != NULL);
     *S = (struct framestate) {0};
 
-    float fov = 60.0f;
-    S->proj = util_projection (E->sdl->width, E->sdl->height, fov);
+    S->proj = util_projection (E->sdl->width, E->sdl->height, k_fov);
 
     mat4 one = mat4_identity ();
 
     vec3 move = {{0.0f, 1.7f, 1.0f}};
     S->mov = mat4_moved (& one, & move);
-    
+
     vec3 axis = {{1.0f, 0.0f, 0.0f}};
     float angle = M_PI * 0.7;
     S->rot = mat4_rotated_aa (& one, & axis, angle);
