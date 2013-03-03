@@ -1,5 +1,5 @@
 float const k_fov = 60.0f;
-float const k_camera_speed = 0.05f;
+float const k_camera_speed = 2.0f;
 float const k_turn_transition_delay = 1.5f;
 
 struct framestate * state_init (struct stone_engine * E) {
@@ -27,56 +27,33 @@ void state_del (struct framestate * S) {
     free (S);
 }
 
-void state_poll_input (struct stone_engine * E, struct inputstate * I) {
-    memset (I, 0, sizeof (*I));
+void state_advance (struct stone_engine * E) {
+    struct framestate * S = E->S;
+
+    double time = (double) SDL_GetTicks () / 1000;
+    S->dt = time - S->time;
+    S->time = time;
 
     int x, y;
-    I->mouse.buttons = SDL_GetMouseState (& x, & y);
+    uint8_t mouse_butt = SDL_GetMouseState (& x, & y);
 
     float hw = E->sdl->width / 2;
     float hh = E->sdl->height / 2;
 
-    I->mouse.x = (x - hw) / hw;
-    I->mouse.y = (y - hh) / hw;
+    float mx = (x - hw) / hw;
+    float my = (y - hh) / hw;
 
-    SDL_Event event;
-    while (SDL_PollEvent (&event)) {
-        if (event.type == SDL_KEYDOWN) {
-            SDL_Keycode key = event.key.keysym.sym;
-            if (key == SDLK_SPACE) {
-                I->next_turn = 1;
-            }
-        } else if (event.type == SDL_QUIT) {
-            E->halt = 1;
-        }
-    }
+    float dx = mx - S->mouse.x;
+    float dy = my - S->mouse.y;
 
-    Uint8 * keys = SDL_GetKeyboardState (NULL);
-    for (unsigned i = 0; i < E->keyboard_max; ++i) {
-        int8_t sign = keys[i] ? 1 : -1;
-        int8_t mult = (sign * E->keyboard[i]) < 0 ? 2 : 1;
-        E->keyboard[i] = sign * mult;
-    }
-
-    I->arrows.up = keys[SDL_SCANCODE_UP];
-    I->arrows.down = keys[SDL_SCANCODE_DOWN];
-    I->arrows.left = keys[SDL_SCANCODE_LEFT];
-    I->arrows.right = keys[SDL_SCANCODE_RIGHT];
-}
-
-void state_advance (struct framestate * S, struct inputstate const * I) {
-    S->time = (double) SDL_GetTicks () / 1000;
-
-    float dx = I->mouse.x - S->mouse.x;
-    float dy = I->mouse.y - S->mouse.y;
-    /* still something is broken with arbitrary rotations */
+    /* still, something is broken with arbitrary rotations */
     dx = 0;
 
-    if (I->mouse.buttons & SDL_BUTTON (2)) {
+    if (mouse_butt & SDL_BUTTON (2)) {
         S->mov.column.w.element.z *= exp(dy);
     }
 
-    if (I->mouse.buttons & SDL_BUTTON (3)) {
+    if (mouse_butt & SDL_BUTTON (3)) {
         vec3 rot = {{dy, dx, 0.0f}};
         float angle = sqrt (dx*dx + dy*dy);
         if (angle > 0) {
@@ -84,11 +61,11 @@ void state_advance (struct framestate * S, struct inputstate const * I) {
         }
     }
 
-    S->mouse.x = I->mouse.x;
-    S->mouse.y = I->mouse.y;
+    S->mouse.x = mx;
+    S->mouse.y = my;
 
     float q = 1.0f / tanf (M_PI / 180 / 2 * 60.0);
-    vec4 view = {-I->mouse.x / q, I->mouse.y / q, 1.0, 0.0};
+    vec4 view = {-mx / q, my / q, 1.0, 0.0};
     mat4 invrot = mat4_inverted_rtonly (& S->rot);
     /* need this be inverted? */
     view = vec4_multiply (& invrot, & view);
@@ -97,14 +74,13 @@ void state_advance (struct framestate * S, struct inputstate const * I) {
     float px = view.element.x * ratio + S->mov.column.w.element.x;
     float py = view.element.y * ratio + S->mov.column.w.element.y;
 
-    char lock = (I->mouse.buttons & SDL_BUTTON (1)) != 0;
+    char lock = (mouse_butt & SDL_BUTTON (1)) != 0;
 
-    float delta = k_camera_speed;
-    // note: need to multiply by Dt, actually
-    if (I->arrows.up) S->mov.column.w.element.y -= delta;
-    if (I->arrows.down) S->mov.column.w.element.y += delta;
-    if (I->arrows.left) S->mov.column.w.element.x -= delta;
-    if (I->arrows.right) S->mov.column.w.element.x += delta;
+    float delta = k_camera_speed * S->dt;
+    if (E->keyboard[SDL_SCANCODE_UP] > 0) S->mov.column.w.element.y -= delta;
+    if (E->keyboard[SDL_SCANCODE_DOWN] > 0) S->mov.column.w.element.y += delta;
+    if (E->keyboard[SDL_SCANCODE_LEFT] > 0) S->mov.column.w.element.x -= delta;
+    if (E->keyboard[SDL_SCANCODE_RIGHT] > 0) S->mov.column.w.element.x += delta;
 
     if (S->lock != 0) {
         float dx = px - S->pan.x;
@@ -125,7 +101,7 @@ void state_advance (struct framestate * S, struct inputstate const * I) {
         }
     }
 
-    if (I->next_turn && !S->turn_transition) {
+    if (E->keyboard[SDL_SCANCODE_SPACE] == 2 && !S->turn_transition) {
         S->turn_transition = 1;
         S->turn_transition_ends = S->time + k_turn_transition_delay;
     }

@@ -390,12 +390,27 @@ void stone_frame_gl (struct stone_engine * E) {
     }
 }
 
+void stone_frame_input (struct stone_engine * E) {
+    SDL_Event event;
+    while (SDL_PollEvent (&event)) {
+        if (event.type == SDL_QUIT) {
+            E->halt = 1;
+        }
+    }
+
+    Uint8 * keys = SDL_GetKeyboardState (NULL);
+    for (unsigned i = 0; i < E->keyboard_max; ++i) {
+        int8_t sign = keys[i] ? 1 : -1;
+        int8_t mult = (sign * E->keyboard[i]) < 0 ? 2 : 1;
+        E->keyboard[i] = sign * mult;
+    }
+}
+
 char stone_frame (struct stone_engine * E) {
     stone_frame_gl (E);
 
-    struct inputstate I [1];
-    state_poll_input (E, I);
-    state_advance (E->S, I);
+    stone_frame_input (E);
+    state_advance (E);
 
     lua_getglobal (E->L, "state");
     int result = lua_pcall (E->L, 0, 0, 0);
