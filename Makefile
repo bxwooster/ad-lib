@@ -233,6 +233,7 @@ $(exe): $(all_source) $(all_headers) $(superheader) $(main) | $(output_dir)
 $(superheader): $(all_source) | $(output_dir)
 	@echo "Making superheader..."
 	@makeheaders -h $(all_source) > $(superheader)
+	@cat $(superheader) | grep API | cut -b5- > API.h #what a hack! marvellous!
 
 $(main): | $(output_dir)
 	@echo "Making mainfile..."

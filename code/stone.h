@@ -25,6 +25,9 @@ struct stone_engine {
     struct hot_player * H;
     lua_State * L;
 
+    int8_t * keyboard;
+    unsigned keyboard_max;
+
     struct galaxy * G;
     struct stone_G1 * G1;
     struct stone_G2 * G2;

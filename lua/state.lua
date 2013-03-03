@@ -1,8 +1,15 @@
-local ffi = require ("ffi")
-ffi.cdef [[
-char api_key_pressed (unsigned key);
-]]
+if (not init) then
+    init = true
+    local api_file = io.open ("API.h")
+    local api_text = api_file:read ("*all")
+    local ffi = require ("ffi")
+    ffi.cdef (api_text)
+    C = ffi.C
 
-if (ffi.C.api_key_pressed (74) ~= 0) then --home
-    print ("Yep. Home.")
+    wireframe = 1
+end
+
+if (C.Xkeyboard (E, 26) == 2) then --W
+    wireframe = not wireframe
+    C.Xset_wireframe (E, wireframe)
 end

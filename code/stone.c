@@ -283,16 +283,20 @@ void planet_hot (void * data, char * text) {
     *P = glts_load_planeta (GPLANETS[index], text);
 }
 
-API char api_key_pressed (unsigned key) {
-    int numkeys;
-    uint8_t * state = SDL_GetKeyboardState (& numkeys);
-    return key < (unsigned) numkeys && state[key];
+API int8_t Xkeyboard (struct stone_engine * E, unsigned key) {
+    if (key >= E->keyboard_max) return 0;
+    return E->keyboard[key];
+}
+
+API void Xset_wireframe (struct stone_engine * E, char show) {
+    E->S->show_wireframe = show;
 }
 
 struct stone_engine *
 stone_init (struct GL * gl, struct SDL * sdl) {
     struct stone_engine * E = malloc (sizeof (*E));
     OK (E != NULL);
+    memset (E, 0, sizeof (*E));
 
     E->gl = gl;
     E->sdl = sdl;
@@ -300,13 +304,22 @@ stone_init (struct GL * gl, struct SDL * sdl) {
 
     E->L = luaL_newstate ();
     OK (E->L != NULL);
-    luaL_openlibs (E->L);
+    luaL_openlibs (E->L); 
+    lua_pushlightuserdata (E->L, E);
+    lua_setglobal (E->L, "E");
     hot_pull (E->H, STATELUA, lua_hot, E, 0);
 
     E->G = NULL;
     E->G1 = NULL;
     E->G2 = NULL;
     hot_pull (E->H, GALAXY, galaxy_hot, E, 0);
+
+    int max;
+    SDL_GetKeyboardState (& max);
+    E->keyboard = malloc (max);
+    E->keyboard_max = (unsigned) max;
+    OK (E->keyboard);
+    memset (E->keyboard, -1, max);
 
     E->S = state_init (E);
 
@@ -335,6 +348,7 @@ void stone_destroy (struct stone_engine * E) {
     state_del (E->S);
     hot_del_player (E->H);
     lua_close (E->L);
+    free (E->keyboard);
 
     glDeleteBuffers (1, & E->cell_vbo);
     glDeleteBuffers (1, & E->imposter.vbo);
@@ -369,17 +383,17 @@ void stone_frame_gl (struct stone_engine * E) {
 }
 
 char stone_frame (struct stone_engine * E) {
-    lua_getglobal (E->L, "state");
-    int result = lua_pcall (E->L, 0, 0, 0);
-    OK_ELSE (result == 0) {
-        logi ("Failed to run script: %s", lua_tostring (E->L, -1));
-    }
-
     stone_frame_gl (E);
 
     struct inputstate I [1];
     state_poll_input (E, I);
     state_advance (E->S, I);
+
+    lua_getglobal (E->L, "state");
+    int result = lua_pcall (E->L, 0, 0, 0);
+    OK_ELSE (result == 0) {
+        logi ("Failed to run script: %s", lua_tostring (E->L, -1));
+    }
 
     stone_A (E);
     stone_B (E);

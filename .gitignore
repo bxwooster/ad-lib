@@ -1,3 +1,4 @@
+API.h
 *.swp
 .ctags
 /.build/

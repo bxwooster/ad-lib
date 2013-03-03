@@ -47,9 +47,6 @@ void state_poll_input (struct stone_engine * E, struct inputstate * I) {
             if (key == SDLK_ESCAPE) {
                 I->halt = 1;
             }
-            else if (key == SDLK_w) {
-                I->toggle_wireframe = 1;
-            }
             else if (key == SDLK_n) {
                 I->toggle_normals = 1;
             }
@@ -62,6 +59,11 @@ void state_poll_input (struct stone_engine * E, struct inputstate * I) {
     }
 
     Uint8 * keys = SDL_GetKeyboardState (NULL);
+    for (unsigned i = 0; i < E->keyboard_max; ++i) {
+        int8_t sign = keys[i] ? 1 : -1;
+        int8_t mult = (sign * E->keyboard[i]) < 0 ? 2 : 1;
+        E->keyboard[i] = sign * mult;
+    }
 
     I->arrows.up = keys[SDL_SCANCODE_UP];
     I->arrows.down = keys[SDL_SCANCODE_DOWN];
@@ -131,7 +133,6 @@ void state_advance (struct framestate * S, struct inputstate const * I) {
     }
 
     S->show_normals ^= I->toggle_normals;
-    S->show_wireframe ^= I->toggle_wireframe;
 
     if (I->next_turn && !S->turn_transition) {
         S->turn_transition = 1;

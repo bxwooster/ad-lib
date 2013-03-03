@@ -1,6 +1,5 @@
 struct inputstate {
     char halt;
-    char toggle_wireframe;
     char toggle_normals;
     char next_turn;
     struct {
