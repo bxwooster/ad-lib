@@ -283,8 +283,10 @@ void planet_hot (void * data, char * text) {
     *P = glts_load_planeta (GPLANETS[index], text);
 }
 
-API void test (void) {
-    logi ("Yep. It works.");
+API char api_key_pressed (unsigned key) {
+    int numkeys;
+    uint8_t * state = SDL_GetKeyboardState (& numkeys);
+    return key < (unsigned) numkeys && state[key];
 }
 
 struct stone_engine *

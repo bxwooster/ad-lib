@@ -1,5 +1,8 @@
 local ffi = require ("ffi")
-ffi.cdef [[void test (void)]]
-ffi.C.test ()
+ffi.cdef [[
+char api_key_pressed (unsigned key);
+]]
 
-io.write("I just get called a lot. Can't help it! Wahey!\n")
+if (ffi.C.api_key_pressed (74) ~= 0) then --home
+    print ("Yep. Home.")
+end
