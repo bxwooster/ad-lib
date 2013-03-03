@@ -1,6 +1,4 @@
 struct inputstate {
-    char halt;
-    char toggle_normals;
     char next_turn;
     struct {
         float x;
@@ -27,8 +25,6 @@ struct framestate {
         float y;
     } mouse;
     char lock;
-    char show_wireframe;
-    char show_normals;
     unsigned turn;
     float turn_tail;
     int turn_transition;

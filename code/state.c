@@ -18,7 +18,6 @@ struct framestate * state_init (struct stone_engine * E) {
     float angle = M_PI * 0.7;
     S->rot = mat4_rotated_aa (& one, & axis, angle);
 
-    S->show_normals = 1;
     S->time = 0.0;
 
     return S;
@@ -44,17 +43,11 @@ void state_poll_input (struct stone_engine * E, struct inputstate * I) {
     while (SDL_PollEvent (&event)) {
         if (event.type == SDL_KEYDOWN) {
             SDL_Keycode key = event.key.keysym.sym;
-            if (key == SDLK_ESCAPE) {
-                I->halt = 1;
-            }
-            else if (key == SDLK_n) {
-                I->toggle_normals = 1;
-            }
-            else if (key == SDLK_SPACE) {
+            if (key == SDLK_SPACE) {
                 I->next_turn = 1;
             }
         } else if (event.type == SDL_QUIT) {
-            I->halt = 1;
+            E->halt = 1;
         }
     }
 
@@ -131,8 +124,6 @@ void state_advance (struct framestate * S, struct inputstate const * I) {
             logi ("Locked @ %f - %f", px, py);
         }
     }
-
-    S->show_normals ^= I->toggle_normals;
 
     if (I->next_turn && !S->turn_transition) {
         S->turn_transition = 1;

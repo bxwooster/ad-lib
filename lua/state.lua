@@ -5,11 +5,18 @@ if (not init) then
     local ffi = require ("ffi")
     ffi.cdef (api_text)
     C = ffi.C
-
-    wireframe = 1
 end
 
 if (C.Xkeyboard (E, 26) == 2) then --W
     wireframe = not wireframe
     C.Xset_wireframe (E, wireframe)
+end
+
+if (C.Xkeyboard (E, 17) == 2) then --E
+    normalview = not normalview
+    C.Xset_normalview (E, normalview)
+end
+
+if (C.Xkeyboard (E, 41) == 2) then --Esc
+    C.Xhalt (E)
 end

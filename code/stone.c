@@ -112,9 +112,9 @@ void stone_B (struct stone_engine * E) {
             sizeof (struct stone_G2), stone_G2_cmp);
 
     unsigned choice = 0;
-    if (E->S->show_wireframe) {
+    if (E->show_wireframe) {
         choice = 2;
-    } else if (E->S->show_normals) {
+    } else if (E->show_normals) {
         choice = 1;
     }
 
@@ -289,7 +289,15 @@ API int8_t Xkeyboard (struct stone_engine * E, unsigned key) {
 }
 
 API void Xset_wireframe (struct stone_engine * E, char show) {
-    E->S->show_wireframe = show;
+    E->show_wireframe = show;
+}
+
+API void Xset_normalview (struct stone_engine * E, char show) {
+    E->show_normals = show;
+}
+
+API void Xhalt (struct stone_engine * E) {
+    E->halt = 1;
 }
 
 struct stone_engine *
@@ -326,7 +334,7 @@ stone_init (struct GL * gl, struct SDL * sdl) {
     E->tex = util_earth ();
     glGenBuffers (1, & E->cell_vbo);
     E->imposter = util_imposter ();
-    
+
     for (unsigned i = 0; i < 3; ++i) {
         void * EnP [] = { E, &E->gplanets[0] + i };
         E->gplanets[i] = (struct glts_planeta) {0};
@@ -372,7 +380,7 @@ void stone_frame_gl (struct stone_engine * E) {
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     #ifndef GLES
-        GLenum poly_mode = E->S->show_wireframe ? GL_LINE : GL_FILL;
+        GLenum poly_mode = E->show_wireframe ? GL_LINE : GL_FILL;
         glPolygonMode(GL_FRONT_AND_BACK, poly_mode);
     #endif
 
@@ -403,5 +411,5 @@ char stone_frame (struct stone_engine * E) {
 
     hot_check (E->H);
     
-    return I->halt;
+    return E->halt;
 }

@@ -28,6 +28,10 @@ struct stone_engine {
     int8_t * keyboard;
     unsigned keyboard_max;
 
+    char show_wireframe;
+    char show_normals;
+    char halt;
+
     struct galaxy * G;
     struct stone_G1 * G1;
     struct stone_G2 * G2;
