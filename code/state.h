@@ -1,6 +1,7 @@
 struct framestate {
     mat4 rot;
     mat4 mov;
+
     struct {
         float x;
         float y;
@@ -10,6 +11,7 @@ struct framestate {
         float y;
     } mouse;
     char lock;
+
     unsigned turn;
     float turn_tail;
     int turn_transition;

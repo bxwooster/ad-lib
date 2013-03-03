@@ -259,10 +259,11 @@ void lua_hot (void * data, char * text) {
     struct stone_engine * E = data;
 
     int status = luaL_loadstring (E->L, text);
-    OK_ELSE (status == 0) {
+    if (status != 0) {
         logi ("Couldn't load file: %s", lua_tostring (E->L, -1));
+    } else {
+        lua_setglobal (E->L, "state");
     }
-    lua_setglobal (E->L, "state");
 }
 
 void cell_hot (void * data, char * text) {
@@ -413,9 +414,11 @@ char stone_frame (struct stone_engine * E) {
     state_advance (E);
 
     lua_getglobal (E->L, "state");
-    int result = lua_pcall (E->L, 0, 0, 0);
-    OK_ELSE (result == 0) {
-        logi ("Failed to run script: %s", lua_tostring (E->L, -1));
+    if (!lua_isnil (E->L, -1)) {
+        int result = lua_pcall (E->L, 0, 0, 0);
+        if (result != 0) {
+            logi ("Failed to run script:\n%s", lua_tostring (E->L, -1));
+        }
     }
 
     stone_A (E);
