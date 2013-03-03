@@ -1,9 +1,3 @@
-#ifdef WINDOWS
-#define API __declspec (dllexport)
-#else
-#define API
-#endif
-
 struct stone_G1 {
     mat4 transform;
     float supersize;

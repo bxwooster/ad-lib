@@ -2,7 +2,7 @@ if (not init) then
     init = true
     local api_file = io.open ("API.h")
     local api_text = api_file:read ("*all")
-    local ffi = require ("ffi")
+    ffi = require ("ffi")
     ffi.cdef (api_text)
     C = ffi.C
 end
@@ -29,9 +29,12 @@ if (C.Xkeyboard (E, 15) == 2) then --L
         if (line == "exit") then
             break
         end
-        local chunk, err = loadstring (line, "interactive")
+        local chunk, err = loadstring (line, ">>>")
         if (chunk) then
-            pcall (chunk)
+            local ok, err = pcall (chunk)
+            if (not ok) then
+                print (err)
+            end
         else
             print (err)
         end

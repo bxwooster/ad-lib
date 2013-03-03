@@ -121,6 +121,7 @@ ifneq ($(filter lua,$(features)),)
     includes += luajit-2.0/lauxlib.h luajit-2.0/lua.h luajit-2.0/lualib.h
     ifeq ($(platform),windows)
         link_flags += -llua51
+        link_flags += -Wl,--export-all-symbols
     else
         link_flags += -lluajit-5.1
     endif
@@ -182,6 +183,7 @@ config_dir := .config/$(platform)
 config_include_dir := $(config_dir)/include
 config_lib_dir := $(config_dir)/lib
 
+api := API.h
 superheader := $(output_dir)/super$(program).h
 main := $(output_dir)/main$(program).c
 exe := $(output_dir)/$(program)$(exe_suffix)
@@ -213,7 +215,7 @@ package: $(package_archive)
 clean:
 	rm -rf $(platform_dir)
 
-run: $(exe)
+run: $(exe) $(api)
 	@./$(exe)
 
 debug: $(exe)
@@ -226,14 +228,20 @@ prepare: $(source_c) $(source_h) $(source_ext_h)
 SHELL := bash
 export
 
-$(exe): $(all_source) $(all_headers) $(superheader) $(main) | $(output_dir)
+$(exe): $(all_headers) $(all_source) $(superheader) $(main) | $(output_dir)
 	@echo "Making the executable..."
 	$(cc) -o $(exe) $(all_source) $(main) $(cflags)
 
 $(superheader): $(all_source) | $(output_dir)
 	@echo "Making superheader..."
 	@makeheaders -h $(all_source) > $(superheader)
-	@cat $(superheader) | grep API | cut -b5- > API.h #what a hack! marvellous!
+
+$(api): $(superheader)
+	@echo "Making API.h..."
+	@cat $(superheader) | grep API | grep -v '#' | sed 's/API //' > API.h
+	@makeheaders -h code/vecmat.h code/vecmat.c > API.tmp
+	@cat API.tmp | grep -v '#' >> API.h
+	@rm -f API.tmp
 
 $(main): | $(output_dir)
 	@echo "Making mainfile..."
