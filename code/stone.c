@@ -11,7 +11,7 @@ char CELL [] = "data/shade/cell.glts";
 char STATELUA [] = "lua/state.lua";
 char GALAXY [] = "data/galaxy";
 
-void stone_A (struct stone_engine * E) {
+void stone_frame_G1 (struct stone_engine * E) {
     for (unsigned i = 0; i < E->G->size; ++i) {
         struct framestate const * S = E->S;
         struct planet const * planet = E->G->planets + i;
@@ -36,13 +36,17 @@ void stone_A (struct stone_engine * E) {
             offset.element.x = sinf (alpha) * distance;
             offset.element.y = cosf (alpha) * distance;
 
-            E->G1[i].transform = mat4_moved (& E->G1[parent].transform, & offset);
-            E->G1[i].supersize = E->G1[parent].size * 0.5 * k_planet_size_minifier;
+            E->G1[i].transform = mat4_moved
+                (& E->G1[parent].transform, & offset);
+            E->G1[i].supersize =
+                E->G1[parent].size * 0.5 * k_planet_size_minifier;
         }
 
         E->G1[i].size = E->G1[i].supersize / (planet->orbit_count + 1);
     }
+}
 
+void stone_frame_G2 (struct stone_engine * E) {
     for (unsigned i = 0; i < E->G->size; ++i) {
         struct planet * P = E->G->planets + i;
         struct stone_G1 * g1 = E->G1 + i;
@@ -107,7 +111,7 @@ int stone_G2_cmp (void const * a, void const * b) {
     return (a_depth > b_depth) ? -1 : 1;
 }
 
-void stone_B (struct stone_engine * E) {
+void stone_frame_G3 (struct stone_engine * E) {
     qsort (E->G2, E->G->size,
             sizeof (struct stone_G2), stone_G2_cmp);
 
@@ -144,7 +148,7 @@ void stone_B (struct stone_engine * E) {
     }
 }
 
-void stone_C (struct stone_engine * E) {
+void stone_frame_C (struct stone_engine * E) {
     struct glts_cello const * shader = & E->gcell;
 
     glDepthMask (GL_FALSE);
@@ -421,9 +425,10 @@ char stone_frame (struct stone_engine * E) {
         }
     }
 
-    stone_A (E);
-    stone_B (E);
-    stone_C (E);
+    stone_frame_G1 (E);
+    stone_frame_G2 (E);
+    stone_frame_G3 (E);
+    stone_frame_C (E);
 
     SDL_GL_SwapWindow (E->sdl->window);
 
