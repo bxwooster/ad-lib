@@ -110,6 +110,7 @@ uint32_t hot_pull (struct hot_player * H,
 #else
     char * answer = hot_play (H, T->filename);
     T->call (T->data, answer);
+    free (answer);
 #endif
     return T->id;
 }
@@ -123,8 +124,8 @@ void hot_watchcall (void * data, char * filename) {
         if (0 == strcmp (T->filename, filename)) {
             logi ("Whoa! %s is updated!", filename);
             char * answer = load_file (T->filename);
-            // note that answer's lifetime is short
             T->call (T->data, answer);
+            free (answer);
         }
     }
 }
