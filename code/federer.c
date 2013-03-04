@@ -4,7 +4,7 @@ int federer (int argc, char * argv []) {
 
     logi ("Hi, I'm Roger.");
     socket_init ();
-    SOCKET real = hot_server ();
+    SOCKET real = hot_server_socket ();
 
     for (;;) hot_serve (real);
 

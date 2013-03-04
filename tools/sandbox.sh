@@ -1,9 +1,9 @@
 #!/bin/bash
 
-make program=nadal || exit 0
-make program=federer || exit 0
+make F=hotremote P=cosmos || exit 0
+make P=federer || exit 0
 
-make program=federer run &
+make P=federer run &
 sleep 0.5
-make program=nadal run
+make P=cosmos run
 

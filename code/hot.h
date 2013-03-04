@@ -22,6 +22,7 @@ struct hot_player {
     SOCKET real;
 #endif
     uint32_t last_id;
+    char * scratch;
 
     struct hot_thing * things;
     size_t count;

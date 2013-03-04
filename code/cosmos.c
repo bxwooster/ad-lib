@@ -4,6 +4,10 @@ int cosmos (int argc, char * argv []) {
 
     logi ("Revving up.");
 
+#ifdef HOTREMOTE
+    socket_init ();
+#endif
+
     init_IMG ();
     struct SDL * sdl = init_SDL ();
     struct GL * gl = init_GL (sdl);

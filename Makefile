@@ -4,8 +4,7 @@ platform ?= native
 program := $(P)
 
 files := misc
-features :=
-
+features := $(F)
 defines :=
 includes :=
 link_flags :=
@@ -44,27 +43,24 @@ ifeq ($(program),cosmos)
              socket \
              hot \
 
-    features += \
-                SDLGL \
-                lua \
+    features += SDLGL lua
 
-    ifeq ($(platform),windows)
-        defines += HOTLOCAL
-        files += watch
+    ifeq ($(filter hotremote,$(features)),)
+        ifeq ($(platform),windows)
+            features += hotlocal
+        endif
     endif
 
 
 else ifeq ($(program),nadal)
 
-    files += \
-             socket \
-             hot \
+    files += socket hot
+    features += hotremote
 
 else ifeq ($(program),federer)
 
-    files += \
-             socket \
-             hot \
+    files += socket hot
+    features += hotremote
 
 endif
 
@@ -93,8 +89,19 @@ endif
 
 ifeq ($(program),watch)
     ifeq ($(platform),windows)
+		defines += WIN32_LEAN_AND_MEAN
         includes += windows.h
     endif
+endif
+
+ifneq ($(filter hotlocal,$(features)),)
+    defines += HOTLOCAL
+    files += watch
+endif
+
+ifneq ($(filter hotremote,$(features)),)
+    defines += HOTREMOTE
+    files += hot_network
 endif
 
 ifneq ($(filter socket,$(files)),)
@@ -215,7 +222,7 @@ package: $(package_archive)
 clean:
 	rm -rf $(platform_dir)
 
-run: $(exe) $(api)
+run: $(exe)
 	@./$(exe)
 
 debug: $(exe)
@@ -228,7 +235,7 @@ prepare: $(source_c) $(source_h) $(source_ext_h)
 SHELL := bash
 export
 
-$(exe): $(all_headers) $(all_source) $(superheader) $(main) | $(output_dir)
+$(exe): $(api) $(all_headers) $(all_source) $(superheader) $(main) | $(output_dir)
 	@echo "Making the executable..."
 	$(cc) -o $(exe) $(all_source) $(main) $(cflags)
 
@@ -237,11 +244,11 @@ $(superheader): $(all_source) | $(output_dir)
 	@makeheaders -h $(all_source) > $(superheader)
 
 $(api): $(superheader)
+ifeq ($(program),cosmos)
 	@echo "Making API.h..."
 	@cat $(superheader) | grep API | grep -v '#' | sed 's/API //' > API.h
-	@makeheaders -h code/vecmat.h code/vecmat.c > API.tmp
-	@cat API.tmp | grep -v '#' >> API.h
-	@rm -f API.tmp
+	@makeheaders -h code/vecmat.h code/vecmat.c | grep -v '#' >> API.h
+endif
 
 $(main): | $(output_dir)
 	@echo "Making mainfile..."

@@ -6,5 +6,7 @@
 
 #ifndef WINDOWS
   #define INVALID_SOCKET -1
+  #define SOCKET_ERROR -1
   #define closesocket close
+  #define ioctlsocket ioctl
 #endif
