@@ -114,13 +114,11 @@ ifneq ($(filter socket,$(files)),)
                     sys/socket.h \
                     netinet/in.h \
                     arpa/inet.h \
+                    sys/ioctl.h \
 
     endif
     ifeq ($(platform),linux)
         defines += _GNU_SOURCE # ip_mreq needs it
-    endif
-    ifeq ($(platform),darwin)
-        includes += sys/ioctl.h
     endif
 endif
 
