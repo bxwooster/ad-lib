@@ -1,6 +1,7 @@
 static char socket_scratch [256];
 
 void socket_init (void) {
+    (void) socket_scratch;
 #ifdef WINDOWS
 	WSADATA whatever;
 	int wstatus = WSAStartup (MAKEWORD (1, 1), &whatever);
