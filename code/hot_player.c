@@ -108,7 +108,6 @@ uint32_t hot_pull (struct hot_player * H,
 #else
     char * answer = hot_play (H, T->filename);
     T->call (T->data, answer);
-    free (answer);
 #endif
     return T->id;
 }

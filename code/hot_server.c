@@ -32,7 +32,6 @@ void hot_del_server (struct hot_server * H) {
 
 void hot_swatchcall (void * data, char * filename) {
     // note: copied from hot_watchcall
-    debug ("SW");
     struct hot_server * H = data;
 
     for (size_t i = 0; i < H->count; i++) {
