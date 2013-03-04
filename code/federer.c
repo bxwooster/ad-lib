@@ -4,11 +4,11 @@ int federer (int argc, char * argv []) {
 
     logi ("Hi, I'm Roger.");
     socket_init ();
-    SOCKET real = hot_server_socket ();
+    struct hot_server * H = hot_new_server ();
 
-    for (;;) hot_serve (real);
+    for (;;) hot_serve (H);
 
-    closesocket (real);
+    hot_del_server (H);
     logi ("Roger out.");
     return 0;
 }

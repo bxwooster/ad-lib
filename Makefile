@@ -42,6 +42,7 @@ ifeq ($(program),cosmos)
              state \
              socket \
              hot \
+             hot_player \
 
     features += SDLGL lua
 
@@ -54,12 +55,12 @@ ifeq ($(program),cosmos)
 
 else ifeq ($(program),nadal)
 
-    files += socket hot
+    files += socket hot hot_player
     features += hotremote
 
 else ifeq ($(program),federer)
 
-    files += socket hot
+    files += socket hot hot_server watch
     features += hotremote
 
 endif
