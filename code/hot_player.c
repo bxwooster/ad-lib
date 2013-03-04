@@ -85,7 +85,7 @@ uint32_t hot_pull (struct hot_player * H,
 
     struct hot_thing * T = H->things + H->count - 1;
 
-    T->id = H->last_id++;
+    T->id = ++H->last_id;
     T->call = call;
     if (size == 0) {
         T->data = data;
@@ -96,12 +96,10 @@ uint32_t hot_pull (struct hot_player * H,
     }
     T->size = size;
 
-    size_t filename_size = strlen (filename);
-    size_t nullterm = 1;
-    T->filename = malloc (filename_size + nullterm);
+    size_t filename_size = strlen (filename) + 1;
+    T->filename = malloc (filename_size);
     OK (T->filename != NULL);
     memcpy (T->filename, filename, filename_size);
-    T->filename[filename_size] = '\0';
 
 #ifndef HOTREMOTE
     char * contents = load_file (filename);
@@ -146,6 +144,7 @@ void hot_check (struct hot_player * H) {
             struct hot_thing * T = H->things + i;
             
             if (T->id == id) {
+                logi ("ID #%lu, %s updated", T->id, T->filename);
                 T->call (T->data, (char *) pack->data);
                 return;
             }

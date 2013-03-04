@@ -30,46 +30,87 @@ void hot_del_server (struct hot_server * H) {
     free (H);
 }
 
+void hot_swatchcall (void * data, char * filename) {
+    // note: copied from hot_watchcall
+    debug ("SW");
+    struct hot_server * H = data;
+
+    for (size_t i = 0; i < H->count; i++) {
+        struct hot_minithing * T = H->things + i;
+
+        if (0 == strcmp (T->filename, filename)) {
+            logi ("Whoa! %s is updated!", filename);
+            char * answer = load_file (T->filename);
+
+            hot_push (H, T->id, answer);
+        }
+    }
+}
+void hot_push (struct hot_server * H, uint32_t id, char * answer) {
+    unsigned size = strlen (answer);
+
+    size_t packlen = sizeof (struct packet) + size;
+    OK (packlen + 1 < SCRATCH_SIZE);
+    struct packet * pack = (void *) H->scratch;
+
+    pack->type = TYPE_PULL_RESPONSE;
+    pack->id = htonl (id);
+    pack->size = htonl (size);
+    memcpy (pack->data, answer, size);
+
+    send_it (H->real, pack, packlen);
+}
+
 void hot_serve (struct hot_server * H) {
 /* non-blocking. does everything that's pending */
-    struct packet original;
-    char * question;
 
     for (;;) {
+        uint32_t id;
+        char * question;
         /* question */
         {
             struct packet * pack = (void *) H->scratch; // alias
 
             if (!recv_it (H->real, pack, SCRATCH_SIZE, 1)) {
-                return;
+                break;
             }
             OK (pack->type == TYPE_PULL_REQUEST);
-            uint32_t id = ntohl (pack->id);
-            logi ("id = %lu", id);
+            id = ntohl (pack->id);
             OK (id > H->last_id);
             H->last_id = id;
-            original = *pack;
 
-            pack->data[ntohl (pack->size)] = '\0';
-            logi ("Question is %s", pack->data);
+            size_t size = ntohl (pack->size);
+            pack->data[size] = '\0';
             question = (char *) pack->data;
+            logi ("Question is %s", question);
+
+            // note: copied from hot_pull
+            H->count++;
+            if (H->capacity < H->count) {
+                H->capacity += 16;
+                H->things = realloc (H->things,
+                       sizeof (struct hot_minithing) * H->capacity);
+                OK (H->things != NULL);
+            }
+
+            struct hot_minithing * T = H->things + H->count - 1;
+            T->id = id;
+
+            size_t filename_size = size + 1;
+            T->filename = malloc (filename_size);
+            OK (T->filename != NULL);
+            memcpy (T->filename, question, filename_size);
+
+            logi ("Added #%lu, %s", T->id, T->filename);
         }
 
         /* answer */
         {
             char * answer = load_file (question);
-            unsigned size = strlen (answer);
-
-            size_t packlen = sizeof (struct packet) + size;
-            OK (packlen + 1 < SCRATCH_SIZE);
-            struct packet * pack = (void *) H->scratch;
-            pack->type = original.type | 1;
-            pack->id = original.id;
-            pack->size = htonl (size);
-            memcpy (pack->data, answer, size);
-
-            send_it (H->real, pack, packlen);
+            hot_push (H, id, answer);
+            free (answer);
         }
     }
+    watch_update (H->W, hot_swatchcall, H);
 }
 
