@@ -106,7 +106,7 @@ endif
 
 ifneq ($(filter socket,$(files)),)
     ifeq ($(platform),windows)
-        link_flags += -lwsock32
+        link_flags += -lwsock32 -mno-ms-bitfields
         includes += winsock.h
     else
         includes += \

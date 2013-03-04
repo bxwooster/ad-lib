@@ -30,7 +30,7 @@ char recv_it (SOCKET real, struct packet * pack, size_t maxlen,
     OK (status == 0);
 
     size_t size = ntohl (pack->size);
-    ssize_t recd = recv (real, (void *) buffer, size, 0);
+    int recd = recv (real, (void *) buffer, size, 0);
     OK ((size_t) recd == size);
 
     return 1;
@@ -125,6 +125,7 @@ char * hot_play (struct hot_player * H, char * filename) {
 size_t const SCRATCH_SIZE = 65536;
 
 struct hot_player * hot_new_player (void) {
+    logi ("Just to be sure, sizeof (packet) is %zd.", sizeof(struct packet));
     struct hot_player * H = malloc (sizeof (*H));
     OK (H != NULL);
 
