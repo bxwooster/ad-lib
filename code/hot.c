@@ -38,55 +38,55 @@ char recv_it (SOCKET real, struct packet * pack, size_t maxlen,
 
 void hot_serve (SOCKET real) {
 /* non-blocking. does everything that's pending */
-    uint32_t last_id = 0;
+    static uint32_t last_id = 0;
 
     struct packet original;
     char * question;
 
     for (;;) {
-    /* question */
-    {
-        char rawbuf [1024];
-        struct packet * pack = (void *) rawbuf; // alias
+        /* question */
+        {
+            char rawbuf [1024];
+            struct packet * pack = (void *) rawbuf; // alias
 
-        if (!recv_it (real, pack, 1024, 1)) {
-            return;
+            if (!recv_it (real, pack, 1024, 1)) {
+                return;
+            }
+            OK (pack->type == TYPE_PULL_REQUEST);
+            uint32_t id = ntohl (pack->id);
+            logi ("id = %lu", id);
+            OK (id > last_id);
+            last_id = id;
+            original = *pack;
+
+            pack->data[ntohl (pack->size)] = '\0';
+            logi ("Question is %s", pack->data);
+            question = (char *) pack->data;
         }
-        OK (pack->type == TYPE_PULL_REQUEST);
-        uint32_t id = ntohl (pack->id);
-        OK (id > last_id);
-        last_id = id;
-        original = *pack;
 
-        pack->data[ntohl (pack->size)] = '\0';
-        logi ("Question is %s", pack->data);
-        question = (char *) pack->data;
-    }
+        /* answer */
+        {
+            char * answer = load_file (question);
+            unsigned size = strlen (answer);
 
-    /* answer */
-    {
-        char * answer = load_file (question);
-        unsigned size = strlen (answer);
+            size_t packlen = sizeof (struct packet) + size;
+            struct packet * pack = malloc (packlen);
+            OK (pack != NULL);
+            pack->type = original.type | 1;
+            pack->id = original.id;
+            pack->size = htonl (size);
+            memcpy (pack->data, answer, size);
 
-        size_t packlen = sizeof (struct packet) + size;
-        struct packet * pack = malloc (packlen);
-        OK (pack != NULL);
-        pack->type = original.type | 1;
-        pack->id = original.id;
-        pack->size = htonl (size);
-        memcpy (pack->data, answer, size);
+            send_it (real, pack, packlen);
 
-        send_it (real, pack, packlen);
-
-        free (pack);
-    }
+            free (pack);
+        }
     }
 }
 
 #ifdef HOTREMOTE
 char * hot_play (struct hot_player * H, char * filename) {
 /* equivalent of load_file */
-    uint32_t last_id = 0;
     struct packet original;
 
     /* question */
@@ -97,7 +97,7 @@ char * hot_play (struct hot_player * H, char * filename) {
         OK (packlen < SCRATCH_SIZE);
         struct packet * pack = (void *) H->scratch;
         pack->type = TYPE_PULL_REQUEST;
-        pack->id = htonl (++last_id);
+        pack->id = htonl (H->last_id);
         pack->size = htonl (size);
         memcpy (pack->data, filename, size);
 
