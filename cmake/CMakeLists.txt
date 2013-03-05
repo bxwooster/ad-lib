@@ -1,14 +1,14 @@
 cmake_minimum_required(VERSION 2.8)
 project(cosmos)
 
-set(HEADERS)
+set(DIR "${CMAKE_CURRENT_SOURCE_DIR}/..")
+set(SOURCES "${DIR}/gen/supercosmos.c")
 
-set(SOURCES gen/supercosmos.c)
-
-include_directories(".." "../ext/windows/include")
+include_directories("${DIR}")
+include_directories("${DIR}/ext/windows/include")
 
 cmake_policy(SET CMP0015 NEW)
-link_directories("../ext/windows/lib")
+link_directories("${DIR}/ext/windows/lib")
 
 add_executable(cosmos ${SOURCES})
 

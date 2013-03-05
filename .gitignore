@@ -1,7 +1,12 @@
 API.h
 *.swp
 .ctags
+
 /.build/
 /.config/
+
 /art/
 /ext/
+/gen/
+/cmake/
+
