@@ -4,7 +4,4 @@ API.h
 /.build/
 /.config/
 /art/
-.DS_Store
-project.xcworkspace/
-xcuserdata/
-/meta/Xcode-iOS/build
+/ext/
