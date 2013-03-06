@@ -55,13 +55,16 @@ ifeq ($(program),cosmos)
 
 else ifeq ($(program),nadal)
 
-    files += socket hot hot_player
+    files += socket hot hot_player hot_network
     features += hotremote
 
 else ifeq ($(program),federer)
 
-    files += socket hot hot_server watch
-    features += hotremote
+    files += socket hot hot_server hot_network
+    ifeq ($(platform),windows)
+        files += hot_network
+        features += hotlocal
+    endif
 
 endif
 
@@ -102,7 +105,6 @@ endif
 
 ifneq ($(filter hotremote,$(features)),)
     defines += HOTREMOTE
-    files += hot_network
 endif
 
 ifneq ($(filter socket,$(files)),)

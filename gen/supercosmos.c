@@ -54,6 +54,9 @@
 #include "gen/socket.h"
 #include "gen/hot.h"
 #include "gen/hot_player.h"
+#ifdef HOTREMOTE
+#include "gen/hot_network.h"
+#endif
 #include "gen/cosmos.h"
 #include "code/misc.c"
 #include "code/vecmat.c"

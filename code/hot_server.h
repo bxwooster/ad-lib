@@ -4,7 +4,9 @@ struct hot_minithing {
 };
 
 struct hot_server {
+#ifdef HOTLOCAL
     struct watcher * W;
+#endif
     SOCKET real;
 
     uint32_t last_id;

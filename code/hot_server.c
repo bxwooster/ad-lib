@@ -3,7 +3,9 @@ struct hot_server * hot_new_server (void) {
     struct hot_server * H = malloc (sizeof (*H));
     OK (H != NULL);
 
+#ifdef HOTLOCAL
     H->W = watch_init ();
+#endif
 
     H->real = hot_server_socket ();
     H->last_id = 0;
@@ -19,7 +21,9 @@ struct hot_server * hot_new_server (void) {
 
 void hot_del_server (struct hot_server * H) {
     closesocket (H->real);
+#ifdef HOTLOCAL
     watch_del (H->W);
+#endif
 
     for (size_t i = 0; i < H->count; i++) {
         free (H->things[i].filename);
@@ -110,6 +114,8 @@ void hot_serve (struct hot_server * H) {
             free (answer);
         }
     }
+#ifdef HOTLOCAL
     watch_update (H->W, hot_swatchcall, H);
+#endif
 }
 
