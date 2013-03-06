@@ -68,6 +68,7 @@ if(DEFINED IOS)
     set(CMAKE_OSX_ARCHITECTURES "armv7")
 
     set_target_properties(cosmos PROPERTIES XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "iPhone Developer")
+    set_target_properties(cosmos PROPERTIES XCODE_ATTRIBUTE_DEAD_CODE_STRIPPING NO)
     set(CMAKE_XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "1,2")
     set(CMAKE_OSX_SYSROOT iphoneos)
     target_link_libraries(cosmos luajit)
