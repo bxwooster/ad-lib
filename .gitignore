@@ -1,10 +1,11 @@
-API.h
 *.swp
 .ctags
+.DS_Store
 
 /.build/
 /.config/
 
+API.h
 /art/
 /ext/
 /gen/

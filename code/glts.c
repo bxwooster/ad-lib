@@ -57,7 +57,7 @@ do_it (
     memcpy (all_pieces + P, pieces, memsize);
     all_pieces[0] =  
 #ifdef GLES
-        "#version 100\nprecision mediump float;\n" :
+        "#version 100\nprecision mediump float;\n";
 #else
         "#version 120\n";
 #endif

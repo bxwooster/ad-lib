@@ -25,9 +25,12 @@
 #include <SDL2/SDL_image.h>
 #ifdef GLEW
 #include <GL/glew.h>
-#endif
-#ifdef DARWIN
+#elif defined DARWIN
 #include <OpenGL/gl.h>
+#elif defined IOS
+#include <OpenGLES/ES2/gl.h>
+#include <OpenGLES/ES2/glext.h>
+#define GLES
 #endif
 #include "code/misc.h"
 #include "code/vecmat.h"
