@@ -21,7 +21,7 @@ endif(PLAT STREQUAL "ios")
 
 message("Platform is ${PLAT}!")
 
-set(DIR "${CMAKE_CURRENT_SOURCE_DIR}/..")
+set(DIR "${CMAKE_CURRENT_LIST_DIR}/..")
 include_directories("${DIR}")
 include_directories("${DIR}/ext/${PLAT}/include")
 include_directories("${DIR}/ext/common/include")
@@ -72,6 +72,11 @@ if(DEFINED IOS)
     set(CMAKE_XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "1,2")
     set(CMAKE_OSX_SYSROOT iphoneos)
     target_link_libraries(cosmos luajit)
+    add_custom_command(TARGET cosmos
+        POST_BUILD
+        COMMAND cp -r ../mode ../art ../data ../lua ../API.h "\${TARGET_BUILD_DIR}/\${FULL_PRODUCT_NAME}"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
+    )
 elseif(DEFINED DARWIN)
     target_link_libraries(cosmos luajit-5.1)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -framework OpenGL")
