@@ -7,14 +7,28 @@
 #include <stdarg.h>
 #include <string.h>
 #include <unistd.h>
+#ifdef WINDOWS
 #include <malloc.h>
+#endif
+#ifdef WINDOWS
 #include <winsock.h>
+#else
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <sys/ioctl.h>
+#endif
 #include <luajit-2.0/lauxlib.h>
 #include <luajit-2.0/lua.h>
 #include <luajit-2.0/lualib.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#ifdef GLEW
 #include <GL/glew.h>
+#endif
+#ifdef DARWIN
+#include <OpenGL/gl.h>
+#endif
 #include "code/misc.h"
 #include "code/vecmat.h"
 #include "code/libs.h"
@@ -26,7 +40,6 @@
 #include "code/socket.h"
 #include "code/hot.h"
 #include "code/hot_player.h"
-#include "code/watch.h"
 #include "gen/misc.h"
 #include "gen/vecmat.h"
 #include "gen/libs.h"
@@ -38,7 +51,6 @@
 #include "gen/socket.h"
 #include "gen/hot.h"
 #include "gen/hot_player.h"
-#include "gen/watch.h"
 #include "gen/cosmos.h"
 #include "code/misc.c"
 #include "code/vecmat.c"
@@ -51,6 +63,5 @@
 #include "code/socket.c"
 #include "code/hot.c"
 #include "code/hot_player.c"
-#include "code/watch.c"
 #include "code/cosmos.c"
 int main(int argc, char * argv[]) {return cosmos(argc,argv);}
