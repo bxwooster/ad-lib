@@ -67,4 +67,8 @@
 #include "code/hot.c"
 #include "code/hot_player.c"
 #include "code/cosmos.c"
+#ifdef HOTREMOTE
+#include "code/hot_network.c"
+#endif
+
 int main(int argc, char * argv[]) {return cosmos(argc,argv);}
