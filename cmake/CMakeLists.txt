@@ -1,11 +1,20 @@
 cmake_minimum_required(VERSION 2.8)
 project(cosmos)
 
+if(WIN32)
+    set(PLATFORM "windows")
+else(APPLE)
+    set(PLATFORM "darwin")
+endif(WIN32)
+
 set(DIR "${CMAKE_CURRENT_SOURCE_DIR}/..")
 include_directories("${DIR}")
-include_directories("${DIR}/ext/windows/include")
+include_directories("${DIR}/ext/${PLATFORM}/include")
+include_directories("${DIR}/ext/common/include")
+include_directories("/usr/local/include")
 cmake_policy(SET CMP0015 NEW)
-link_directories("${DIR}/ext/windows/lib")
+link_directories("${DIR}/ext/${PLATFORM}/lib")
+link_directories("/usr/local/lib")
 
 set(SOURCES "${DIR}/gen/supercosmos.c")
 add_executable(cosmos "${SOURCES}")
