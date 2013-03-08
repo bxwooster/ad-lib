@@ -11,8 +11,9 @@ vec3 fragment () {
     float dist = length (Vplanar - Ucutout_center);
     if (dist < Ucutout_radius) discard;
 
-    float brightness = 0.8;
-	return brightness * Ucolour * inner;
+    float brightness = 0.3;
+    float vortex = abs(Vplanar.x / Vplanar.y);
+	return brightness * Ucolour * inner * (1 + vortex);
 }
 #elif defined VS
 vec4 vertex () {
