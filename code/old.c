@@ -171,9 +171,6 @@ API void stone_frame_C () {
             for (unsigned p = 0; p < orbit_size; ++p) {
                 float posish = 0.5 + p + XE->S->turn + XE->S->turn_tail;
 
-                glUniform1f (shader->Uradius_min, r1);
-                glUniform1f (shader->Uradius_max, r2);
-
                 float r = (float) rand() / (float) RAND_MAX;
                 float g = (float) rand() / (float) RAND_MAX;
                 float b = 2.0f - r - g;

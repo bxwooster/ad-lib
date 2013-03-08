@@ -1,11 +1,9 @@
-#pragma type planeta
 #pragma include simple-vf
 #pragma include planet-common
 
-#ifdef FS
+#if defined FS
 vec3 fragment () {
-	discard_test ();
-	return 0.5 + 0.5 * the_normal ();
+    return Ucolour * 0.5;
 }
 #endif
 

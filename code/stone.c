@@ -2,12 +2,12 @@ float const k_planet_size_minifier = 0.9f;
 unsigned const k_round_cell_segments = 64;
 
 char * GPLANETS [] = {
-    "data/shade/planet.glts",
-    "data/shade/planet-normals.glts",
-    "data/shade/planet-wireframe.glts",
+    "glsl/planet.glts",
+    "glsl/planet-normals.glts",
+    "glsl/planet-wireframe.glts",
 };
 
-char CELL [] = "data/shade/cell.glts";
+char CELL [] = "glsl/cell.glts";
 char GALAXY [] = "data/galaxy";
 
 char * func2file (char const * func) {

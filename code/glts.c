@@ -104,7 +104,6 @@ GLuint // program
 glts_load (
         char * filename,
         char const * text,
-        char const * typename,
         char const * typecode
 ) {
     GLuint program = GL_FALSE;
@@ -117,25 +116,8 @@ glts_load (
     const char * current_file = at = text;
 	if (current_file == NULL) goto end;
 
-    /* first line must be the following: */
-	const char type_string [] = "#pragma type ";
-	int count = strlen (type_string);
-	if (strncmp (at, type_string, count) != 0) goto end;
-	at += count;
-
-    /* check exact type */
-	count = strlen (typename);
-	if (strncmp (at, typename, count) != 0) goto end;
-	at += count;
-    char const * base_file = sources[N++] =
-        load_it ("mode/glts/", typename, NULL);
-    if (base_file == NULL) goto end;
-
-    /* newline */
-	if (*at++ != '\n') goto end;
-
     const char include_str [] = "#pragma include ";
-    count = strlen (include_str);
+    int count = strlen (include_str);
 
 	for (;strncmp (at, include_str, count) == 0;) {
 		at += count;
@@ -143,7 +125,7 @@ glts_load (
 		if (newline == NULL) goto end;
 
         char const * included_file = sources[N++] =
-                      load_it ("data/shade/", at, newline);
+                      load_it ("glsl/", at, newline);
         if (included_file == NULL) goto end;
 
 		at = newline + 1;
@@ -186,7 +168,7 @@ end:
 struct glts_cello glts_load_cello (char * filename, char * text) {
     struct glts_cello it;
 
-    it.program = glts_load (filename, text, "cello", "");
+    it.program = glts_load (filename, text, "");
 
     it.Apos2d = (GLuint) glGetAttribLocation (it.program, "Apos2d");
     if (it.Apos2d == (GLuint) -1) {
@@ -206,7 +188,7 @@ struct glts_cello glts_load_cello (char * filename, char * text) {
 struct glts_planeta glts_load_planeta (char * filename, char * text) {
     struct glts_planeta it;
 
-    it.program = glts_load (filename, text, "planeta", "");
+    it.program = glts_load (filename, text, "");
 
     it.Apos2d = (GLuint) glGetAttribLocation (it.program, "Apos2d");
     if (it.Apos2d == (GLuint) -1) {

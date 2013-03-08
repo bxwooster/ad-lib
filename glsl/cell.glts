@@ -1,4 +1,3 @@
-#pragma type cello
 #pragma include simple-vf
 
 #if defined VS

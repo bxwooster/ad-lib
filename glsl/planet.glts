@@ -1,4 +1,3 @@
-#pragma type planeta
 #pragma include simple-vf
 #pragma include planet-common
 
