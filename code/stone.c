@@ -8,8 +8,31 @@ char * GPLANETS [] = {
 };
 
 char CELL [] = "data/shade/cell.glts";
-char STATELUA [] = "lua/state.lua";
 char GALAXY [] = "data/galaxy";
+
+char * file2func (char const * file) {
+    char const * dot = strrchr (file, '.');
+    char const * afterslash = strrchr (file, '/') + 1;
+    OK (dot != NULL && afterslash != NULL && dot > afterslash);
+    size_t len = dot - afterslash;
+    char * func = malloc (len + 1);
+    func[len] = '\0';
+    memcpy (func, afterslash, len);
+    return func;
+}
+
+char * func2file (char const * func) {
+    char before [] = "lua/"; int B = strlen (before);
+    char after [] = ".lua"; int A = strlen (after);
+    int F = strlen (func); size_t len = B + F + A;
+    
+    char * file = malloc (len + 1);
+    file[len] = '\0';
+    memcpy (file, before, B);
+    memcpy (file + B, func, F);
+    memcpy (file + B + F, after, A);
+    return file;
+}
 
 void stone_frame_G1 (struct stone_engine * E) {
     for (unsigned i = 0; i < E->G->size; ++i) {
@@ -243,14 +266,15 @@ void stone_frame_C (struct stone_engine * E) {
 }
 
 /* hot adapter */
-void galaxy_hot (void * data, char * contents) {
+void galaxy_hot (void * data, char const * file, char const * text) {
     struct stone_engine * E = data;
+    (void) file;
     
     free (E->G1); /* Dup. */
     free (E->G2); /* Dup. */
 
     if (E->G != NULL) galaxy_del (E->G); /* Dup. */
-    E->G = galaxy_parse (contents);
+    E->G = galaxy_parse (text);
 
     E->G1 = malloc (E->G->size * sizeof (struct stone_G1));
     E->G2 = malloc (E->G->size * sizeof (struct stone_G2));
@@ -259,33 +283,37 @@ void galaxy_hot (void * data, char * contents) {
     OK (E->G2 != NULL);
 }
 
-void lua_hot (void * data, char * text) {
+void lua_hot (void * data, char const * file, char const * text) {
     struct stone_engine * E = data;
+    char * func = file2func (file);
 
-    int status = luaL_loadbuffer (E->L, text, strlen (text), "state");
+    int status = luaL_loadbuffer (E->L, text, strlen (text), func);
     if (status != 0) {
-        logi ("Couldn't load file: %s", lua_tostring (E->L, -1));
+        logi ("Couldn't load luafile: %s", lua_tostring (E->L, -1));
     } else {
-        lua_setglobal (E->L, "state");
+        lua_setglobal (E->L, func);
     }
+    free (func);
 }
 
-void cell_hot (void * data, char * text) {
+void cell_hot (void * data, char const * file, char const * text) {
     struct stone_engine * E = data;
+    (void) file;
 
     glDeleteProgram (E->gcell.program); /* Dup. */
 
-    E->gcell = glts_load_cello (CELL, text);
+    E->gcell = glts_load_cello (CELL, (char /*const*/ *) text);
 }
 
-void planet_hot (void * data, char * text) {
+void planet_hot (void * data, char const * file, char const * text) {
     struct stone_engine * E = *((void **) data + 0);
     struct glts_planeta * P = *((void **) data + 1);
+    (void) file;
 
     glDeleteProgram (P->program); /* Dup. */
 
     int index = P - &E->gplanets[0];
-    *P = glts_load_planeta (GPLANETS[index], text);
+    *P = glts_load_planeta (GPLANETS[index], (char /*const*/ *) text);
 }
 
 API int8_t Xkeyboard (struct stone_engine * E, unsigned key) {
@@ -305,6 +333,12 @@ API void Xhalt (struct stone_engine * E) {
     E->halt = 1;
 }
 
+API void Xpull (struct stone_engine * E, char const * func) {
+    char * file = func2file (func);
+    hot_pull (E->H, file, lua_hot, E, 0);
+    free (file);
+}
+
 struct stone_engine *
 stone_init (struct GL * gl, struct SDL * sdl) {
     struct stone_engine * E = malloc (sizeof (*E));
@@ -320,7 +354,10 @@ stone_init (struct GL * gl, struct SDL * sdl) {
     luaL_openlibs (E->L); 
     lua_pushlightuserdata (E->L, E);
     lua_setglobal (E->L, "E");
-    hot_pull (E->H, STATELUA, lua_hot, E, 0);
+    Xpull (E, "Init");
+    lua_getglobal (E->L, "Init");
+    int result = lua_pcall (E->L, 0, 0, 0);
+    OK (result == 0);
 
     E->G = NULL;
     E->G1 = NULL;
@@ -417,7 +454,7 @@ char stone_frame (struct stone_engine * E) {
     stone_frame_input (E);
     state_advance (E);
 
-    lua_getglobal (E->L, "state");
+    lua_getglobal (E->L, "Loop");
     if (!lua_isnil (E->L, -1)) {
         int result = lua_pcall (E->L, 0, 0, 0);
         if (result != 0) {

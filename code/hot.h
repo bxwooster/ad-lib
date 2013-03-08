@@ -5,5 +5,5 @@ struct packet {
     uint8_t data [0];
 } __attribute__((packed)); 
 
-typedef void (*hot_callback) (void *, char *);
-
+typedef void (*hot_callback)
+    (void * data, char const * file, char const * text);

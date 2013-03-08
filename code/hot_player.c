@@ -74,7 +74,7 @@ void hot_del_player (struct hot_player * H) {
 }
 
 uint32_t hot_pull (struct hot_player * H,
-        char * filename, hot_callback call, void * data, size_t size) {
+        char const * filename, hot_callback call, void * data, size_t size) {
     H->count++;
     if (H->capacity < H->count) {
         H->capacity += 16;
@@ -103,11 +103,11 @@ uint32_t hot_pull (struct hot_player * H,
 
 #ifndef HOTREMOTE
     char * contents = load_file (filename);
-    call (data, contents);
+    call (data, filename, contents);
     free (contents);
 #else
     char * answer = hot_play (H, T->filename);
-    T->call (T->data, answer);
+    T->call (T->data, filename, answer);
 #endif
     return T->id;
 }
@@ -121,7 +121,7 @@ void hot_watchcall (void * data, char * filename) {
         if (0 == strcmp (T->filename, filename)) {
             logi ("Whoa! %s is updated!", filename);
             char * answer = load_file (T->filename);
-            T->call (T->data, answer);
+            T->call (T->data, filename, answer);
             free (answer);
         }
     }

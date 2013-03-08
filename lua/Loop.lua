@@ -1,12 +1,3 @@
-if (not init) then
-    init = true
-    local api_file = io.open ("API.h")
-    local api_text = api_file:read ("*all")
-    ffi = require ("ffi")
-    ffi.cdef (api_text)
-    C = ffi.C
-end
-
 if (C.Xkeyboard (E, 26) == 2) then --W
     wireframe = not wireframe
     C.Xset_wireframe (E, wireframe)
@@ -29,14 +20,14 @@ if (C.Xkeyboard (E, 15) == 2) then --L
         if (line == "exit") then
             break
         end
-        local chunk, err = loadstring (line, ">>>")
+        local chunk, err = loadstring ("print(" .. line .. ")", ">>>")
         if (chunk) then
-            local ok, err = pcall (chunk)
+            local ok, result = pcall (chunk)
             if (not ok) then
-                print (err)
+                print (result)
             end
-        else
-            print (err)
+        elseif (result) then
+            print (result)
         end
     end
 end
