@@ -98,7 +98,7 @@ stone_init (struct GL * gl, struct SDL * sdl) {
     E->S = state_init (E);
 
     E->tex = util_earth ();
-    glGenBuffers (1, & E->cell_vbo);
+    E->segment = util_segment ();
     E->imposter = util_imposter ();
 
     for (unsigned i = 0; i < 3; ++i) {
@@ -141,7 +141,7 @@ void stone_destroy (struct stone_engine * E) {
     lua_close (E->L);
     free (E->keyboard);
 
-    glDeleteBuffers (1, & E->cell_vbo);
+    glDeleteBuffers (1, & E->segment.vbo);
     glDeleteBuffers (1, & E->imposter.vbo);
     glDeleteTextures (1, & E->tex);
 

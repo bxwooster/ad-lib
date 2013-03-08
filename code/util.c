@@ -126,6 +126,40 @@ util_imposter (void) {
     return (struct GLvbo_and_size) {vbo, vertices};
 }
 
+struct GLvbo_and_size
+util_segment (void) {
+    unsigned N = k_round_cell_segments;
+
+    struct {
+        float x;
+        float y;
+    } tris [N] [6];
+
+    for (unsigned i = 0; i < N; ++i) {
+        float b = i;
+        float a = i + 1;
+        tris[i][0].x = 0;
+        tris[i][0].y = a;
+        tris[i][1].x = 1;
+        tris[i][1].y = a;
+        tris[i][2].x = 1;
+        tris[i][2].y = b;
+        tris[i][3].x = 0;
+        tris[i][3].y = a;
+        tris[i][4].x = 1;
+        tris[i][4].y = b;
+        tris[i][5].x = 0;
+        tris[i][5].y = b;
+    };
+
+    GLuint vbo;
+    glGenBuffers (1, &vbo);
+    glBindBuffer (GL_ARRAY_BUFFER, vbo);
+    glBufferData (GL_ARRAY_BUFFER, sizeof (tris), tris, GL_DYNAMIC_DRAW);
+
+    return (struct GLvbo_and_size) {vbo, N};
+}
+
 mat4
 util_projection_afn (
 		float aspect_ratio,

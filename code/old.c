@@ -118,52 +118,15 @@ API void stone_frame_C () {
     for (unsigned j = 0; j < XE->G->size; ++j) {
         for (unsigned k = 0; k < XE->G->planets[j].orbit_count; ++k) {
             unsigned orbit_size = k + 3; //!!
+            unsigned M = XE->segment.size / orbit_size;
             float angle = 2*M_PI / orbit_size;
-            unsigned N = k_round_cell_segments / (float) orbit_size;
-            struct {
-                float x;
-                float y;
-            } tris [N] [6];
-
             float s1 = XE->G1[j].size;
             float s2 = XE->G1[j].supersize;
             float sd = (s2 - s1) / XE->G->planets[j].orbit_count;
             float r1 = s1 + sd * k;
             float r2 = s1 + sd * (k + 1);
-            for (unsigned i = 0; i < N; ++i) {
-                float b = i / (float) N;
-                float a = (i + 1) / (float) N;
-                /*
-                tris[i][0].x = r1 * sinf (a);
-                tris[i][0].y = r1 * cosf (a);
-                tris[i][1].x = r2 * sinf (a);
-                tris[i][1].y = r2 * cosf (a);
-                tris[i][2].x = r2 * sinf (b);
-                tris[i][2].y = r2 * cosf (b);
-                tris[i][3].x = r1 * sinf (a);
-                tris[i][3].y = r1 * cosf (a);
-                tris[i][4].x = r2 * sinf (b);
-                tris[i][4].y = r2 * cosf (b);
-                tris[i][5].x = r1 * sinf (b);
-                tris[i][5].y = r1 * cosf (b);
-                */
-                tris[i][0].x = 0;
-                tris[i][0].y = a;
-                tris[i][1].x = 1;
-                tris[i][1].y = a;
-                tris[i][2].x = 1;
-                tris[i][2].y = b;
-                tris[i][3].x = 0;
-                tris[i][3].y = a;
-                tris[i][4].x = 1;
-                tris[i][4].y = b;
-                tris[i][5].x = 0;
-                tris[i][5].y = b;
-            };
 
-            glBindBuffer (GL_ARRAY_BUFFER, XE->cell_vbo);
-            glBufferData (GL_ARRAY_BUFFER, sizeof (tris), tris, GL_DYNAMIC_DRAW);
-
+            glBindBuffer (GL_ARRAY_BUFFER, XE->segment.vbo);
             // these two guys need to be called after glBindBuffer
             glVertexAttribPointer (shader->Apos2d, 2, GL_FLOAT, GL_FALSE, 0, 0);
             glEnableVertexAttribArray (shader->Apos2d);
@@ -199,14 +162,14 @@ API void stone_frame_C () {
                     (& XE->S->viewproj, & transform);
                 glUniformMatrix4fv (shader->Umvp, 1, GL_FALSE, mvp.p);
 
-                glUniform1f (shader->Uangle, angle);
+                glUniform1f (shader->Uangle, angle / M);
                 glUniform1f (shader->UR1, r1);
                 glUniform1f (shader->UR2, r2);
                 glUniform1f (shader->Ucutout_radius,
                         q == j ? 0.0f : XE->G1[q].supersize);
                 glUniform2fv (shader->Ucutout_center, 1, cutout_center.p);
 
-                glDrawArrays (GL_TRIANGLES, 0, 2 * N * 3);
+                glDrawArrays (GL_TRIANGLES, 0, 2 * M * 3);
            }
        }
    }

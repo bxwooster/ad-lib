@@ -33,7 +33,7 @@ struct stone_engine {
     struct framestate * S;
 
     GLuint tex;
-    GLuint cell_vbo;
+    struct GLvbo_and_size segment;
     struct GLvbo_and_size imposter;
     struct glts_planeta gplanets [3];
     struct glts_cello gcell;
