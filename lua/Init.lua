@@ -5,6 +5,8 @@ ffi.cdef (api_text)
 C = ffi.C
 C.Xpull (E, "Loop")
 C.Xpull (E, "REPL")
+C.Xpull (E, "KeyDefs")
+KeyDefs ()
 
 function KeyDown (key)
     return (C.Xkeyboard (E, key) > 1)
