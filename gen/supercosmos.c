@@ -58,6 +58,7 @@
 #include "gen/hot_network.h"
 #endif
 #include "gen/cosmos.h"
+#include "gen/X.h"
 #include "code/misc.c"
 #include "code/vecmat.c"
 #include "code/libs.c"
@@ -70,6 +71,7 @@
 #include "code/hot.c"
 #include "code/hot_player.c"
 #include "code/cosmos.c"
+#include "code/X.c"
 #ifdef HOTREMOTE
 #include "code/hot_network.c"
 #endif

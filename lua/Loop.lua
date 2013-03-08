@@ -5,16 +5,16 @@ C.Xstone_frame_C (E);
 
 if (KeyDown (KEY.W)) then
     wireframe = not wireframe
-    C.Xset_wireframe (E, wireframe)
+    C.XSetWireframe (wireframe)
 end
 
 if (KeyDown (KEY.N)) then
     normalview = not normalview
-    C.Xset_normalview (E, normalview)
+    C.XSetNormalview (normalview)
 end
 
 if (KeyDown (KEY.Escape)) then
-    C.Xhalt (E)
+    C.XHalt ()
 end
 
 if (KeyDown (KEY.L)) then

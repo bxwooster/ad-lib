@@ -3,11 +3,11 @@ local api_text = api_file:read ("*all")
 ffi = require ("ffi")
 ffi.cdef (api_text)
 C = ffi.C
-C.Xpull (E, "Loop")
-C.Xpull (E, "REPL")
-C.Xpull (E, "KeyDefs")
+C.XPull ("Loop")
+C.XPull ("REPL")
+C.XPull ("KeyDefs")
 KeyDefs ()
 
 function KeyDown (key)
-    return (C.Xkeyboard (E, key) > 1)
+    return (C.XKeyboard (key) > 1)
 end

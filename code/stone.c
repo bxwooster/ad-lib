@@ -316,29 +316,6 @@ void planet_hot (void * data, char const * file, char const * text) {
     *P = glts_load_planeta (GPLANETS[index], (char /*const*/ *) text);
 }
 
-API int8_t Xkeyboard (struct stone_engine * E, unsigned key) {
-    if (key >= E->keyboard_max) return 0;
-    return E->keyboard[key];
-}
-
-API void Xset_wireframe (struct stone_engine * E, char show) {
-    E->show_wireframe = show;
-}
-
-API void Xset_normalview (struct stone_engine * E, char show) {
-    E->show_normals = show;
-}
-
-API void Xhalt (struct stone_engine * E) {
-    E->halt = 1;
-}
-
-API void Xpull (struct stone_engine * E, char const * func) {
-    char * file = func2file (func);
-    hot_pull (E->H, file, lua_hot, E, 0);
-    free (file);
-}
-
 struct stone_engine *
 stone_init (struct GL * gl, struct SDL * sdl) {
     struct stone_engine * E = malloc (sizeof (*E));
@@ -348,16 +325,6 @@ stone_init (struct GL * gl, struct SDL * sdl) {
     E->gl = gl;
     E->sdl = sdl;
     E->H = hot_new_player ();
-
-    E->L = luaL_newstate ();
-    OK (E->L != NULL);
-    luaL_openlibs (E->L); 
-    lua_pushlightuserdata (E->L, E);
-    lua_setglobal (E->L, "E");
-    Xpull (E, "Init");
-    lua_getglobal (E->L, "Init");
-    int result = lua_pcall (E->L, 0, 0, 0);
-    OK (result == 0);
 
     E->G = NULL;
     E->G1 = NULL;
@@ -387,6 +354,19 @@ stone_init (struct GL * gl, struct SDL * sdl) {
     E->gcell = (struct glts_cello) {0};
     E->gcell.program = GL_FALSE;
     hot_pull (E->H, CELL, cell_hot, E, 0);
+
+    X_init (E);
+    E->L = luaL_newstate ();
+    OK (E->L != NULL);
+    luaL_openlibs (E->L);
+    lua_pushlightuserdata (E->L, E);
+    lua_setglobal (E->L, "E");
+    hot_pull (E->H, "lua/Init.lua", lua_hot, E, 0);
+    lua_getglobal (E->L, "Init");
+    int result = lua_pcall (E->L, 0, 0, 0);
+    if (result != 0) {
+        logi ("Lua's Init failed:\n%s", lua_tostring (E->L, -1));
+    }
 
     return E;
 }
