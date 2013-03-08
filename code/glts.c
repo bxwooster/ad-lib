@@ -187,7 +187,6 @@ struct glts_cello glts_load_cello (char * filename, char * text) {
     struct glts_cello it;
 
     it.program = glts_load (filename, text, "cello", "");
-    OK (it.program != GL_FALSE);
 
     it.Apos2d = (GLuint) glGetAttribLocation (it.program, "Apos2d");
     if (it.Apos2d == (GLuint) -1) {
@@ -195,8 +194,6 @@ struct glts_cello glts_load_cello (char * filename, char * text) {
     }
 
     it.Umvp = glGetUniformLocation (it.program, "Umvp");
-    OK (it.Umvp != -1);
-
     it.Ucolour = glGetUniformLocation (it.program, "Ucolour");
     it.Ucutout_center = glGetUniformLocation (it.program, "Ucutout_center");
     it.Ucutout_radius = glGetUniformLocation (it.program, "Ucutout_radius");
@@ -210,7 +207,6 @@ struct glts_planeta glts_load_planeta (char * filename, char * text) {
     struct glts_planeta it;
 
     it.program = glts_load (filename, text, "planeta", "");
-    OK (it.program != GL_FALSE);
 
     it.Apos2d = (GLuint) glGetAttribLocation (it.program, "Apos2d");
     if (it.Apos2d == (GLuint) -1) {
@@ -219,11 +215,9 @@ struct glts_planeta glts_load_planeta (char * filename, char * text) {
 
     it.Umv = glGetUniformLocation (it.program, "Umv");
     it.Umvp = glGetUniformLocation (it.program, "Umvp");
-    OK (it.Umvp != -1);
-
     it.Ucolour = glGetUniformLocation (it.program, "Ucolour");
     it.Uuvscale = glGetUniformLocation (it.program, "Uuvscale");
     it.Utexture = glGetUniformLocation (it.program, "Uexture");
-    // ignore some missing uniforms
+
     return it;
 }

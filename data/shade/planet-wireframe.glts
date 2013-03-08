@@ -4,7 +4,7 @@
 
 #if defined FS
 vec3 fragment () {
-    return Ucolour;
+    return Ucolour * 0.5;
 }
 #endif
 

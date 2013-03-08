@@ -398,7 +398,7 @@ void stone_frame_gl (struct stone_engine * E) {
     glViewport (0, 0, E->sdl->width, E->sdl->height);
 
     glDepthMask (GL_TRUE);
-    glClearColor (0.0, 0.0, 0.0, 0.0);
+    glClearColor (1.0f, 1.0f, 1.0f, 0.0);
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     #ifndef GLES
@@ -407,7 +407,7 @@ void stone_frame_gl (struct stone_engine * E) {
     #endif
 
     GLuint error = glGetError ();
-    OK_ELSE (error == 0) {
+    if (error != 0) {
         logi ("There occurred a GL error, # %d.", error);
     }
 }
