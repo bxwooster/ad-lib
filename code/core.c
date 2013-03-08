@@ -37,7 +37,6 @@ API void PreSphere () {
     struct glts_planeta const * shader = XE->gplanets;
 
     glBindBuffer (GL_ARRAY_BUFFER, XE->imposter.vbo);
-    XE->gl->vertices = XE->imposter.size;
 
     glDepthMask (GL_TRUE);
     glDisable (GL_BLEND);
@@ -49,11 +48,11 @@ API void PreSphere () {
 }
 
 API void Sphere (mat4 const * transform, float radius) {
-    struct stone_G1 g1;
+    struct stone_G1 G1;
     struct stone_G2 G2;
-    g1.size = radius;
-    g1.transform = *transform;
+    G1.size = radius;
+    G1.transform = *transform;
 
-    g2 (& g1, & G2);
-    g3 (&G2);
+    old_g2 (& G1, & G2);
+    old_planet (& G2);
 }

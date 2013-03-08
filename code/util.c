@@ -1,3 +1,5 @@
+unsigned const k_round_cell_segments = 64;
+
 GLenum // GLformat
 util_earth_load (SDL_Surface * earth [6]) {
     char const * const earthimg [6] = {
@@ -136,20 +138,13 @@ util_segment (void) {
     } tris [N] [6];
 
     for (unsigned i = 0; i < N; ++i) {
-        float b = i;
-        float a = i + 1;
-        tris[i][0].x = 0;
-        tris[i][0].y = a;
-        tris[i][1].x = 1;
-        tris[i][1].y = a;
-        tris[i][2].x = 1;
-        tris[i][2].y = b;
-        tris[i][3].x = 0;
-        tris[i][3].y = a;
-        tris[i][4].x = 1;
-        tris[i][4].y = b;
-        tris[i][5].x = 0;
-        tris[i][5].y = b;
+        float j = i + 1;
+        tris[i][0].x = 0; tris[i][0].y = j;
+        tris[i][1].x = 1; tris[i][1].y = j;
+        tris[i][2].x = 1; tris[i][2].y = i;
+        tris[i][3].x = 0; tris[i][3].y = j;
+        tris[i][4].x = 1; tris[i][4].y = i;
+        tris[i][5].x = 0; tris[i][5].y = i;
     };
 
     GLuint vbo;

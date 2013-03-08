@@ -1,5 +1,4 @@
 float const k_planet_size_minifier = 0.9f;
-unsigned const k_round_cell_segments = 64;
 
 char * GPLANETS [] = {
     "glsl/planet.glts",
@@ -163,8 +162,8 @@ void stone_frame_gl (struct stone_engine * E) {
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     #ifndef GLES
-        GLenum poly_mode = E->show_wireframe ? GL_LINE : GL_FILL;
-        glPolygonMode(GL_FRONT_AND_BACK, poly_mode);
+    GLenum poly_mode = E->show_wireframe ? GL_LINE : GL_FILL;
+    glPolygonMode(GL_FRONT_AND_BACK, poly_mode);
     #endif
 
     GLuint error = glGetError ();

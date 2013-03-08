@@ -1,4 +1,4 @@
-void g1 (struct planet const * planet, struct stone_G1 * G1) {
+void old_g1 (struct planet const * planet, struct stone_G1 * G1) {
     struct framestate const * S = XE->S;
     if (planet == &XE->G->planets[0]) {
         G1->transform = mat4_identity ();
@@ -29,7 +29,7 @@ void g1 (struct planet const * planet, struct stone_G1 * G1) {
     G1->size = G1->supersize / (planet->orbit_count + 1);
 }
 
-void g2 (struct stone_G1 * g1, struct stone_G2 * G2) {
+void old_g2 (struct stone_G1 * g1, struct stone_G2 * G2) {
     mat4 mmodel = g1->transform;
 
     /*
@@ -82,7 +82,7 @@ void g2 (struct stone_G1 * g1, struct stone_G2 * G2) {
     G2->colour = (vec3) {1.0f, 1.0f, 1.0f};
 }
 
-void g3 (struct stone_G2 * G2) {
+void old_planet (struct stone_G2 * G2) {
     struct glts_planeta const * shader = XE->gplanets;
 
     glUniformMatrix4fv (shader->Umvp, 1, GL_FALSE, G2->mvp.p);
@@ -98,39 +98,61 @@ API void stone_frame_G () {
     PreSphere ();
 
     for (unsigned i = 0; i < XE->G->size; ++i) {
-        g1 (XE->G->planets + i, XE->G1 + i);
-        g2 (XE->G1 + i, XE->G2 + i);
-        g3 (XE->G2 + i);
+        old_g1 (XE->G->planets + i, XE->G1 + i);
+        old_g2 (XE->G1 + i, XE->G2 + i);
+        old_planet (XE->G2 + i);
     }
 }
 
-API void stone_frame_C () {
+void old_segment (float r1, float r2, float angsize, float angle,
+        mat4 * tmat, vec4 const * hole_relative, float hole_size) {
     struct glts_cello const * shader = & XE->gcell;
 
+    unsigned M = XE->segment.size / (2*M_PI) * angsize;
+
+    float r = (float) rand() / (float) RAND_MAX;
+    float g = (float) rand() / (float) RAND_MAX;
+    float b = (float) rand() / (float) RAND_MAX;
+    vec3 colour = {r, g, b};
+    glUniform3fv (shader->Ucolour, 1, colour.p);
+
+    mat4 transform = mat4_rotated_aa
+        (tmat, & (vec3) {0,0,1}, angle);
+    mat4 inverse = mat4_inverted_rtonly (& transform);
+    vec4 cutout_center = vec4_multiply (& inverse, hole_relative);
+
+    mat4 mvp = mat4_multiply
+        (& XE->S->viewproj, & transform);
+    glUniformMatrix4fv (shader->Umvp, 1, GL_FALSE, mvp.p);
+
+    glUniform1f (shader->Uangle, angsize / M);
+    glUniform1f (shader->UR1, r1);
+    glUniform1f (shader->UR2, r2);
+    glUniform1f (shader->Ucutout_radius, hole_size);
+    glUniform2fv (shader->Ucutout_center, 1, cutout_center.p);
+
+    glDrawArrays (GL_TRIANGLES, 0, 2 * M * 3);
+}
+
+API void stone_frame_C () {
     PreSegment ();
 
     srand(1); // color hack!
 
     for (unsigned j = 0; j < XE->G->size; ++j) {
         for (unsigned k = 0; k < XE->G->planets[j].orbit_count; ++k) {
-            unsigned orbit_size = k + 3; //!!
-            unsigned M = XE->segment.size / orbit_size;
-            float angle = 2*M_PI / orbit_size;
+            unsigned orbit_size = k + 3;
             float s1 = XE->G1[j].size;
             float s2 = XE->G1[j].supersize;
             float sd = (s2 - s1) / XE->G->planets[j].orbit_count;
+
             float r1 = s1 + sd * k;
             float r2 = s1 + sd * (k + 1);
+            float angsize = 2*M_PI / orbit_size;
+
+            mat4 * tmat = & XE->G1[j].transform;
 
             for (unsigned p = 0; p < orbit_size; ++p) {
-                float posish = 0.5 + p + XE->S->turn + XE->S->turn_tail;
-
-                float r = (float) rand() / (float) RAND_MAX;
-                float g = (float) rand() / (float) RAND_MAX;
-                float b = 2.0f - r - g;
-                vec3 colour = {r, g, b};
-                glUniform3fv (shader->Ucolour, 1, colour.p);
-
                 unsigned q;
                 for (q = j; q < XE->G->size; q++) {
                     if (XE->G->planets[q].where.parent_index == j &&
@@ -141,29 +163,16 @@ API void stone_frame_C () {
                 }
                 if (q == XE->G->size) q = j; //no-op
 
-                mat4 transform = mat4_rotated_aa
-                    (& XE->G1[j].transform, & (vec3) {0,0,1}, -angle * (posish));
+                mat4 * parent = & XE->G1[q].transform;
+                vec4 hole_center = vec4_multiply (parent, & (vec4) {0,0,0,1});
+                float hole_size = q == j ? 0.0f : XE->G1[q].supersize;
 
-                mat4 cutout = mat4_inverted_rtonly (& transform);
-                cutout = mat4_multiply (&cutout, & XE->G1[q].transform);
-                vec4 cutout_center = vec4_multiply
-                    (& cutout, & (vec4) {0,0,0,1});
+                float posish = 0.5 + p + XE->S->turn + XE->S->turn_tail;
+                float angle = -angsize * posish;
 
-                mat4 mvp = mat4_multiply
-                    (& XE->S->viewproj, & transform);
-                glUniformMatrix4fv (shader->Umvp, 1, GL_FALSE, mvp.p);
-
-                glUniform1f (shader->Uangle, angle / M);
-                glUniform1f (shader->UR1, r1);
-                glUniform1f (shader->UR2, r2);
-                glUniform1f (shader->Ucutout_radius,
-                        q == j ? 0.0f : XE->G1[q].supersize);
-                glUniform2fv (shader->Ucutout_center, 1, cutout_center.p);
-
-                glDrawArrays (GL_TRIANGLES, 0, 2 * M * 3);
+                old_segment (r1, r2, angsize, angle,
+                        tmat, & hole_center, hole_size);
            }
        }
    }
 }
-
-
