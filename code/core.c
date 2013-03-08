@@ -39,26 +39,31 @@ API void Segment (mat4 * tmat, float r1, float r2, float angsize, float angle,
 
     unsigned M = XE->vsegment.size / 6 / (2*M_PI) * angsize;
 
-    float r = (float) rand() / (float) RAND_MAX;
-    float g = (float) rand() / (float) RAND_MAX;
-    float b = (float) rand() / (float) RAND_MAX;
+    float r = fmodf (angle, 1.0);
+    float g = fmodf (angsize, 1.0);
+    float b = 1.0 - r - g;
     vec3 colour = {r, g, b};
     glUniform3fv (shader->Ucolour, 1, colour.p);
 
     mat4 transform = mat4_rotated_aa
         (tmat, & (vec3) {0,0,1}, angle);
-    mat4 inverse = mat4_inverted_rtonly (& transform);
-    vec4 v4 = vec4_from3 (hole_relative);
-    vec4 cutout_center = vec4_multiply (& inverse, & v4);
 
     mat4 mvp = mat4_multiply
         (& XE->S->viewproj, & transform);
+
+    if (hole_relative != NULL) {
+        mat4 inverse = mat4_inverted_rtonly (& transform);
+        vec4 v4 = vec4_from3 (hole_relative);
+        vec4 cutout_center = vec4_multiply (& inverse, & v4);
+
+        glUniform2fv (shader->Ucutout_center, 1, cutout_center.p);
+    }
+
     glUniformMatrix4fv (shader->Umvp, 1, GL_FALSE, mvp.p);
     glUniform1f (shader->Uangle, angsize / M);
     glUniform1f (shader->UR1, r1);
     glUniform1f (shader->UR2, r2);
     glUniform1f (shader->Ucutout_radius, hole_size);
-    glUniform2fv (shader->Ucutout_center, 1, cutout_center.p);
 
     glDrawArrays (GL_TRIANGLES, 0, M * 6);
 }
