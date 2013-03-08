@@ -51,7 +51,7 @@ do_it (
 
     unsigned const P = 2;
     unsigned const all_count = P + count;
-    size_t memsize = all_count * sizeof (char *);
+    size_t memsize = count * sizeof (char *);
 
     char const * all_pieces [all_count];
     memcpy (all_pieces + P, pieces, memsize);
