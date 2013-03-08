@@ -1,3 +1,8 @@
+C.Xstone_frame_G1 (E);
+C.Xstone_frame_G2 (E);
+C.Xstone_frame_G3 (E);
+C.Xstone_frame_C (E);
+
 if (C.Xkeyboard (E, 26) == 2) then --W
     wireframe = not wireframe
     C.Xset_wireframe (E, wireframe)

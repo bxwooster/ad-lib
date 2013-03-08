@@ -34,7 +34,7 @@ char * func2file (char const * func) {
     return file;
 }
 
-void stone_frame_G1 (struct stone_engine * E) {
+API void Xstone_frame_G1 (struct stone_engine * E) {
     for (unsigned i = 0; i < E->G->size; ++i) {
         struct framestate const * S = E->S;
         struct planet const * planet = E->G->planets + i;
@@ -69,7 +69,7 @@ void stone_frame_G1 (struct stone_engine * E) {
     }
 }
 
-void stone_frame_G2 (struct stone_engine * E) {
+API void Xstone_frame_G2 (struct stone_engine * E) {
     for (unsigned i = 0; i < E->G->size; ++i) {
         struct planet * P = E->G->planets + i;
         struct stone_G1 * g1 = E->G1 + i;
@@ -134,7 +134,7 @@ int stone_G2_cmp (void const * a, void const * b) {
     return (a_depth > b_depth) ? -1 : 1;
 }
 
-void stone_frame_G3 (struct stone_engine * E) {
+API void Xstone_frame_G3 (struct stone_engine * E) {
     qsort (E->G2, E->G->size,
             sizeof (struct stone_G2), stone_G2_cmp);
 
@@ -171,7 +171,7 @@ void stone_frame_G3 (struct stone_engine * E) {
     }
 }
 
-void stone_frame_C (struct stone_engine * E) {
+API void Xstone_frame_C (struct stone_engine * E) {
     struct glts_cello const * shader = & E->gcell;
 
     glDepthMask (GL_FALSE);
@@ -450,8 +450,8 @@ void stone_frame_input (struct stone_engine * E) {
 
 char stone_frame (struct stone_engine * E) {
     stone_frame_gl (E);
-
     stone_frame_input (E);
+
     state_advance (E);
 
     lua_getglobal (E->L, "Loop");
@@ -462,14 +462,7 @@ char stone_frame (struct stone_engine * E) {
         }
     }
 
-    stone_frame_G1 (E);
-    stone_frame_G2 (E);
-    stone_frame_G3 (E);
-    stone_frame_C (E);
-
     SDL_GL_SwapWindow (E->sdl->window);
-
     hot_check (E->H);
-    
     return E->halt;
 }
