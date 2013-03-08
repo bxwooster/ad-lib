@@ -15,6 +15,6 @@ struct glts_cello {
     GLint Ucolour;
     GLint Ucutout_center;
     GLint Ucutout_radius;
-    GLint Uradius_min;
-    GLint Uradius_max;
+    GLint UR1;
+    GLint UR2;
 };
