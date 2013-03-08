@@ -19,6 +19,20 @@ API void Pull (char const * func) {
     free (file);
 }
 
+API void PreSegment () {
+    struct glts_cello const * shader = & XE->gcell;
+
+    glDepthMask (GL_FALSE);
+    glEnable (GL_BLEND);
+    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glUseProgram (shader->program);
+
+    glBindBuffer (GL_ARRAY_BUFFER, XE->segment.vbo);
+    // these two guys need to be called after glBindBuffer
+    glVertexAttribPointer (shader->Apos2d, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray (shader->Apos2d);
+}
+
 API void PreSphere () {
     struct glts_planeta const * shader = XE->gplanets;
 

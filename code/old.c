@@ -91,7 +91,7 @@ void g3 (struct stone_G2 * G2) {
     glUniform1i (shader->Utexture, G2->texture);
     glUniform3fv (shader->Ucolour, 1, G2->colour.p);
 
-    glDrawArrays (GL_TRIANGLES, 0, XE->gl->vertices);
+    glDrawArrays (GL_TRIANGLES, 0, XE->imposter.size);
 }
 
 API void stone_frame_G () {
@@ -107,11 +107,7 @@ API void stone_frame_G () {
 API void stone_frame_C () {
     struct glts_cello const * shader = & XE->gcell;
 
-    glDepthMask (GL_FALSE);
-    glEnable (GL_BLEND);
-    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    glUseProgram (shader->program);
+    PreSegment ();
 
     srand(1); // color hack!
 
@@ -125,11 +121,6 @@ API void stone_frame_C () {
             float sd = (s2 - s1) / XE->G->planets[j].orbit_count;
             float r1 = s1 + sd * k;
             float r2 = s1 + sd * (k + 1);
-
-            glBindBuffer (GL_ARRAY_BUFFER, XE->segment.vbo);
-            // these two guys need to be called after glBindBuffer
-            glVertexAttribPointer (shader->Apos2d, 2, GL_FLOAT, GL_FALSE, 0, 0);
-            glEnableVertexAttribArray (shader->Apos2d);
 
             for (unsigned p = 0; p < orbit_size; ++p) {
                 float posish = 0.5 + p + XE->S->turn + XE->S->turn_tail;
