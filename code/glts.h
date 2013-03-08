@@ -17,4 +17,5 @@ struct glts_cello {
     GLint Ucutout_radius;
     GLint UR1;
     GLint UR2;
+    GLint Uangle;
 };

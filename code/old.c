@@ -131,8 +131,8 @@ API void stone_frame_C () {
             float r1 = s1 + sd * k;
             float r2 = s1 + sd * (k + 1);
             for (unsigned i = 0; i < N; ++i) {
-                float b = i / (float) N * angle;
-                float a = (i + 1) / (float) N * angle;
+                float b = i / (float) N;
+                float a = (i + 1) / (float) N;
                 /*
                 tris[i][0].x = r1 * sinf (a);
                 tris[i][0].y = r1 * cosf (a);
@@ -199,6 +199,7 @@ API void stone_frame_C () {
                     (& XE->S->viewproj, & transform);
                 glUniformMatrix4fv (shader->Umvp, 1, GL_FALSE, mvp.p);
 
+                glUniform1f (shader->Uangle, angle);
                 glUniform1f (shader->UR1, r1);
                 glUniform1f (shader->UR2, r2);
                 glUniform1f (shader->Ucutout_radius,

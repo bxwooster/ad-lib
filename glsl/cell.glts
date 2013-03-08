@@ -6,6 +6,8 @@ attribute vec2 Apos2d;
 
 uniform float UR1;
 uniform float UR2;
+uniform float Uangle;
+
 uniform mat4 Umvp;
 uniform vec3 Ucolour;
 uniform vec2 Ucutout_center;
@@ -27,7 +29,8 @@ vec3 fragment () {
 #elif defined VS
 vec4 vertex () {
     float r = UR1 + Apos2d.r * (UR2 - UR1);
-    vec2 cartesian = vec2 (r * cos (Apos2d.g), r * sin (Apos2d.g));
+    float a = Apos2d.g * Uangle;
+    vec2 cartesian = vec2 (r * cos(a), r * sin(a));
     vec4 position = Umvp * vec4 (cartesian, 0.0, 1.0);
 
 	Vplanar = cartesian;
