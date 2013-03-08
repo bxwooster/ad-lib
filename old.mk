@@ -251,8 +251,9 @@ $(superheader): $(all_source) | $(output_dir)
 $(api): $(superheader)
 ifeq ($(program),cosmos)
 	@echo "Making API.h..."
-	@cat $(superheader) | grep API | grep -v '#' | sed 's/API //' > API.h
+	@rm -f API.h
 	@makeheaders -h code/vecmat.h code/vecmat.c | grep -v '#' >> API.h
+	@cat $(superheader) | grep API | grep -v '#' | sed 's/API //' >> API.h
 endif
 
 $(main): | $(output_dir)

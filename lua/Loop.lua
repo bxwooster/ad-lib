@@ -1,12 +1,8 @@
---core.Xstone_frame_G1 (E);
---core.Xstone_frame_G2 (E);
---core.Xstone_frame_G3 (E);
---core.Xstone_frame_C (E);
+--core.Xstone_frame_G ();
+core.Xstone_frame_C ();
 
-if (KeyDown (KEY.L)) then
-    REPL ()
-end
+core.XPreSphere ()
+apply (Sphere, spheres)
 
-if (KeyDown (KEY.Escape)) then
-    core.XHalt ()
-end
+if (KeyDown (KEY.L)) then REPL () end
+if (KeyDown (KEY.Escape)) then core.XHalt () end
