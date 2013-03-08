@@ -8,6 +8,7 @@ core.XPull ("Loop")
 core.XPull ("REPL")
 core.XPull ("KeyDefs")
 core.XPull ("Sphere")
+core.XPull ("Transform")
 
 KeyDefs ()
 
@@ -21,7 +22,14 @@ function apply (f, x)
     end
 end
 
-local p1 = {transform = core.mat4_identity (), radius = 0.2}
+local pc = {tmat = core.mat4_identity ()}
+local p1 = {
+    rmat = core.mat4_movement (core.vec3_new (1, 0, 0)),
+    radius = 0.5, parent = pc
+}
 
 spheres = {}
+transforms = {}
+
 table.insert (spheres, p1)
+table.insert (transforms, p1)

@@ -42,13 +42,18 @@ mat4 mat4_inverted_rtonly (mat4 const * m) {
     return out;
 }
 
-mat4 mat4_moved ( mat4 const * m, vec3 const * v) {
-	mat4 mtra = mat4_identity ();
-    mtra.column.w.v3 = *v;
+mat4 mat4_moved (mat4 const * m, vec3 const * v) {
+    mat4 mtra = mat4_movement (v);
 	return mat4_multiply (m, & mtra);
 }
 
-mat4 mat4_multiply ( mat4 const * a, mat4 const * b) {
+mat4 mat4_movement (vec3 const * v) {
+	mat4 mtra = mat4_identity ();
+    mtra.column.w.v3 = *v;
+    return mtra;
+}
+
+mat4 mat4_multiply (mat4 const * a, mat4 const * b) {
     mat4 out;
 
     for (int i = 0; i < 4; ++i) { /* columns */
@@ -64,7 +69,7 @@ mat4 mat4_multiply ( mat4 const * a, mat4 const * b) {
     return out;
 }
 
-mat4 mat4_rotated_aa ( mat4 const * m, vec3 const * axis, float angle) {
+mat4 mat4_rotated_aa (mat4 const * m, vec3 const * axis, float angle) {
     float len = vec3_length (axis);
     assert (len != 0.0f);
    
@@ -102,7 +107,7 @@ mat4 mat4_rotated_aa ( mat4 const * m, vec3 const * axis, float angle) {
 	return mat4_multiply (m, & mrot);
 }
 
-mat4 mat4_scaled ( mat4 const * m, float scale) {
+mat4 mat4_scaled (mat4 const * m, float scale) {
     mat4 out = * m;
 
 	for (int n = 0; n < 12; ++n) {
@@ -113,7 +118,7 @@ mat4 mat4_scaled ( mat4 const * m, float scale) {
     return out;
 }
 
-void mat4_print ( mat4 const * m) {
+void mat4_print (mat4 const * m) {
     for (unsigned i = 0; i < 4; ++i) {
         logi (VEC4_FMT,
                 m->p[i + 0], m->p[i + 4],
@@ -121,13 +126,13 @@ void mat4_print ( mat4 const * m) {
     }
 }
 
-void vec4_print ( vec4 const * v) {
+void vec4_print (vec4 const * v) {
     logi (VEC4_FMT,
             v->p[0], v->p[1],
             v->p[2], v->p[3]);
 }
 
-vec4 vec4_multiply ( mat4 const * m, vec4 const * v) {
+vec4 vec4_multiply (mat4 const * m, vec4 const * v) {
     vec4 out = {0};
 
     for (int j = 0; j < 4; ++j) { /* rows */
@@ -139,7 +144,7 @@ vec4 vec4_multiply ( mat4 const * m, vec4 const * v) {
     return out;
 }
 
-vec3 vec3_diff ( vec3 const * a, vec3 const * b) {
+vec3 vec3_diff (vec3 const * a, vec3 const * b) {
     vec3 out;
 
 	out.p[0] = a->p[0] - b->p[0];
@@ -149,24 +154,24 @@ vec3 vec3_diff ( vec3 const * a, vec3 const * b) {
     return out;
 }
 
-float vec3_dot ( vec3 const * a, vec3 const * b) {
+float vec3_dot (vec3 const * a, vec3 const * b) {
     return
         (a->p[0] * b->p[0]) +
         (a->p[1] * b->p[1]) +
         (a->p[2] * b->p[2]);
 }
 
-float vec3_length ( vec3 const * v) {
+float vec3_length (vec3 const * v) {
 	return sqrtf (vec3_dot (v, v));
 }
 
-vec3 vec3_normalized ( vec3 const * v) {
+vec3 vec3_normalized (vec3 const * v) {
 	float len = vec3_length (v);
     assert (len != 0.0f);
     return vec3_scaled (v, 1.0f / len);
 }
 
-vec3 vec3_product ( vec3 const * a, vec3 const * b) {
+vec3 vec3_product (vec3 const * a, vec3 const * b) {
     vec3 out;
 
 	out.p[0] = a->p[1] * b->p[2] - a->p[2] * b->p[1];
@@ -176,7 +181,7 @@ vec3 vec3_product ( vec3 const * a, vec3 const * b) {
     return out;
 }
 
-vec3 vec3_scaled ( vec3 const * v, float scale) {
+vec3 vec3_scaled (vec3 const * v, float scale) {
     vec3 out;
 
 	out.p[0] = v->p[0] * scale;
@@ -186,12 +191,22 @@ vec3 vec3_scaled ( vec3 const * v, float scale) {
     return out;
 }
 
-vec3 vec3_sum ( vec3 const * a, vec3 const * b) {
+vec3 vec3_sum (vec3 const * a, vec3 const * b) {
     vec3 out;
 
 	out.p[0] = a->p[0] + b->p[0];
 	out.p[1] = a->p[1] + b->p[1];
 	out.p[2] = a->p[2] + b->p[2];
+
+    return out;
+}
+
+vec3 vec3_new (float x, float y, float z) {
+    vec3 out;
+
+    out.p[0] = x;
+    out.p[1] = y;
+    out.p[2] = z;
 
     return out;
 }

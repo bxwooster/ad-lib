@@ -39,6 +39,7 @@ ifeq ($(program),cosmos)
              galaxy \
              util \
              stone \
+             old \
              X \
              state \
              socket \
