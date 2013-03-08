@@ -1,9 +1,11 @@
-core.stone_frame_G ();
-core.stone_frame_C ();
+function Loop ()
+    core.stone_frame_G ();
+    core.stone_frame_C ();
 
-apply (Transform, transforms)
-core.PreSphere ()
-apply (Sphere, spheres)
+    apply (Transform, transforms)
+    core.PreSphere ()
+    apply (Sphere, spheres)
 
-if (KeyDown (KEY.L)) then REPL () end
-if (KeyDown (KEY.Escape)) then core.Halt () end
+    if (KeyDown (KEY.L)) then REPL () end
+    if (KeyDown (KEY.Escape)) then core.Halt () end
+end

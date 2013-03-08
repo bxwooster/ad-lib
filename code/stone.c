@@ -10,22 +10,11 @@ char * GPLANETS [] = {
 char CELL [] = "data/shade/cell.glts";
 char GALAXY [] = "data/galaxy";
 
-char * file2func (char const * file) {
-    char const * dot = strrchr (file, '.');
-    char const * afterslash = strrchr (file, '/') + 1;
-    OK (dot != NULL && afterslash != NULL && dot > afterslash);
-    size_t len = dot - afterslash;
-    char * func = malloc (len + 1);
-    func[len] = '\0';
-    memcpy (func, afterslash, len);
-    return func;
-}
-
 char * func2file (char const * func) {
     char before [] = "lua/"; int B = strlen (before);
     char after [] = ".lua"; int A = strlen (after);
     int F = strlen (func); size_t len = B + F + A;
-    
+
     char * file = malloc (len + 1);
     file[len] = '\0';
     memcpy (file, before, B);
@@ -34,11 +23,12 @@ char * func2file (char const * func) {
     return file;
 }
 
+    
 /* hot adapter */
 void galaxy_hot (void * data, char const * file, char const * text) {
     struct stone_engine * E = data;
     (void) file;
-    
+
     free (E->G1); /* Dup. */
     free (E->G2); /* Dup. */
 
@@ -54,15 +44,13 @@ void galaxy_hot (void * data, char const * file, char const * text) {
 
 void lua_hot (void * data, char const * file, char const * text) {
     struct stone_engine * E = data;
-    char * func = file2func (file);
 
-    int status = luaL_loadbuffer (E->L, text, strlen (text), func);
+    int status = luaL_loadbuffer (E->L, text, strlen (text), file);
     if (status != 0) {
         logi ("Couldn't load luafile: %s", lua_tostring (E->L, -1));
     } else {
-        lua_setglobal (E->L, func);
+        stone_pcall (E);
     }
-    free (func);
 }
 
 void cell_hot (void * data, char const * file, char const * text) {
@@ -129,15 +117,19 @@ stone_init (struct GL * gl, struct SDL * sdl) {
     OK (E->L != NULL);
     luaL_openlibs (E->L);
     lua_pushlightuserdata (E->L, E);
-    lua_setglobal (E->L, "E");
+    lua_setglobal (E->L, "_E");
     hot_pull (E->H, "lua/Init.lua", lua_hot, E, 0);
     lua_getglobal (E->L, "Init");
-    int result = lua_pcall (E->L, 0, 0, 0);
-    if (result != 0) {
-        logi ("Lua's Init failed:\n%s", lua_tostring (E->L, -1));
-    }
+    stone_pcall (E);
 
     return E;
+}
+
+void stone_pcall (struct stone_engine * E) {
+    int result = lua_pcall (E->L, 0, 0, 0);
+    if (result != 0) {
+        logi ("Pcall failed:\n%s", lua_tostring (E->L, -1));
+    }
 }
 
 void stone_destroy (struct stone_engine * E) {
@@ -204,12 +196,7 @@ char stone_frame (struct stone_engine * E) {
     state_advance (E);
 
     lua_getglobal (E->L, "Loop");
-    if (!lua_isnil (E->L, -1)) {
-        int result = lua_pcall (E->L, 0, 0, 0);
-        if (result != 0) {
-            logi ("Failed to run script:\n%s", lua_tostring (E->L, -1));
-        }
-    }
+    stone_pcall (E);
 
     SDL_GL_SwapWindow (E->sdl->window);
     hot_check (E->H);
