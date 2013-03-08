@@ -5,7 +5,6 @@ struct stone_G1 {
 };
 
 struct stone_engine {
-    struct GL * gl;
     struct SDL * sdl;
     struct hot_player * H;
     lua_State * L;
@@ -13,8 +12,6 @@ struct stone_engine {
     int8_t * keyboard;
     unsigned keyboard_max;
 
-    char show_wireframe;
-    char show_normals;
     char halt;
 
     struct galaxy * G;
@@ -23,8 +20,8 @@ struct stone_engine {
     struct framestate * S;
 
     GLuint tex;
-    struct GLvbo_and_size segment;
-    struct GLvbo_and_size imposter;
+    struct GLvbo_and_size vsegment;
+    struct GLvbo_and_size vimposter;
     struct glts_planeta gplanets [3];
     struct glts_cello gcell;
 };

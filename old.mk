@@ -34,7 +34,7 @@ ifeq ($(program),cosmos)
 
     files += \
              vecmat \
-             libs \
+             SDL \
              glts \
              galaxy \
              util \

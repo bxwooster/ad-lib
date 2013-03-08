@@ -69,12 +69,11 @@ void planet_hot (void * data, char const * file, char const * text) {
 }
 
 struct stone_engine *
-stone_init (struct GL * gl, struct SDL * sdl) {
+stone_init (struct SDL * sdl) {
     struct stone_engine * E = malloc (sizeof (*E));
     OK (E != NULL);
     memset (E, 0, sizeof (*E));
 
-    E->gl = gl;
     E->sdl = sdl;
     E->H = hot_new_player ();
 
@@ -92,8 +91,8 @@ stone_init (struct GL * gl, struct SDL * sdl) {
     E->S = state_init (E);
 
     E->tex = util_earth ();
-    E->segment = util_segment ();
-    E->imposter = util_imposter ();
+    E->vsegment = util_segment ();
+    E->vimposter = util_imposter ();
 
     for (unsigned i = 0; i < 3; ++i) {
         void * EnP [] = { E, &E->gplanets[0] + i };
@@ -134,8 +133,8 @@ void stone_destroy (struct stone_engine * E) {
     lua_close (E->L);
     free (E->keyboard);
 
-    glDeleteBuffers (1, & E->segment.vbo);
-    glDeleteBuffers (1, & E->imposter.vbo);
+    glDeleteBuffers (1, & E->vsegment.vbo);
+    glDeleteBuffers (1, & E->vimposter.vbo);
     glDeleteTextures (1, & E->tex);
 
     for (unsigned i = 0; i < 3; ++i) {
@@ -154,11 +153,6 @@ void stone_frame_gl (struct stone_engine * E) {
     glDepthMask (GL_TRUE);
     glClearColor (1.0f, 1.0f, 1.0f, 0.0);
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    #ifndef GLES
-    GLenum poly_mode = E->show_wireframe ? GL_LINE : GL_FILL;
-    glPolygonMode(GL_FRONT_AND_BACK, poly_mode);
-    #endif
 
     GLuint error = glGetError ();
     if (error != 0) {

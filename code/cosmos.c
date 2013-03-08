@@ -8,11 +8,8 @@ int cosmos (int argc, char * argv []) {
     socket_init ();
 #endif
 
-    init_IMG ();
     struct SDL * sdl = init_SDL ();
-    struct GL * gl = init_GL (sdl);
-
-    struct stone_engine * E = stone_init (gl, sdl);
+    struct stone_engine * E = stone_init (sdl);
 
     /* All systems go! */
     unsigned long frame = 0;
@@ -26,10 +23,7 @@ int cosmos (int argc, char * argv []) {
     logi ("%d frames were done. Have a nice day!", frame);
 
     stone_destroy (E);
-
-    exit_GL (gl);
     exit_SDL (sdl);
-    IMG_Quit ();
 
     return 0;
 }

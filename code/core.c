@@ -27,7 +27,7 @@ API void PreSegment () {
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glUseProgram (shader->program);
 
-    glBindBuffer (GL_ARRAY_BUFFER, XE->segment.vbo);
+    glBindBuffer (GL_ARRAY_BUFFER, XE->vsegment.vbo);
     // these two guys need to be called after glBindBuffer
     glVertexAttribPointer (shader->Apos2d, 2, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray (shader->Apos2d);
@@ -37,7 +37,7 @@ API void Segment (mat4 * tmat, float r1, float r2, float angsize, float angle,
         vec3 const * hole_relative, float hole_size) {
     struct glts_cello const * shader = & XE->gcell;
 
-    unsigned M = XE->segment.size / 6 / (2*M_PI) * angsize;
+    unsigned M = XE->vsegment.size / 6 / (2*M_PI) * angsize;
 
     float r = (float) rand() / (float) RAND_MAX;
     float g = (float) rand() / (float) RAND_MAX;
@@ -66,7 +66,7 @@ API void Segment (mat4 * tmat, float r1, float r2, float angsize, float angle,
 API void PreSphere () {
     struct glts_planeta const * shader = XE->gplanets;
 
-    glBindBuffer (GL_ARRAY_BUFFER, XE->imposter.vbo);
+    glBindBuffer (GL_ARRAY_BUFFER, XE->vimposter.vbo);
 
     glDepthMask (GL_TRUE);
     glDisable (GL_BLEND);
@@ -122,5 +122,5 @@ API void Sphere (mat4 const * tmat, float radius) {
     glUniform1i (shader->Utexture, XE->tex);
     glUniform3fv (shader->Ucolour, 1, (vec3) {1.0f, 1.0f, 1.0f}.p);
 
-    glDrawArrays (GL_TRIANGLES, 0, XE->imposter.size);
+    glDrawArrays (GL_TRIANGLES, 0, XE->vimposter.size);
 }
