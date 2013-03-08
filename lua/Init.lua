@@ -4,16 +4,16 @@ ffi = require ("ffi")
 ffi.cdef (api_text)
 core = ffi.C
 
-core.XPull ("Loop")
-core.XPull ("REPL")
-core.XPull ("KeyDefs")
-core.XPull ("Sphere")
-core.XPull ("Transform")
+core.Pull ("Loop")
+core.Pull ("REPL")
+core.Pull ("KeyDefs")
+core.Pull ("Sphere")
+core.Pull ("Transform")
 
 KeyDefs ()
 
 function KeyDown (key)
-    return (core.XKeyboard (key) > 1)
+    return (core.Keyboard (key) > 1)
 end
 
 function apply (f, x)

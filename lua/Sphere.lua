@@ -1,2 +1,2 @@
 local this = ...
-core.XSphere (this.tmat, this.radius)
+core.Sphere (this.tmat, this.radius)

@@ -40,7 +40,7 @@ ifeq ($(program),cosmos)
              util \
              stone \
              old \
-             X \
+             core \
              state \
              socket \
              hot \

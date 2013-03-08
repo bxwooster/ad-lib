@@ -94,8 +94,8 @@ void g3 (struct stone_G2 * G2) {
     glDrawArrays (GL_TRIANGLES, 0, XE->gl->vertices);
 }
 
-API void Xstone_frame_G () {
-    XPreSphere ();
+API void stone_frame_G () {
+    PreSphere ();
 
     for (unsigned i = 0; i < XE->G->size; ++i) {
         g1 (XE->G->planets + i, XE->G1 + i);
@@ -104,7 +104,7 @@ API void Xstone_frame_G () {
     }
 }
 
-API void Xstone_frame_C () {
+API void stone_frame_C () {
     struct glts_cello const * shader = & XE->gcell;
 
     glDepthMask (GL_FALSE);

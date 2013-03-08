@@ -124,7 +124,7 @@ stone_init (struct GL * gl, struct SDL * sdl) {
     E->gcell.program = GL_FALSE;
     hot_pull (E->H, CELL, cell_hot, E, 0);
 
-    X_init (E);
+    core_init (E);
     E->L = luaL_newstate ();
     OK (E->L != NULL);
     luaL_openlibs (E->L);
