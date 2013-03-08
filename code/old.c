@@ -29,78 +29,12 @@ void old_g1 (struct planet const * planet, struct stone_G1 * G1) {
     G1->size = G1->supersize / (planet->orbit_count + 1);
 }
 
-void old_g2 (struct stone_G1 * g1, struct stone_G2 * G2) {
-    mat4 mmodel = g1->transform;
-
-    /*
-    float theta = (float) ((XE->S->time / P->day.period) * M_PI * 2.0);
-
-    mat4 out = mat4_identity ();
-    out.column.w.v3 = (vec3) {{0}};
-    mat4 mrot = mat4_rotated_aa (& out, & P->day.axis, theta);
-    */
-    mat4 mrot = mat4_identity ();
-
-    vec3 first = vec3_diff (
-        & mmodel.column.w.v3,
-        & XE->S->viewi.column.w.v3);
-
-    float p = vec3_length (& first);
-    float r = g1->size;
-    float apparent = sqrtf (p * p - r * r) * r / p;
-    float apparentratio = apparent / r;
-    float offset = (r * r) / p;
-
-    vec3 unit_x = {{1.0f, 0.0f, 0.0f}};
-    vec3 unit_y = {{0.0f, 1.0f, 0.0f}};
-
-    vec3 second = first.element.x < first.element.y ?
-        vec3_product (& first, & unit_x) :
-        vec3_product (& first, & unit_y) ;
-
-    vec3 third = vec3_product (& first, & second);
-
-    mat4 rotation = {.p[15] = 1.0f};
-    rotation.column.z.v3 = vec3_normalized (& first);
-    rotation.column.x.v3 = vec3_normalized (& second);
-    rotation.column.y.v3 = vec3_normalized (& third);
-    mmodel = mat4_multiply (& mmodel, & rotation);
-
-    mrot = mat4_multiply (& mrot, & mmodel);
-
-    vec3 move = {{0.0f, 0.0f, -offset}};
-    mmodel = mat4_moved (& mmodel, & move);
-    mmodel = mat4_scaled (& mmodel, apparent);
-
-    mat4 mvp = mat4_multiply (& XE->S->viewproj, & mmodel);
-
-    G2->mvp = mvp;
-    G2->mv = mrot;
-    G2->uvscale = apparentratio;
-    G2->texture = XE->tex;
-    //G2->colour = P->colour;
-    G2->colour = (vec3) {1.0f, 1.0f, 1.0f};
-}
-
-void old_planet (struct stone_G2 * G2) {
-    struct glts_planeta const * shader = XE->gplanets;
-
-    glUniformMatrix4fv (shader->Umvp, 1, GL_FALSE, G2->mvp.p);
-    glUniformMatrix4fv (shader->Umv, 1, GL_FALSE, G2->mv.p);
-    glUniform1f (shader->Uuvscale, G2->uvscale);
-    glUniform1i (shader->Utexture, G2->texture);
-    glUniform3fv (shader->Ucolour, 1, G2->colour.p);
-
-    glDrawArrays (GL_TRIANGLES, 0, XE->imposter.size);
-}
-
 API void stone_frame_G () {
     PreSphere ();
 
     for (unsigned i = 0; i < XE->G->size; ++i) {
         old_g1 (XE->G->planets + i, XE->G1 + i);
-        old_g2 (XE->G1 + i, XE->G2 + i);
-        old_planet (XE->G2 + i);
+        Sphere (& XE->G1[i].transform, XE->G1[i].size);
     }
 }
 

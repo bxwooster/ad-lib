@@ -48,7 +48,8 @@ API void Segment (mat4 * tmat, float r1, float r2, float angsize, float angle,
     mat4 transform = mat4_rotated_aa
         (tmat, & (vec3) {0,0,1}, angle);
     mat4 inverse = mat4_inverted_rtonly (& transform);
-    vec4 cutout_center = vec4_multiply (& inverse, hole_relative);
+    vec4 v4 = vec4_from3 (hole_relative);
+    vec4 cutout_center = vec4_multiply (& inverse, & v4);
 
     mat4 mvp = mat4_multiply
         (& XE->S->viewproj, & transform);
@@ -77,11 +78,49 @@ API void PreSphere () {
 }
 
 API void Sphere (mat4 const * tmat, float radius) {
-    struct stone_G1 G1;
-    struct stone_G2 G2;
-    G1.size = radius;
-    G1.transform = *tmat;
+    mat4 mmodel = *tmat;
+    mat4 mrot = mat4_identity ();
 
-    old_g2 (& G1, & G2);
-    old_planet (& G2);
+    vec3 first = vec3_diff (
+        & mmodel.column.w.v3,
+        & XE->S->viewi.column.w.v3);
+
+    float p = vec3_length (& first);
+    float r = radius;
+    float apparent = sqrtf (p * p - r * r) * r / p;
+    float apparentratio = apparent / r;
+    float offset = (r * r) / p;
+
+    vec3 unit_x = {{1.0f, 0.0f, 0.0f}};
+    vec3 unit_y = {{0.0f, 1.0f, 0.0f}};
+
+    vec3 second = first.element.x < first.element.y ?
+        vec3_product (& first, & unit_x) :
+        vec3_product (& first, & unit_y) ;
+
+    vec3 third = vec3_product (& first, & second);
+
+    mat4 rotation = {.p[15] = 1.0f};
+    rotation.column.z.v3 = vec3_normalized (& first);
+    rotation.column.x.v3 = vec3_normalized (& second);
+    rotation.column.y.v3 = vec3_normalized (& third);
+    mmodel = mat4_multiply (& mmodel, & rotation);
+
+    mrot = mat4_multiply (& mrot, & mmodel);
+
+    vec3 move = {{0.0f, 0.0f, -offset}};
+    mmodel = mat4_moved (& mmodel, & move);
+    mmodel = mat4_scaled (& mmodel, apparent);
+
+    mat4 mvp = mat4_multiply (& XE->S->viewproj, & mmodel);
+
+    struct glts_planeta const * shader = XE->gplanets;
+
+    glUniformMatrix4fv (shader->Umvp, 1, GL_FALSE, mvp.p);
+    glUniformMatrix4fv (shader->Umv, 1, GL_FALSE, mrot.p);
+    glUniform1f (shader->Uuvscale, apparentratio);
+    glUniform1i (shader->Utexture, XE->tex);
+    glUniform3fv (shader->Ucolour, 1, (vec3) {1.0f, 1.0f, 1.0f}.p);
+
+    glDrawArrays (GL_TRIANGLES, 0, XE->imposter.size);
 }

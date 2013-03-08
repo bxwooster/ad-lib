@@ -210,3 +210,12 @@ vec3 vec3_new (float x, float y, float z) {
 
     return out;
 }
+
+vec4 vec4_from3 (vec3 const * v3) {
+    vec4 out;
+
+    out.v3 = *v3;
+    out.p[3] = 1.0f;
+
+    return out;
+}
