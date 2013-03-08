@@ -5,11 +5,9 @@ function Init ()
     ffi.cdef (api_text)
     core = ffi.C
 
-    core.Pull ("Loop")
-    core.Pull ("REPL")
-    core.Pull ("KeyDefs")
-    core.Pull ("Components")
     core.Pull ("Lib")
+    core.Pull ("Loop")
+    core.Pull ("KeyDefs")
 
     local pc = {tmat = core.mat4_identity ()}
     local p1 = {
