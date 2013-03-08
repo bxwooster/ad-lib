@@ -25,3 +25,12 @@ function REPL ()
         end
     end
 end
+
+vec3 = {
+    New = core.vec3_new
+}
+
+mat4 = {
+    Id = core.mat4_identity,
+    Movement = core.mat4_movement
+}

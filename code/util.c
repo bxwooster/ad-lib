@@ -118,7 +118,7 @@ util_imposter (void) {
         {{0, 0}, {+y,+1}, {-y,+1}},
         {{0, 0}, {-y,+1}, {+1,-y}},
     };
-    int vertices = sizeof (tris) / sizeof (tris[0][0]);
+    unsigned vertices = sizeof (tris) / sizeof (tris[0][0]);
 
     GLuint vbo;
     glGenBuffers (1, &vbo);
@@ -146,13 +146,14 @@ util_segment (void) {
         tris[i][4].x = 1; tris[i][4].y = i;
         tris[i][5].x = 0; tris[i][5].y = i;
     };
+    unsigned vertices = sizeof (tris) / sizeof (tris[0][0]);
 
     GLuint vbo;
     glGenBuffers (1, &vbo);
     glBindBuffer (GL_ARRAY_BUFFER, vbo);
-    glBufferData (GL_ARRAY_BUFFER, sizeof (tris), tris, GL_DYNAMIC_DRAW);
+    glBufferData (GL_ARRAY_BUFFER, sizeof (tris), tris, GL_STATIC_DRAW);
 
-    return (struct GLvbo_and_size) {vbo, N};
+    return (struct GLvbo_and_size) {vbo, vertices};
 }
 
 mat4

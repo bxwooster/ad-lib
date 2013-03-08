@@ -104,36 +104,6 @@ API void stone_frame_G () {
     }
 }
 
-void old_segment (float r1, float r2, float angsize, float angle,
-        mat4 * tmat, vec4 const * hole_relative, float hole_size) {
-    struct glts_cello const * shader = & XE->gcell;
-
-    unsigned M = XE->segment.size / (2*M_PI) * angsize;
-
-    float r = (float) rand() / (float) RAND_MAX;
-    float g = (float) rand() / (float) RAND_MAX;
-    float b = (float) rand() / (float) RAND_MAX;
-    vec3 colour = {r, g, b};
-    glUniform3fv (shader->Ucolour, 1, colour.p);
-
-    mat4 transform = mat4_rotated_aa
-        (tmat, & (vec3) {0,0,1}, angle);
-    mat4 inverse = mat4_inverted_rtonly (& transform);
-    vec4 cutout_center = vec4_multiply (& inverse, hole_relative);
-
-    mat4 mvp = mat4_multiply
-        (& XE->S->viewproj, & transform);
-    glUniformMatrix4fv (shader->Umvp, 1, GL_FALSE, mvp.p);
-
-    glUniform1f (shader->Uangle, angsize / M);
-    glUniform1f (shader->UR1, r1);
-    glUniform1f (shader->UR2, r2);
-    glUniform1f (shader->Ucutout_radius, hole_size);
-    glUniform2fv (shader->Ucutout_center, 1, cutout_center.p);
-
-    glDrawArrays (GL_TRIANGLES, 0, 2 * M * 3);
-}
-
 API void stone_frame_C () {
     PreSegment ();
 
@@ -170,8 +140,8 @@ API void stone_frame_C () {
                 float posish = 0.5 + p + XE->S->turn + XE->S->turn_tail;
                 float angle = -angsize * posish;
 
-                old_segment (r1, r2, angsize, angle,
-                        tmat, & hole_center, hole_size);
+                Segment (tmat, r1, r2, angsize, angle,
+                        & hole_center.v3, hole_size);
            }
        }
    }
