@@ -4,3 +4,4 @@ ffi = require ("ffi")
 ffi.cdef (api_text)
 C = ffi.C
 C.Xpull (E, "Loop")
+C.Xpull (E, "REPL")
