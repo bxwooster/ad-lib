@@ -25,17 +25,18 @@ function Init ()
         }
     }
 
-    nodes = {}
-    spheres = {}
-    orbitholders = {}
+    world = {}
+    world.nodes = {}
+    world.spheres = {}
+    world.orbitholders = {}
 
-    table.insert (nodes, p1)
-    table.insert (spheres, p1)
-    table.insert (orbitholders, p1)
+    table.insert (world.nodes, p1)
+    table.insert (world.spheres, p1)
+    table.insert (world.orbitholders, p1)
 
     local inve = vec3.New (0.0, 1.7, 1.0)
     local ang = 0.7 * math.pi
-    camera = {
+    world.camera = {
         speed = 1.0,
         tmat = core.mat4_rotated_aa (mat4.Movement (inve), vec3.right, ang)
     }

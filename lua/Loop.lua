@@ -20,32 +20,32 @@ end
 
 function Camera (this)
     if (KeyDown (KEY.Left)) then
-        camera.tmat = core.mat4_multiply (camera.tmat,
+        this.tmat = core.mat4_multiply (this.tmat,
             mat4.Movement (vec3.left))
     end
 
     if (KeyDown (KEY.Right)) then
-        camera.tmat = core.mat4_multiply (camera.tmat,
+        this.tmat = core.mat4_multiply (this.tmat,
             mat4.Movement (vec3.right))
     end
+
+    core.SetCamera (world.camera.tmat)
 end
 
 function Loop ()
-    apply (Node, nodes)
+    apply (Node, world.nodes)
 
-    core.SetCamera (camera.tmat)
+    Camera (world.camera)
 
     core.PreSphere ()
-    apply (Sphere, spheres)
+    apply (Sphere, world.spheres)
 
     core.PreSegment ()
-    apply (Orbitholder, orbitholders)
+    apply (Orbitholder, world.orbitholders)
 
     core.stone_frame_G ();
     --core.stone_frame_C ();
     
-    Camera ()
-
     if (KeyDown (KEY.Space)) then
         -- ;)
     end
