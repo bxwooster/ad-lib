@@ -54,5 +54,6 @@ function Loop ()
     end
 
     if (KeyDown (KEY.L)) then REPL () end
+    if (KeyDown (KEY.R)) then world = InitWorld () end
     if (KeyDown (KEY.Escape)) then core.Halt () end
 end
