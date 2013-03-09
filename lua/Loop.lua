@@ -12,7 +12,7 @@ function Orbitholder (this)
         local R2 = R1 + orbit.width
         local A = math.pi * 2 / orbit.cells
         for i = 1, orbit.cells do
-            core.Segment (this.tmat, R1, R2, A, A * i, nil, 0)
+            core.Segment (this.tmat, R1, R2, A, time + A * i, nil, 0)
         end
         R1 = R2
     end
@@ -33,6 +33,9 @@ function Camera (this)
 end
 
 function Loop ()
+    time = core.Time ()
+    dt = core.Dt ()
+
     apply (Node, world.nodes)
 
     Camera (world.camera)

@@ -10,6 +10,10 @@ function apply (f, x)
     for _,xi in ipairs (x) do f (xi) end
 end
 
+function tprint (t)
+    for k, v in pairs (t) do print (k, v) end
+end
+
 function REPL ()
     local line
     while (true) do
