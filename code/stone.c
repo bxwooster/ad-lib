@@ -43,6 +43,7 @@ void lua_hot (void * data, char const * file, char const * text) {
     int status = luaL_loadbuffer (E->L, text, strlen (text), file);
     if (status != 0) {
         logi ("Couldn't load luafile: %s", lua_tostring (E->L, -1));
+        sleep (1);
     } else {
         stone_pcall (E);
     }

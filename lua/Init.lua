@@ -9,6 +9,12 @@ function Init ()
     core.Pull ("Loop")
     core.Pull ("KeyDefs")
 
+    --[[
+    vec3 axis = {{1.0f, 0.0f, 0.0f}};
+    float angle = M_PI * 0.7;
+    S->rot = mat4_rotated_aa (& one, & axis, angle);
+    --]]
+
     local pc = {tmat = mat4.id}
     local p1 = {
         rmat = mat4.Movement (vec3.left),
@@ -26,4 +32,12 @@ function Init ()
     table.insert (nodes, p1)
     table.insert (spheres, p1)
     table.insert (orbitholders, p1)
+
+    local inve = vec3.New (0.0, 1.7, 1.0)
+    local ang = 0.7 * math.pi
+    camera = {
+        speed = 1.0,
+        tmat = core.mat4_rotated_aa (mat4.Movement (inve), vec3.right, ang)
+    }
+    
 end

@@ -1,7 +1,19 @@
 struct stone_engine * XE = NULL;
 
-void core_init(struct stone_engine * E) {
-    XE = E;
+void core_init(struct stone_engine * E) {XE = E;}
+
+API double Time () {
+    return XE->S->time;
+}
+
+API double Dt () {
+    return XE->S->dt;
+}
+
+API void SetCamera (mat4 const * mcam) {
+    XE->S->viewi = *mcam;
+    mat4 view = mat4_inverted_rtonly (mcam);
+    XE->S->viewproj = mat4_multiply (& XE->S->proj, & view);
 }
 
 API int8_t Keyboard (unsigned key) {
