@@ -9,9 +9,9 @@ function Init ()
     core.Pull ("Loop")
     core.Pull ("KeyDefs")
 
-    local pc = {tmat = core.mat4_identity ()}
+    local pc = {tmat = mat4.id}
     local p1 = {
-        rmat = core.mat4_movement (core.vec3_new (1, 0, 0)),
+        rmat = mat4.Movement (vec3.left),
         radius = 0.5, parent = pc,
         orbits = {
             {width = 1, cells = 3},
@@ -19,11 +19,11 @@ function Init ()
         }
     }
 
+    nodes = {}
     spheres = {}
-    transforms = {}
     orbitholders = {}
 
+    table.insert (nodes, p1)
     table.insert (spheres, p1)
-    table.insert (transforms, p1)
     table.insert (orbitholders, p1)
 end

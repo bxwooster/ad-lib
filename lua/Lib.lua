@@ -27,10 +27,18 @@ function REPL ()
 end
 
 vec3 = {
-    New = core.vec3_new
+    New = core.vec3_new,
+
+    left = core.vec3_new (-1, 0, 0),
+    right = core.vec3_new (1, 0, 0),
+    forward = core.vec3_new (0, 1, 0),
+    back = core.vec3_new (0, -1, 0),
+    up = core.vec3_new (0, 0, 1),
+    down = core.vec3_new (0, 0, -1),
 }
 
 mat4 = {
-    Id = core.mat4_identity,
-    Movement = core.mat4_movement
+    Movement = core.mat4_movement,
+
+    id = core.mat4_identity ()
 }
