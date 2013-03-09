@@ -123,6 +123,7 @@ void stone_pcall (struct stone_engine * E) {
     int result = lua_pcall (E->L, 0, 0, 0);
     if (result != 0) {
         logi ("Pcall failed:\n%s", lua_tostring (E->L, -1));
+        sleep (1);
     }
 }
 

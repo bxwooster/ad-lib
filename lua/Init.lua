@@ -20,7 +20,7 @@ function InitWorld ()
 
     local pc = {tmat = mat4.id}
     local p1 = {
-        rmat = mat4.Movement (vec3.left),
+        rmat = mat4.Movement (vec3.x),
         radius = 0.5, parent = pc,
         orbits = {
             {width = 1, cells = 3},
@@ -35,8 +35,8 @@ function InitWorld ()
     local pos = vec3.New (0.0, 1.7, 1.0)
     local angle = 0.7 * math.pi
     world.camera = {
-        speed = 1.0,
-        tmat = core.mat4_rotated_aa (mat4.Movement (pos), vec3.right, angle)
+        speed = 3,
+        tmat = mat4.Movement (pos):RotatedAA (vec3.right, angle)
     }
     
     return world

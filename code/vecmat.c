@@ -11,6 +11,10 @@ mat4 mat4_identity (void) {
     return out;
 }
 
+void mat4_invert_rtonly (mat4 * m) {
+    *m = mat4_inverted_rtonly (m);
+}
+
 mat4 mat4_inverted_rtonly (mat4 const * m) {
     mat4 out;
 
@@ -47,6 +51,11 @@ mat4 mat4_moved (mat4 const * m, vec3 const * v) {
 	return mat4_multiply (m, & mtra);
 }
 
+void mat4_move (mat4 * m, vec3 const * v) {
+    mat4 mtra = mat4_movement (v);
+	*m =  mat4_multiply (m, & mtra);
+}
+
 mat4 mat4_movement (vec3 const * v) {
 	mat4 mtra = mat4_identity ();
     mtra.column.w.v3 = *v;
@@ -67,6 +76,10 @@ mat4 mat4_multiply (mat4 const * a, mat4 const * b) {
     }
 
     return out;
+}
+
+void mat4_rotate_aa (mat4 * m, vec3 const * axis, float angle) {
+    *m = mat4_rotated_aa (m, axis, angle);
 }
 
 mat4 mat4_rotated_aa (mat4 const * m, vec3 const * axis, float angle) {

@@ -19,20 +19,28 @@ function Orbitholder (this)
 end
 
 function Camera (this)
-    if (KeyDown (KEY.Left)) then
-        this.tmat = core.mat4_multiply (this.tmat,
-            mat4.Movement (vec3.left))
+    local dist = dt * this.speed
+
+    if (KeyHeld (KEY.Left)) then
+        this.tmat:Move (dist * vec3.left)
     end
 
-    if (KeyDown (KEY.Right)) then
-        this.tmat = core.mat4_multiply (this.tmat,
-            mat4.Movement (vec3.right))
+    if (KeyHeld (KEY.Right)) then
+        this.tmat:Move (dist * vec3.right)
     end
 
+    if (KeyHeld (KEY.Up)) then
+        this.tmat:Move (dist * vec3.up)
+    end
+
+    if (KeyHeld (KEY.Down)) then
+        this.tmat:Move (dist * vec3.down)
+    end
     core.SetCamera (world.camera.tmat)
 end
 
 function Loop ()
+    
     time = core.Time ()
     dt = core.Dt ()
 
@@ -48,7 +56,7 @@ function Loop ()
 
     core.stone_frame_G ();
     --core.stone_frame_C ();
-    
+
     if (KeyDown (KEY.Space)) then
         -- ;)
     end
