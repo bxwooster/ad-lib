@@ -1,5 +1,5 @@
 function Sphere (this)
-    core.Sphere (this.tmat, this.radius)
+    core.Sphere (this.tmat, this.colour, this.radius)
 end
 
 function Node (this)
@@ -10,9 +10,10 @@ function Orbitholder (this)
     local R1 = this.radius
     for _,orbit in ipairs (this.orbits) do
         local R2 = R1 + orbit.width
-        local A = math.pi * 2 / orbit.cells
-        for i = 1, orbit.cells do
-            core.Segment (this.tmat, R1, R2, A, time + A * i, nil, 0)
+        local A = math.pi * 2 / table.getn(orbit.cells)
+        for i,cell in ipairs (orbit.cells) do
+            core.Segment (this.tmat, cell.colour,
+                R1, R2, A, time + A * i, nil, 0)
         end
         R1 = R2
     end
@@ -54,7 +55,7 @@ function Loop ()
     core.PreSegment ()
     apply (Orbitholder, world.orbitholders)
 
-    core.stone_frame_G ();
+    --core.stone_frame_G ();
     --core.stone_frame_C ();
 
     if (KeyDown (KEY.Space)) then

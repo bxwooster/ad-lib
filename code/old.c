@@ -34,7 +34,7 @@ API void stone_frame_G () {
 
     for (unsigned i = 0; i < XE->G->size; ++i) {
         old_g1 (XE->G->planets + i, XE->G1 + i);
-        Sphere (& XE->G1[i].transform, XE->G1[i].size);
+        Sphere (& XE->G1[i].transform, & (vec3) {1,1,1}, XE->G1[i].size);
     }
 }
 
@@ -74,7 +74,7 @@ API void stone_frame_C () {
                 float posish = 0.5 + p + XE->S->turn + XE->S->turn_tail;
                 float angle = -angsize * posish;
 
-                Segment (tmat, r1, r2, angsize, angle,
+                Segment (tmat, & (vec3) {1,1,1}, r1, r2, angsize, angle,
                         & hole_center.v3, hole_size);
            }
        }

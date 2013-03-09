@@ -224,6 +224,21 @@ vec3 vec3_new (float x, float y, float z) {
     return out;
 }
 
+vec3 vec3_random () {
+    for (;;) {
+        float x = rand () / (double) RAND_MAX;
+        float y = rand () / (double) RAND_MAX;
+        float z = rand () / (double) RAND_MAX;
+
+        float r2 = x*x + y*y + z*z;
+        if (r2 <= 1) {
+            float r = sqrtf (r2);
+            return (vec3) {x / r, y /r, z / r};
+        }
+    }
+    return (vec3) {};
+}
+
 vec4 vec4_from3 (vec3 const * v3) {
     vec4 out;
 

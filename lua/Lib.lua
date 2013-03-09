@@ -36,6 +36,7 @@ end
 
 vec3 = {
     New = core.vec3_new,
+    Random = core.vec3_random,
 
     left = core.vec3_new (-1, 0, 0),
     right = core.vec3_new (1, 0, 0),
