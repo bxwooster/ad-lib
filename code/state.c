@@ -27,19 +27,6 @@ void state_del (struct framestate * S) {
     free (S);
 }
 
-API vec2 Pointer () {
-    int x, y;
-    SDL_GetMouseState (& x, & y);
-
-    float hw = XE->sdl->width / 2;
-    float hh = XE->sdl->height / 2;
-
-    float mx = (x - hw) / hw;
-    float my = (y - hh) / hw;
-    
-    return (vec2) {mx, my};
-}
-
 void state_advance (struct stone_engine * E) {
     struct framestate * S = E->S;
 

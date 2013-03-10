@@ -1,6 +1,16 @@
 struct stone_engine * XE = NULL;
 
-void core_init(struct stone_engine * E) {XE = E;}
+void core_init (struct stone_engine * E) {XE = E;}
+
+API void Pull (char const * func) {
+    char * file = func2file (func);
+    hot_pull (XE->H, file, lua_hot, XE, 0);
+    free (file);
+}
+
+API void Halt () {
+    XE->halt = 1;
+}
 
 API double Time () {
     return XE->S->time;
@@ -10,25 +20,28 @@ API double Dt () {
     return XE->S->dt;
 }
 
-API void SetCamera (mat4 const * mcam) {
-    XE->S->viewi = *mcam;
-    mat4 view = mat4_inverted_rtonly (mcam);
-    XE->S->viewproj = mat4_multiply (& XE->S->proj, & view);
-}
-
 API int8_t Keyboard (unsigned key) {
     if (key >= XE->keyboard_max) return 0;
     return XE->keyboard[key];
 }
 
-API void Halt () {
-    XE->halt = 1;
+API vec2 Pointer () {
+    int x, y;
+    SDL_GetMouseState (& x, & y);
+
+    float hw = XE->sdl->width / 2;
+    float hh = XE->sdl->height / 2;
+
+    float mx = (x - hw) / hw;
+    float my = (y - hh) / hw;
+    
+    return (vec2) {mx, my};
 }
 
-API void Pull (char const * func) {
-    char * file = func2file (func);
-    hot_pull (XE->H, file, lua_hot, XE, 0);
-    free (file);
+API void SetCamera (mat4 const * mcam) {
+    XE->S->viewi = *mcam;
+    mat4 view = mat4_inverted_rtonly (mcam);
+    XE->S->viewproj = mat4_multiply (& XE->S->proj, & view);
 }
 
 API void PreSegment () {
