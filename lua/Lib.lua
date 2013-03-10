@@ -39,6 +39,8 @@ do
         New = core.vec2_new,
         Random = core.vec2_random,
         Print = core.vec2_print,
+        Scaled = core.vec2_scaled,
+        Scale = core.vec2_scale,
         Normalized = core.vec2_normalized,
         Normalize = core.vec2_normalize,
         Length = core.vec2_length,
@@ -53,7 +55,7 @@ do
     vec2.x = vec2.right
     vec2.y = vec2.forward
 
-    local v2s = core.vec2_scaled
+    local v2s = vec2.Scaled
     local v2mt = {}
     v2mt.__add = core.vec2_sum
     v2mt.__sub = core.vec2_diff
@@ -77,6 +79,8 @@ do
         New = core.vec3_new,
         Random = core.vec3_random,
         Print = core.vec3_print,
+        Scaled = core.vec3_scaled,
+        Scale = core.vec3_scale,
         Normalized = core.vec3_normalized,
         Normalize = core.vec3_normalize,
         Length = core.vec3_length,
@@ -94,7 +98,7 @@ do
     vec3.y = vec3.forward
     vec3.z = vec3.up
 
-    local v3s = core.vec3_scaled
+    local v3s = vec3.Scaled
     local v3mt = {}
     v3mt.__add = core.vec3_sum
     v3mt.__sub = core.vec3_diff

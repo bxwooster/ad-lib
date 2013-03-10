@@ -196,6 +196,12 @@ vec3 vec3_product (vec3 const * a, vec3 const * b) {
     return out;
 }
 
+void vec3_scale (vec3 * v, float scale) {
+	v->p[0] *= scale;
+	v->p[1] *= scale;
+	v->p[2] *= scale;
+}
+
 vec3 vec3_scaled (vec3 const * v, float scale) {
     vec3 out;
 
@@ -275,6 +281,11 @@ vec2 vec2_normalized (vec2 const * v) {
 	float len = vec2_length (v);
     if (len == 0.0f) return (vec2) {0, 0};
     return vec2_scaled (v, 1.0f / len);
+}
+
+void vec2_scale (vec2 * v, float scale) {
+	v->p[0] *= scale;
+	v->p[1] *= scale;
 }
 
 vec2 vec2_scaled (vec2 const * v, float scale) {
