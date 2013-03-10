@@ -27,19 +27,20 @@ void state_del (struct framestate * S) {
     free (S);
 }
 
-vec3 screenray (vec2 const * pointer) {
+vec3 ScreenRay (vec2 const * pointer) {
     float q = 1.0f / tanf (M_PI / 180 * k_fov / 2);
     vec4 screen = {pointer->e.x / q, -pointer->e.y / q, 1.0, 0.0};
     return vec4_multiply (& XE->S->viewi, & screen).v3;
 }
 
-vec3 intersection (vec3 const * C, vec3 const * V,
+vec3 PlaneIntersection (vec3 const * C, vec3 const * V,
         vec3 const * N, vec3 const * P) {
     vec3 CmP = vec3_diff (C, P);
     float ratio = -vec3_dot (N, & CmP) / vec3_dot (N, V);
     vec3 Vr = vec3_scaled (V, ratio);
     return vec3_sum (C, & Vr);
 }
+
 void state_advance (struct stone_engine * E) {
     struct framestate * S = E->S;
 
@@ -49,38 +50,30 @@ void state_advance (struct stone_engine * E) {
 
     S->pointer = Pointer ();
 
-    S->viewi = mat4_multiply (& S->mov, & S->rot);
-    mat4 mview = mat4_inverted_rtonly (& S->viewi);
-    S->viewproj = mat4_multiply (& S->proj, & mview);
-
-    vec3 V = screenray (& S->pointer);
+    vec3 V = ScreenRay (& S->pointer);
     vec3 C = S->viewi.c.w.v3;
     vec3 N = (vec3) {0,0,1};
     vec3 P = (vec3) {0,0,0};
 
-    vec2 I = intersection (& C, & V, & N, & P).v2;
+    vec2 I = PlaneIntersection (& C, & V, & N, & P).v2;
 
-    uint8_t mouse_butt = SDL_GetMouseState (NULL, NULL);
-    char locked = (mouse_butt & SDL_BUTTON (1)) != 0;
-
-    if (S->lock != 0) {
+    if (Key (1) == 1) {
         vec2 D = vec2_diff (& I, & S->intersection);
-
-        S->mov.c.w.e.x -= D.e.x;
-        S->mov.c.w.e.y -= D.e.y;
-
-        if (!locked) S->lock = 0;
+        vec3 D3 = (vec3) {-D.e.x, -D.e.y, 0};
+        mat4 mm = mat4_movement (& D3);
+        S->viewi = mat4_multiply (& mm, & S->viewi);
     }
-    else {
-        if (locked) {
-            S->lock = 1;
-            S->intersection = I;
-            logi ("Locked @ %f - %f", I.p[0], I.p[1]);
-        }
+
+    if (Key (1) > 1) {
+        S->intersection = I;
+        logi ("Locked @ %f - %f", I.p[0], I.p[1]);
     }
+
+    mat4 mview = mat4_inverted_rtonly (& S->viewi);
+    S->viewproj = mat4_multiply (& S->proj, & mview);
 
     // end of useful code
-    if (E->keyboard[SDL_SCANCODE_SPACE] == 2 && !S->turn_transition) {
+    if (E->key[SDL_SCANCODE_SPACE] == 2 && !S->turn_transition) {
         S->turn_transition = 1;
         S->turn_transition_ends = S->time + k_turn_transition_delay;
     }

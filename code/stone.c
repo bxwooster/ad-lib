@@ -84,10 +84,10 @@ stone_init (struct SDL * sdl) {
 
     int max;
     SDL_GetKeyboardState (& max);
-    E->keyboard = malloc (max);
-    E->keyboard_max = (unsigned) max;
-    OK (E->keyboard);
-    memset (E->keyboard, -1, max);
+    E->key = malloc (max);
+    E->key_max = (unsigned) max;
+    OK (E->key);
+    memset (E->key, -1, max);
 
     E->S = state_init (E);
 
@@ -133,7 +133,7 @@ void stone_destroy (struct stone_engine * E) {
     state_del (E->S);
     hot_del_player (E->H);
     lua_close (E->L);
-    free (E->keyboard);
+    free (E->key);
 
     glDeleteBuffers (1, & E->vsegment.vbo);
     glDeleteBuffers (1, & E->vimposter.vbo);
@@ -170,11 +170,18 @@ void stone_frame_input (struct stone_engine * E) {
         }
     }
 
+    uint8_t mb = SDL_GetMouseState (NULL, NULL);
+    for (unsigned i = 1; i <= 3; ++i) {
+        int8_t sign = (mb & SDL_BUTTON (i)) ? 1 : -1;
+        int8_t mult = (sign * E->key[i]) < 0 ? 2 : 1;
+        E->key[i] = sign * mult;
+    }
+
     Uint8 * keys = SDL_GetKeyboardState (NULL);
-    for (unsigned i = 0; i < E->keyboard_max; ++i) {
+    for (unsigned i = 4; i < E->key_max; ++i) {
         int8_t sign = keys[i] ? 1 : -1;
-        int8_t mult = (sign * E->keyboard[i]) < 0 ? 2 : 1;
-        E->keyboard[i] = sign * mult;
+        int8_t mult = (sign * E->key[i]) < 0 ? 2 : 1;
+        E->key[i] = sign * mult;
     }
 }
 

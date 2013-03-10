@@ -1,9 +1,9 @@
 function KeyDown (key)
-    return (core.Keyboard (key) > 1)
+    return (core.Key (key) > 1)
 end
 
 function KeyHeld (key)
-    return (core.Keyboard (key) > 0)
+    return (core.Key (key) > 0)
 end
 
 function apply (f, x)

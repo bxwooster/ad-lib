@@ -20,9 +20,9 @@ API double DTime () {
     return XE->S->dt;
 }
 
-API int8_t Keyboard (unsigned key) {
-    if (key >= XE->keyboard_max) return 0;
-    return XE->keyboard[key];
+API int8_t Key (unsigned key) {
+    if (key >= XE->key_max) return 0;
+    return XE->key[key];
 }
 
 API vec2 Pointer () {

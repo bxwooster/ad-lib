@@ -1,4 +1,5 @@
 KEY = {
+    -- SDL Scancodes
     A = 4,
     B = 5,
     C = 6,
@@ -233,5 +234,10 @@ KEY = {
     Kbdillumdown = 279,
     Kbdillumup = 280,
     Eject = 281,
-    Sleep = 282
+    Sleep = 282,
+
+    -- Not SDL
+    P1 = 1,
+    P2 = 2,
+    P3 = 3,
 }

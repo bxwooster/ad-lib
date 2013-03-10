@@ -9,8 +9,8 @@ struct stone_engine {
     struct hot_player * H;
     lua_State * L;
 
-    int8_t * keyboard;
-    unsigned keyboard_max;
+    int8_t * key;
+    unsigned key_max;
 
     char halt;
 

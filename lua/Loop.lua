@@ -38,7 +38,7 @@ function Camera (this)
         this.tmat:Move (dist * vec3.down)
     end
 
-    --core.SetCamera (world.camera.tmat)
+    if time < 2 then core.SetCamera (world.camera.tmat) end
 end
 
 function Loop ()
