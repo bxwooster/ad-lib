@@ -141,7 +141,10 @@ API void Sphere (mat4 const * tmat, vec3 const * colour, float radius) {
 
     vec3 move = {{0.0f, 0.0f, -offset}};
     mmodel = mat4_moved (& mmodel, & move);
-    mmodel = mat4_scaled (& mmodel, apparent);
+    // scaling!
+	for (int n = 0; n < 12; ++n) {
+		mmodel.p[n] *= apparent;
+    }
 
     mat4 mvp = mat4_multiply (& XE->S->viewproj, & mmodel);
 

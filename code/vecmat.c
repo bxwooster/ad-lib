@@ -1,5 +1,3 @@
-static char * VEC4_FMT = "\t( %.3f\t%.3f\t%.3f\t%.3f )";
-
 mat4 mat4_identity (void) {
     mat4 out = {{
         1.0f, 0.0f, 0.0f, 0.0f,
@@ -120,16 +118,9 @@ mat4 mat4_rotated_aa (mat4 const * m, vec3 const * axis, float angle) {
 	return mat4_multiply (m, & mrot);
 }
 
-mat4 mat4_scaled (mat4 const * m, float scale) {
-    mat4 out = * m;
-
-	for (int n = 0; n < 12; ++n) {
-		out.p[n] *= scale;
-        /* what about the 'translation' elements? */
-	}
-
-    return out;
-}
+static char * VEC4_FMT = "\t( %.3f\t%.3f\t%.3f\t%.3f )";
+static char * VEC3_FMT = "\t( %.3f\t%.3f\t%.3f )";
+static char * VEC2_FMT = "\t( %.3f\t%.3f )";
 
 void mat4_print (mat4 const * m) {
     for (unsigned i = 0; i < 4; ++i) {
@@ -140,9 +131,15 @@ void mat4_print (mat4 const * m) {
 }
 
 void vec4_print (vec4 const * v) {
-    logi (VEC4_FMT,
-            v->p[0], v->p[1],
-            v->p[2], v->p[3]);
+    logi (VEC4_FMT, v->p[0], v->p[1], v->p[2], v->p[3]);
+}
+
+void vec3_print (vec3 const * v) {
+    logi (VEC3_FMT, v->p[0], v->p[1], v->p[2]);
+}
+
+void vec2_print (vec2 const * v) {
+    logi (VEC2_FMT, v->p[0], v->p[1]);
 }
 
 vec4 vec4_multiply (mat4 const * m, vec4 const * v) {
@@ -176,6 +173,11 @@ float vec3_dot (vec3 const * a, vec3 const * b) {
 
 float vec3_length (vec3 const * v) {
 	return sqrtf (vec3_dot (v, v));
+}
+
+void vec3_normalize (vec3 * v) {
+	float len = vec3_length (v);
+    if (len != 0.0f) *v = vec3_scaled (v, 1.0f / len);
 }
 
 vec3 vec3_normalized (vec3 const * v) {
@@ -262,6 +264,11 @@ float vec2_dot (vec2 const * a, vec2 const * b) {
 
 float vec2_length (vec2 const * v) {
 	return sqrtf (vec2_dot (v, v));
+}
+
+void vec2_normalize (vec2 * v) {
+	float len = vec2_length (v);
+    if (len != 0.0f) *v = vec2_scaled (v, 1.0f / len);
 }
 
 vec2 vec2_normalized (vec2 const * v) {
