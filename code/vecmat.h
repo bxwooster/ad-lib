@@ -1,3 +1,13 @@
+// vec2 //
+typedef union {
+    float p [2];
+
+    struct {
+        float x;
+        float y;
+    } element;
+} vec2;
+
 // vec3 //
 typedef union {
     float p [3];
@@ -7,6 +17,8 @@ typedef union {
         float y;
         float z;
     } element;
+
+    vec2 v2;
 } vec3;
 
 // vec4 //
@@ -20,6 +32,7 @@ typedef union {
         float w;
     } element;
 
+    vec2 v2;
     vec3 v3;
 } vec4;
 

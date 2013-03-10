@@ -3,7 +3,7 @@ function Sphere (this)
 end
 
 function Node (this)
-    this.tmat = core.mat4_multiply (this.rmat, this.parent.tmat)
+    this.tmat = this.rmat ^ this.parent.tmat
 end
 
 function Orbitholder (this)
@@ -37,11 +37,11 @@ function Camera (this)
     if (KeyHeld (KEY.Down)) then
         this.tmat:Move (dist * vec3.down)
     end
-    core.SetCamera (world.camera.tmat)
+
+    --core.SetCamera (world.camera.tmat)
 end
 
 function Loop ()
-    
     time = core.Time ()
     dt = core.Dt ()
 
@@ -55,8 +55,9 @@ function Loop ()
     core.PreSegment ()
     apply (Orbitholder, world.orbitholders)
 
-    --core.stone_frame_G ();
-    --core.stone_frame_C ();
+    -- old C code here
+    core.stone_frame_G ();
+    core.stone_frame_C ();
 
     if (KeyDown (KEY.Space)) then
         -- ;)

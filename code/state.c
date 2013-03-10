@@ -27,6 +27,19 @@ void state_del (struct framestate * S) {
     free (S);
 }
 
+API vec2 Pointer () {
+    int x, y;
+    SDL_GetMouseState (& x, & y);
+
+    float hw = XE->sdl->width / 2;
+    float hh = XE->sdl->height / 2;
+
+    float mx = (x - hw) / hw;
+    float my = (y - hh) / hw;
+    
+    return (vec2) {mx, my};
+}
+
 void state_advance (struct stone_engine * E) {
     struct framestate * S = E->S;
 
@@ -34,17 +47,10 @@ void state_advance (struct stone_engine * E) {
     S->dt = time - S->time;
     S->time = time;
 
-    int x, y;
-    uint8_t mouse_butt = SDL_GetMouseState (& x, & y);
-
-    float hw = E->sdl->width / 2;
-    float hh = E->sdl->height / 2;
-
-    float mx = (x - hw) / hw;
-    float my = (y - hh) / hw;
-
-    float dx = mx - S->mouse.x;
-    float dy = my - S->mouse.y;
+    uint8_t mouse_butt = SDL_GetMouseState (NULL, NULL);
+    vec2 m = Pointer ();
+    float dx = m.element.x - S->mouse.element.x;
+    float dy = m.element.y - S->mouse.element.y;
 
     /* still, something is broken with arbitrary rotations */
     dx = 0;
@@ -61,11 +67,10 @@ void state_advance (struct stone_engine * E) {
         }
     }
 
-    S->mouse.x = mx;
-    S->mouse.y = my;
+    S->mouse = m;
 
     float q = 1.0f / tanf (M_PI / 180 / 2 * 60.0);
-    vec4 view = {-mx / q, my / q, 1.0, 0.0};
+    vec4 view = {-m.element.x / q, m.element.y / q, 1.0, 0.0};
     mat4 invrot = mat4_inverted_rtonly (& S->rot);
     /* need this be inverted? */
     view = vec4_multiply (& invrot, & view);
@@ -110,7 +115,7 @@ void state_advance (struct stone_engine * E) {
         S->turn++;
         S->turn_transition = 0;
     }
-    
+
     S->turn_tail = 0.0f;
     if (S->turn_transition) {
         float ttd = k_turn_transition_delay;

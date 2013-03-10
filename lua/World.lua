@@ -7,7 +7,7 @@ function InitWorld ()
     local function genCells (n)
         local cells = {}
         for i = 1, n do
-            cells[i] = { colour = vec3.Random () }
+            cells[i] = { colour = vec3.Random (true) }
         end
         return cells
     end
