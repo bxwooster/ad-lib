@@ -48,11 +48,11 @@ void state_advance (struct stone_engine * E) {
     S->viewproj = mat4_multiply (& S->proj, & mview);
 
     float q = 1.0f / tanf (M_PI / 180 * k_fov / 2);
-    vec4 screen = {-S->pointer.element.x / q, S->pointer.element.y / q, 1.0, 0.0};
+    vec4 screen = {-S->pointer.e.x / q, S->pointer.e.y / q, 1.0, 0.0};
     mat4 invrot = mat4_inverted_rtonly (& S->rot);
     /* need this be inverted? */
     vec3 V = vec4_multiply (& invrot, & screen).v3;
-    vec3 C = S->mov.column.w.v3;
+    vec3 C = S->mov.c.w.v3;
     vec3 N = (vec3) {0,0,1};
     vec3 P = (vec3) {0,0,0};
     vec3 p = intersection (& C, & V, & N, & P);
@@ -61,19 +61,19 @@ void state_advance (struct stone_engine * E) {
     char lock = (mouse_butt & SDL_BUTTON (1)) != 0;
 
     if (S->lock != 0) {
-        float dx = p.element.x - S->pan.x;
-        float dy = p.element.y - S->pan.y;
+        float dx = p.e.x - S->pan.x;
+        float dy = p.e.y - S->pan.y;
 
-        S->mov.column.w.element.x -= dx;
-        S->mov.column.w.element.y -= dy;
+        S->mov.c.w.e.x -= dx;
+        S->mov.c.w.e.y -= dy;
 
         if (!lock) S->lock = 0;
     }
     else {
         if (lock) {
             S->lock = 1;
-            S->pan.x = p.element.x;
-            S->pan.y = p.element.y;
+            S->pan.x = p.e.x;
+            S->pan.y = p.e.y;
 
             logi ("Locked @ %f - %f - %f", p.p[0], p.p[1], p.p[2]);
         }

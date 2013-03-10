@@ -56,7 +56,7 @@ void mat4_move (mat4 * m, vec3 const * v) {
 
 mat4 mat4_movement (vec3 const * v) {
 	mat4 mtra = mat4_identity ();
-    mtra.column.w.v3 = *v;
+    mtra.c.w.v3 = *v;
     return mtra;
 }
 

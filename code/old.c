@@ -17,8 +17,8 @@ void old_g1 (struct planet const * planet, struct stone_G1 * G1) {
             (planet->where.orbit_number + 0.5f);
 
         vec3 offset = {{0}};
-        offset.element.x = sinf (alpha) * distance;
-        offset.element.y = cosf (alpha) * distance;
+        offset.e.x = sinf (alpha) * distance;
+        offset.e.y = cosf (alpha) * distance;
 
         G1->transform = mat4_moved
             (& XE->G1[parent].transform, & offset);

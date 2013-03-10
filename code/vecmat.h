@@ -5,7 +5,7 @@ typedef union {
     struct {
         float x;
         float y;
-    } element;
+    } e;
 } vec2;
 
 // vec3 //
@@ -16,7 +16,7 @@ typedef union {
         float x;
         float y;
         float z;
-    } element;
+    } e;
 
     vec2 v2;
 } vec3;
@@ -30,7 +30,7 @@ typedef union {
         float y;
         float z;
         float w;
-    } element;
+    } e;
 
     vec2 v2;
     vec3 v3;
@@ -47,5 +47,5 @@ typedef union {
         vec4 y;
         vec4 z;
         vec4 w;
-    } column;
+    } c;
 } mat4;

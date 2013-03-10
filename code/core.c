@@ -113,8 +113,8 @@ API void Sphere (mat4 const * tmat, vec3 const * colour, float radius) {
     mat4 mrot = mat4_identity ();
 
     vec3 first = vec3_diff (
-        & mmodel.column.w.v3,
-        & XE->S->viewi.column.w.v3);
+        & mmodel.c.w.v3,
+        & XE->S->viewi.c.w.v3);
 
     float p = vec3_length (& first);
     float r = radius;
@@ -125,16 +125,16 @@ API void Sphere (mat4 const * tmat, vec3 const * colour, float radius) {
     vec3 unit_x = {{1.0f, 0.0f, 0.0f}};
     vec3 unit_y = {{0.0f, 1.0f, 0.0f}};
 
-    vec3 second = first.element.x < first.element.y ?
+    vec3 second = first.e.x < first.e.y ?
         vec3_product (& first, & unit_x) :
         vec3_product (& first, & unit_y) ;
 
     vec3 third = vec3_product (& first, & second);
 
     mat4 rotation = {.p[15] = 1.0f};
-    rotation.column.z.v3 = vec3_normalized (& first);
-    rotation.column.x.v3 = vec3_normalized (& second);
-    rotation.column.y.v3 = vec3_normalized (& third);
+    rotation.c.z.v3 = vec3_normalized (& first);
+    rotation.c.x.v3 = vec3_normalized (& second);
+    rotation.c.y.v3 = vec3_normalized (& third);
     mmodel = mat4_multiply (& mmodel, & rotation);
 
     mrot = mat4_multiply (& mrot, & mmodel);
