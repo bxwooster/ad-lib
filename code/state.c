@@ -27,6 +27,12 @@ void state_del (struct framestate * S) {
     free (S);
 }
 
+vec3 screenray (vec2 const * pointer) {
+    float q = 1.0f / tanf (M_PI / 180 * k_fov / 2);
+    vec4 screen = {pointer->e.x / q, -pointer->e.y / q, 1.0, 0.0};
+    return vec4_multiply (& XE->S->viewi, & screen).v3;
+}
+
 vec3 intersection (vec3 const * C, vec3 const * V,
         vec3 const * N, vec3 const * P) {
     vec3 CmP = vec3_diff (C, P);
@@ -47,33 +53,29 @@ void state_advance (struct stone_engine * E) {
     mat4 mview = mat4_inverted_rtonly (& S->viewi);
     S->viewproj = mat4_multiply (& S->proj, & mview);
 
-    float q = 1.0f / tanf (M_PI / 180 * k_fov / 2);
-    vec4 screen = {S->pointer.e.x / q, -S->pointer.e.y / q, 1.0, 0.0};
-    vec3 V = vec4_multiply (& S->viewi, & screen).v3;
+    vec3 V = screenray (& S->pointer);
     vec3 C = S->viewi.c.w.v3;
     vec3 N = (vec3) {0,0,1};
     vec3 P = (vec3) {0,0,0};
-    vec3 p = intersection (& C, & V, & N, & P);
+
+    vec2 I = intersection (& C, & V, & N, & P).v2;
 
     uint8_t mouse_butt = SDL_GetMouseState (NULL, NULL);
-    char lock = (mouse_butt & SDL_BUTTON (1)) != 0;
+    char locked = (mouse_butt & SDL_BUTTON (1)) != 0;
 
     if (S->lock != 0) {
-        float dx = p.e.x - S->pan.x;
-        float dy = p.e.y - S->pan.y;
+        vec2 D = vec2_diff (& I, & S->intersection);
 
-        S->mov.c.w.e.x -= dx;
-        S->mov.c.w.e.y -= dy;
+        S->mov.c.w.e.x -= D.e.x;
+        S->mov.c.w.e.y -= D.e.y;
 
-        if (!lock) S->lock = 0;
+        if (!locked) S->lock = 0;
     }
     else {
-        if (lock) {
+        if (locked) {
             S->lock = 1;
-            S->pan.x = p.e.x;
-            S->pan.y = p.e.y;
-
-            logi ("Locked @ %f - %f - %f", p.p[0], p.p[1], p.p[2]);
+            S->intersection = I;
+            logi ("Locked @ %f - %f", I.p[0], I.p[1]);
         }
     }
 
