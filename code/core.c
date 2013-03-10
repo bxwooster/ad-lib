@@ -16,7 +16,7 @@ API double Time () {
     return XE->S->time;
 }
 
-API double Dt () {
+API double DTime () {
     return XE->S->dt;
 }
 
@@ -36,6 +36,11 @@ API vec2 Pointer () {
     float my = (y - hh) / hw;
     
     return (vec2) {mx, my};
+}
+
+API vec2 DPointer () {
+    vec2 p = Pointer ();
+    return vec2_diff (& p, & XE->S->pointer);
 }
 
 API void SetCamera (mat4 const * mcam) {

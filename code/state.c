@@ -36,25 +36,11 @@ void state_advance (struct stone_engine * E) {
 
     uint8_t mouse_butt = SDL_GetMouseState (NULL, NULL);
     vec2 m = Pointer ();
-    float dx = m.element.x - S->mouse.element.x;
-    float dy = m.element.y - S->mouse.element.y;
+    vec2 d = vec2_diff (& m, & S->pointer);
+    S->pointer = m;
 
     /* still, something is broken with arbitrary rotations */
-    dx = 0;
-
-    if (mouse_butt & SDL_BUTTON (2)) {
-        S->mov.column.w.element.z *= exp(dy);
-    }
-
-    if (mouse_butt & SDL_BUTTON (3)) {
-        vec3 rot = {{dy, dx, 0.0f}};
-        float angle = sqrt (dx*dx + dy*dy);
-        if (angle > 0) {
-            S->rot = mat4_rotated_aa (& S->rot, & rot, -angle);
-        }
-    }
-
-    S->mouse = m;
+    d.element.x = 0;
 
     float q = 1.0f / tanf (M_PI / 180 / 2 * 60.0);
     vec4 view = {-m.element.x / q, m.element.y / q, 1.0, 0.0};
@@ -67,12 +53,6 @@ void state_advance (struct stone_engine * E) {
     float py = view.element.y * ratio + S->mov.column.w.element.y;
 
     char lock = (mouse_butt & SDL_BUTTON (1)) != 0;
-
-    float delta = k_camera_speed * S->dt;
-    if (E->keyboard[SDL_SCANCODE_UP] > 0) S->mov.column.w.element.y -= delta;
-    if (E->keyboard[SDL_SCANCODE_DOWN] > 0) S->mov.column.w.element.y += delta;
-    if (E->keyboard[SDL_SCANCODE_LEFT] > 0) S->mov.column.w.element.x -= delta;
-    if (E->keyboard[SDL_SCANCODE_RIGHT] > 0) S->mov.column.w.element.x += delta;
 
     if (S->lock != 0) {
         float dx = px - S->pan.x;
@@ -110,7 +90,6 @@ void state_advance (struct stone_engine * E) {
     }
 
     S->viewi = mat4_multiply (& S->mov, & S->rot);
-
     mat4 mview = mat4_inverted_rtonly (& S->viewi);
     S->viewproj = mat4_multiply (& S->proj, & mview);
 }

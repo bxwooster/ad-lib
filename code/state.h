@@ -6,7 +6,7 @@ struct framestate {
         float x;
         float y;
     } pan;
-    vec2 mouse;
+    vec2 pointer;
     char lock;
 
     unsigned turn;

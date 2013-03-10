@@ -43,7 +43,7 @@ end
 
 function Loop ()
     time = core.Time ()
-    dt = core.Dt ()
+    dt = core.DTime ()
 
     apply (Node, world.nodes)
 
