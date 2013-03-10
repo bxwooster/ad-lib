@@ -30,7 +30,7 @@ void state_del (struct framestate * S) {
 vec3 intersection (vec3 const * C, vec3 const * V,
         vec3 const * N, vec3 const * P) {
     vec3 CmP = vec3_diff (C, P);
-    float ratio = vec3_dot (N, & CmP) / vec3_dot (N, V);
+    float ratio = -vec3_dot (N, & CmP) / vec3_dot (N, V);
     vec3 Vr = vec3_scaled (V, ratio);
     return vec3_sum (C, & Vr);
 }
@@ -48,11 +48,9 @@ void state_advance (struct stone_engine * E) {
     S->viewproj = mat4_multiply (& S->proj, & mview);
 
     float q = 1.0f / tanf (M_PI / 180 * k_fov / 2);
-    vec4 screen = {-S->pointer.e.x / q, S->pointer.e.y / q, 1.0, 0.0};
-    mat4 invrot = mat4_inverted_rtonly (& S->rot);
-    /* need this be inverted? */
-    vec3 V = vec4_multiply (& invrot, & screen).v3;
-    vec3 C = S->mov.c.w.v3;
+    vec4 screen = {S->pointer.e.x / q, -S->pointer.e.y / q, 1.0, 0.0};
+    vec3 V = vec4_multiply (& S->viewi, & screen).v3;
+    vec3 C = S->viewi.c.w.v3;
     vec3 N = (vec3) {0,0,1};
     vec3 P = (vec3) {0,0,0};
     vec3 p = intersection (& C, & V, & N, & P);
