@@ -30,9 +30,9 @@ function CameraPointer (this)
     local V = core.ScreenRay (core.Pointer ())
     local lock = core.PlaneIntersection (C, V, vec3.z, vec3.zero)
 
-    if KeyDown (1) then
+    if KeyDown (KEY.P1) then
         this.lock = lock;
-    elseif KeyHeld (1) then
+    elseif KeyHeld (KEY.P1) then
         local delta = this.lock - lock
         this.tmat = mat4.Movement (delta) ^ this.tmat
     end
@@ -44,19 +44,19 @@ function CameraArrows (this)
     local dist = dt * this.speed
 
     if (KeyHeld (KEY.Left)) then
-        this.tmat:Move (dist * vec3.left)
+        this.tmat = mat4.Movement (dist * vec3.left) ^ this.tmat
     end
 
     if (KeyHeld (KEY.Right)) then
-        this.tmat:Move (dist * vec3.right)
+        this.tmat = mat4.Movement (dist * vec3.right) ^ this.tmat
     end
 
     if (KeyHeld (KEY.Up)) then
-        this.tmat:Move (dist * vec3.up)
+        this.tmat = mat4.Movement (dist * vec3.back) ^ this.tmat
     end
 
     if (KeyHeld (KEY.Down)) then
-        this.tmat:Move (dist * vec3.down)
+        this.tmat = mat4.Movement (dist * vec3.forward) ^ this.tmat
     end
 end
 
