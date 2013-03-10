@@ -34,29 +34,31 @@ void state_advance (struct stone_engine * E) {
     S->dt = time - S->time;
     S->time = time;
 
-    uint8_t mouse_butt = SDL_GetMouseState (NULL, NULL);
-    vec2 m = Pointer ();
-    vec2 d = vec2_diff (& m, & S->pointer);
-    S->pointer = m;
+    S->pointer = Pointer ();
 
-    /* still, something is broken with arbitrary rotations */
-    d.element.x = 0;
+    S->viewi = mat4_multiply (& S->mov, & S->rot);
+    mat4 mview = mat4_inverted_rtonly (& S->viewi);
+    S->viewproj = mat4_multiply (& S->proj, & mview);
 
-    float q = 1.0f / tanf (M_PI / 180 / 2 * 60.0);
-    vec4 view = {-m.element.x / q, m.element.y / q, 1.0, 0.0};
+    float q = 1.0f / tanf (M_PI / 180 * k_fov / 2);
+    vec4 screen = {-m.element.x / q, m.element.y / q, 1.0, 0.0};
     mat4 invrot = mat4_inverted_rtonly (& S->rot);
     /* need this be inverted? */
-    view = vec4_multiply (& invrot, & view);
+    vec3 C = S->mov.column.w.v3;
+    vec3 V = vec4_multiply (& invrot, & screen).v3;
+    vec3 N = (vec3) {0,0,1};
+    vec3 P = (vec3) {0,0,0};
+    vec3 CmP = vec3_diff (& C, & P);
+    float ratio = vec3_dot (& N, & CmP) / vec3_dot (& N, & V);
+    vec3 Vr = vec3_scaled (& V, ratio);
+    vec3 p = vec3_sum (& C, & Vr);
 
-    float ratio = S->mov.column.w.element.z / view.element.z;
-    float px = view.element.x * ratio + S->mov.column.w.element.x;
-    float py = view.element.y * ratio + S->mov.column.w.element.y;
-
+    uint8_t mouse_butt = SDL_GetMouseState (NULL, NULL);
     char lock = (mouse_butt & SDL_BUTTON (1)) != 0;
 
     if (S->lock != 0) {
-        float dx = px - S->pan.x;
-        float dy = py - S->pan.y;
+        float dx = p.element.x - S->pan.x;
+        float dy = p.element.y - S->pan.y;
 
         S->mov.column.w.element.x -= dx;
         S->mov.column.w.element.y -= dy;
@@ -66,13 +68,14 @@ void state_advance (struct stone_engine * E) {
     else {
         if (lock) {
             S->lock = 1;
-            S->pan.x = px;
-            S->pan.y = py;
+            S->pan.x = p.element.x;
+            S->pan.y = p.element.y;
 
-            logi ("Locked @ %f - %f", px, py);
+            logi ("Locked @ %f - %f - %f", p.p[0], p.p[1], p.p[2]);
         }
     }
 
+    // end of useful code
     if (E->keyboard[SDL_SCANCODE_SPACE] == 2 && !S->turn_transition) {
         S->turn_transition = 1;
         S->turn_transition_ends = S->time + k_turn_transition_delay;
@@ -88,8 +91,4 @@ void state_advance (struct stone_engine * E) {
         float ttd = k_turn_transition_delay;
         S->turn_tail = (S->time - S->turn_transition_ends + ttd) / ttd;
     }
-
-    S->viewi = mat4_multiply (& S->mov, & S->rot);
-    mat4 mview = mat4_inverted_rtonly (& S->viewi);
-    S->viewproj = mat4_multiply (& S->proj, & mview);
 }

@@ -118,9 +118,9 @@ mat4 mat4_rotated_aa (mat4 const * m, vec3 const * axis, float angle) {
 	return mat4_multiply (m, & mrot);
 }
 
-static char * VEC4_FMT = "\t( %.3f\t%.3f\t%.3f\t%.3f )";
-static char * VEC3_FMT = "\t( %.3f\t%.3f\t%.3f )";
-static char * VEC2_FMT = "\t( %.3f\t%.3f )";
+#define VEC4_FMT "(%.3f, %.3f, %.3f, %.3f)"
+#define VEC3_FMT "(%.3f, %.3f, %.3f)"
+#define VEC2_FMT "(%.3f, %.3f)"
 
 void mat4_print (mat4 const * m) {
     for (unsigned i = 0; i < 4; ++i) {
