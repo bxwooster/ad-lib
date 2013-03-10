@@ -1,4 +1,5 @@
 float const k_planet_size_minifier = 0.9f;
+float const k_fov = 60.0f;
 
 char * GPLANETS [] = {
     "glsl/planet.glts",
@@ -70,7 +71,7 @@ stone_init (struct SDL * sdl) {
     OK (E->key);
     memset (E->key, -1, max);
 
-    E->S = state_init (E);
+    E->Sproj = util_projection (E->sdl->width, E->sdl->height, k_fov);
 
     E->tex = util_earth ();
     E->vsegment = util_segment ();
@@ -109,7 +110,6 @@ void stone_pcall (struct stone_engine * E) {
 }
 
 void stone_destroy (struct stone_engine * E) {
-    state_del (E->S);
     hot_del_player (E->H);
     lua_close (E->L);
     free (E->key);
@@ -167,8 +167,6 @@ void stone_frame_input (struct stone_engine * E) {
 char stone_frame (struct stone_engine * E) {
     stone_frame_gl (E);
     stone_frame_input (E);
-
-    state_advance (E);
 
     lua_getglobal (E->L, "Loop");
     stone_pcall (E);

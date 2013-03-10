@@ -6,6 +6,12 @@ function Node (this)
     this.tmat = this.rmat ^ this.parent.tmat
 end
 
+function Camera (this)
+    CameraPointer (this)
+    CameraArrows (this)
+    core.SetCamera (world.camera.tmat)
+end
+
 function Orbitholder (this)
     local R1 = this.radius
     for _,orbit in ipairs (this.orbits) do
@@ -19,7 +25,22 @@ function Orbitholder (this)
     end
 end
 
-function Camera (this)
+function CameraPointer (this)
+    local C = this.tmat.c.w.v3
+    local V = core.ScreenRay (core.Pointer ())
+    local lock = core.PlaneIntersection (C, V, vec3.z, vec3.zero)
+
+    if KeyDown (1) then
+        this.lock = lock;
+    elseif KeyHeld (1) then
+        local delta = this.lock - lock
+        this.tmat = mat4.Movement (delta) ^ this.tmat
+    end
+
+    core.SetCamera (this.tmat)
+end
+
+function CameraArrows (this)
     local dist = dt * this.speed
 
     if (KeyHeld (KEY.Left)) then
@@ -37,8 +58,6 @@ function Camera (this)
     if (KeyHeld (KEY.Down)) then
         this.tmat:Move (dist * vec3.down)
     end
-
-    if time < 2 then core.SetCamera (world.camera.tmat) end
 end
 
 function Loop ()

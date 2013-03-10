@@ -34,10 +34,24 @@ API vec2 Pointer () {
     return (vec2) {mx, my};
 }
 
+API vec3 ScreenRay (vec2 const * pointer) {
+    float q = 1.0f / tanf (M_PI / 180 * k_fov / 2);
+    vec4 screen = {pointer->e.x / q, -pointer->e.y / q, 1.0, 0.0};
+    return vec4_multiply (& XE->Sviewi, & screen).v3;
+}
+
+API vec3 PlaneIntersection (vec3 const * C, vec3 const * V,
+        vec3 const * N, vec3 const * P) {
+    vec3 CmP = vec3_diff (C, P);
+    float ratio = -vec3_dot (N, & CmP) / vec3_dot (N, V);
+    vec3 Vr = vec3_scaled (V, ratio);
+    return vec3_sum (C, & Vr);
+}
+
 API void SetCamera (mat4 const * mcam) {
-    XE->S->viewi = *mcam;
+    XE->Sviewi = *mcam;
     mat4 view = mat4_inverted_rtonly (mcam);
-    XE->S->viewproj = mat4_multiply (& XE->S->proj, & view);
+    XE->Sviewproj = mat4_multiply (& XE->Sproj, & view);
 }
 
 API void PreSegment () {
@@ -65,7 +79,7 @@ API void Segment (mat4 const * tmat, vec3 const * colour,
         (tmat, & (vec3) {0,0,1}, angle);
 
     mat4 mvp = mat4_multiply
-        (& XE->S->viewproj, & transform);
+        (& XE->Sviewproj, & transform);
 
     if (hole_relative != NULL) {
         mat4 inverse = mat4_inverted_rtonly (& transform);
@@ -105,7 +119,7 @@ API void Sphere (mat4 const * tmat, vec3 const * colour, float radius) {
 
     vec3 first = vec3_diff (
         & mmodel.c.w.v3,
-        & XE->S->viewi.c.w.v3);
+        & XE->Sviewi.c.w.v3);
 
     float p = vec3_length (& first);
     float r = radius;
@@ -137,7 +151,7 @@ API void Sphere (mat4 const * tmat, vec3 const * colour, float radius) {
 		mmodel.p[n] *= apparent;
     }
 
-    mat4 mvp = mat4_multiply (& XE->S->viewproj, & mmodel);
+    mat4 mvp = mat4_multiply (& XE->Sviewproj, & mmodel);
 
     struct glts_planeta const * shader = XE->gplanets;
 

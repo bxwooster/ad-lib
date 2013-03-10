@@ -19,6 +19,7 @@ struct stone_engine {
     unsigned key_max;
 
     char halt;
-    struct framestate * S;
-
+    mat4 Sproj;
+    mat4 Sviewi;
+    mat4 Sviewproj;
 };
