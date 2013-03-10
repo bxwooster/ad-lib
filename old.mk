@@ -38,7 +38,7 @@ ifeq ($(program),cosmos)
              glts \
              galaxy \
              util \
-             stone \
+             bronze \
              old \
              core \
              state \

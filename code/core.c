@@ -1,6 +1,6 @@
-struct stone_engine * XE = NULL;
+struct bronze_engine * XE = NULL;
 
-void core_init (struct stone_engine * E) {XE = E;}
+void core_init (struct bronze_engine * E) {XE = E;}
 
 API void Pull (char const * func) {
     char * file = func2file (func);

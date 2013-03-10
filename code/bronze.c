@@ -24,19 +24,19 @@ char * func2file (char const * func) {
 }
 
 void lua_hot (void * data, char const * file, char const * text) {
-    struct stone_engine * E = data;
+    struct bronze_engine * E = data;
 
     int status = luaL_loadbuffer (E->L, text, strlen (text), file);
     if (status != 0) {
         logi ("Couldn't load luafile: %s", lua_tostring (E->L, -1));
         sleep (1);
     } else {
-        stone_pcall (E);
+        bronze_pcall (E);
     }
 }
 
 void cell_hot (void * data, char const * file, char const * text) {
-    struct stone_engine * E = data;
+    struct bronze_engine * E = data;
     (void) file;
 
     glDeleteProgram (E->gcell.program); /* Dup. */
@@ -45,7 +45,7 @@ void cell_hot (void * data, char const * file, char const * text) {
 }
 
 void planet_hot (void * data, char const * file, char const * text) {
-    struct stone_engine * E = *((void **) data + 0);
+    struct bronze_engine * E = *((void **) data + 0);
     struct glts_planeta * P = *((void **) data + 1);
     (void) file;
 
@@ -55,9 +55,9 @@ void planet_hot (void * data, char const * file, char const * text) {
     *P = glts_load_planeta (GPLANETS[index], (char /*const*/ *) text);
 }
 
-struct stone_engine *
-stone_init (struct SDL * sdl) {
-    struct stone_engine * E = malloc (sizeof (*E));
+struct bronze_engine *
+bronze_init (struct SDL * sdl) {
+    struct bronze_engine * E = malloc (sizeof (*E));
     OK (E != NULL);
     memset (E, 0, sizeof (*E));
 
@@ -96,12 +96,12 @@ stone_init (struct SDL * sdl) {
     lua_setglobal (E->L, "_E");
     hot_pull (E->H, "lua/Init.lua", lua_hot, E, 0);
     lua_getglobal (E->L, "Init");
-    stone_pcall (E);
+    bronze_pcall (E);
 
     return E;
 }
 
-void stone_pcall (struct stone_engine * E) {
+void bronze_pcall (struct bronze_engine * E) {
     int result = lua_pcall (E->L, 0, 0, 0);
     if (result != 0) {
         logi ("Pcall failed:\n%s", lua_tostring (E->L, -1));
@@ -109,7 +109,7 @@ void stone_pcall (struct stone_engine * E) {
     }
 }
 
-void stone_destroy (struct stone_engine * E) {
+void bronze_destroy (struct bronze_engine * E) {
     hot_del_player (E->H);
     lua_close (E->L);
     free (E->key);
@@ -127,7 +127,7 @@ void stone_destroy (struct stone_engine * E) {
     free (E);
 }
 
-void stone_frame_gl (struct stone_engine * E) {
+void bronze_frame_gl (struct bronze_engine * E) {
     glActiveTexture (GL_TEXTURE0); glEnable (GL_DEPTH_TEST);
     glViewport (0, 0, E->sdl->width, E->sdl->height);
 
@@ -141,7 +141,7 @@ void stone_frame_gl (struct stone_engine * E) {
     }
 }
 
-void stone_frame_input (struct stone_engine * E) {
+void bronze_frame_input (struct bronze_engine * E) {
     SDL_Event event;
     while (SDL_PollEvent (&event)) {
         if (event.type == SDL_QUIT) {
@@ -164,12 +164,12 @@ void stone_frame_input (struct stone_engine * E) {
     }
 }
 
-char stone_frame (struct stone_engine * E) {
-    stone_frame_gl (E);
-    stone_frame_input (E);
+char bronze_frame (struct bronze_engine * E) {
+    bronze_frame_gl (E);
+    bronze_frame_input (E);
 
     lua_getglobal (E->L, "Loop");
-    stone_pcall (E);
+    bronze_pcall (E);
 
     SDL_GL_SwapWindow (E->sdl->window);
     hot_check (E->H);

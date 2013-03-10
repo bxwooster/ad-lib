@@ -9,20 +9,20 @@ int cosmos (int argc, char * argv []) {
 #endif
 
     struct SDL * sdl = init_SDL ();
-    struct stone_engine * E = stone_init (sdl);
+    struct bronze_engine * E = bronze_init (sdl);
 
     /* All systems go! */
     unsigned long frame = 0;
 
     for (;;) {
         frame++;
-        char status = stone_frame (E);
+        char status = bronze_frame (E);
         if (status != 0) break;
     }
 
     logi ("%d frames were done. Have a nice day!", frame);
 
-    stone_destroy (E);
+    bronze_destroy (E);
     exit_SDL (sdl);
 
     return 0;

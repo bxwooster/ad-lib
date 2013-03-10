@@ -1,10 +1,10 @@
-struct stone_G1 {
+struct bronze_G1 {
     mat4 transform;
     float supersize;
     float size;
 };
 
-struct stone_engine {
+struct bronze_engine {
     struct SDL * sdl;
     struct hot_player * H;
     lua_State * L;
