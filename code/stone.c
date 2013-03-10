@@ -22,21 +22,6 @@ char * func2file (char const * func) {
     return file;
 }
 
-    
-/* hot adapter */
-void galaxy_hot (void * data, char const * file, char const * text) {
-    struct stone_engine * E = data;
-    (void) file;
-
-    free (E->G1); /* Dup. */
-
-    if (E->G != NULL) galaxy_del (E->G); /* Dup. */
-    E->G = galaxy_parse (text);
-
-    E->G1 = malloc (E->G->size * sizeof (struct stone_G1));
-    OK (E->G1 != NULL);
-}
-
 void lua_hot (void * data, char const * file, char const * text) {
     struct stone_engine * E = data;
 
@@ -77,10 +62,6 @@ stone_init (struct SDL * sdl) {
 
     E->sdl = sdl;
     E->H = hot_new_player ();
-
-    E->G = NULL;
-    E->G1 = NULL;
-    hot_pull (E->H, GALAXY, galaxy_hot, E, 0);
 
     int max;
     SDL_GetKeyboardState (& max);
@@ -128,8 +109,6 @@ void stone_pcall (struct stone_engine * E) {
 }
 
 void stone_destroy (struct stone_engine * E) {
-    free (E->G1);
-    galaxy_del (E->G);
     state_del (E->S);
     hot_del_player (E->H);
     lua_close (E->L);

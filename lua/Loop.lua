@@ -42,8 +42,9 @@ function Camera (this)
 end
 
 function Loop ()
-    time = core.Time ()
-    dt = core.DTime ()
+    local newTime = core.Time ()
+    dt = newTime - (time or 0)
+    time = newTime
 
     apply (Node, world.nodes)
 
@@ -54,10 +55,6 @@ function Loop ()
 
     core.PreSegment ()
     apply (Orbitholder, world.orbitholders)
-
-    -- old C code here
-    core.stone_frame_G ();
-    core.stone_frame_C ();
 
     if (KeyDown (KEY.Space)) then
         -- ;)
