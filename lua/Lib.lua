@@ -136,10 +136,8 @@ do
     mat4 = {
         Movement = core.mat4_movement,
         Moved = core.mat4_moved,
-        Move = core.mat4_move,
-        RotatedAA = core.mat4_rotated_aa,
-        RotateAA = core.mat4_rotate_aa,
-        InvertRT = core.mat4_invert_rtonly,
+        Rotation = core.mat4_rotation_aa,
+        Rotated = core.mat4_rotated_aa,
         InvertedRT = core.mat4_inverted_rtonly,
         Print = core.mat4_print,
 

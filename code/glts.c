@@ -199,6 +199,7 @@ struct glts_planeta glts_load_planeta (char * filename, char * text) {
     it.Umv = glGetUniformLocation (it.program, "Umv");
     it.Umvp = glGetUniformLocation (it.program, "Umvp");
     it.Ucolour = glGetUniformLocation (it.program, "Ucolour");
+    it.UR = glGetUniformLocation (it.program, "UR");
     it.Uuvscale = glGetUniformLocation (it.program, "Uuvscale");
     it.Utexture = glGetUniformLocation (it.program, "Uexture");
 

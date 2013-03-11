@@ -68,7 +68,7 @@ API void PreSegment () {
     glEnableVertexAttribArray (shader->Apos2d);
 }
 
-API void Segment (mat4 const * tmat, vec3 const * colour,
+API void Segment (mat4 const * tMat, vec3 const * colour,
         float r1, float r2, float angsize, float angle,
         vec3 const * hole_relative, float hole_size) {
     struct glts_cello const * shader = & XE->gcell;
@@ -76,7 +76,7 @@ API void Segment (mat4 const * tmat, vec3 const * colour,
     unsigned M = XE->vsegment.size / 6 / (2*M_PI) * angsize;
 
     mat4 transform = mat4_rotated_aa
-        (tmat, & (vec3) {0,0,1}, angle);
+        (tMat, & (vec3) {0,0,1}, angle);
 
     mat4 mvp = mat4_multiply
         (& XE->Sviewproj, & transform);
@@ -113,9 +113,18 @@ API void PreSphere () {
     glEnableVertexAttribArray (shader->Apos2d);
 }
 
-API void Sphere (mat4 const * tmat, vec3 const * colour, float radius) {
-    mat4 mmodel = *tmat;
-    mat4 mrot = mat4_identity ();
+API void Sphere (mat4 const * tMat, vec3 const * colour, float radius) {
+    /* this is somewhat hacky and might need more work
+     * we want to split tMat into pure translation and rotation
+     * for some unknown yet reason I had to invert the rotation
+     * so it looked right. Well, that's it! */
+    mat4 mmodel = *tMat;
+    mmodel.c.x = (vec4) {1,0,0,0};
+    mmodel.c.y = (vec4) {0,1,0,0};
+    mmodel.c.z = (vec4) {0,0,1,0};
+    mat4 mrot = *tMat;
+    mrot.c.w = (vec4) {0};
+    mrot = mat4_inverted_rtonly (& mrot);
 
     vec3 first = vec3_diff (
         & mmodel.c.w.v3,
@@ -124,7 +133,6 @@ API void Sphere (mat4 const * tmat, vec3 const * colour, float radius) {
     float p = vec3_length (& first);
     float r = radius;
     float apparent = sqrtf (p * p - r * r) * r / p;
-    float apparentratio = apparent / r;
     float offset = (r * r) / p;
 
     vec3 unit_x = {{1.0f, 0.0f, 0.0f}};
@@ -146,10 +154,6 @@ API void Sphere (mat4 const * tmat, vec3 const * colour, float radius) {
 
     vec3 move = {{0.0f, 0.0f, -offset}};
     mmodel = mat4_moved (& mmodel, & move);
-    // scaling!
-	for (int n = 0; n < 12; ++n) {
-		mmodel.p[n] *= apparent;
-    }
 
     mat4 mvp = mat4_multiply (& XE->Sviewproj, & mmodel);
 
@@ -157,7 +161,8 @@ API void Sphere (mat4 const * tmat, vec3 const * colour, float radius) {
 
     glUniformMatrix4fv (shader->Umvp, 1, GL_FALSE, mvp.p);
     glUniformMatrix4fv (shader->Umv, 1, GL_FALSE, mrot.p);
-    glUniform1f (shader->Uuvscale, apparentratio);
+    glUniform1f (shader->Uuvscale, apparent / r);
+    glUniform1f (shader->UR, r);
     glUniform1i (shader->Utexture, XE->tex);
     glUniform3fv (shader->Ucolour, 1, colour->p);
 

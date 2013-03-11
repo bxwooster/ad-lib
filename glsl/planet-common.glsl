@@ -6,6 +6,7 @@ uniform mat4 Umvp;
 uniform mat4 Umv;
 uniform vec3 Ucolour;
 uniform float Uuvscale;
+uniform float UR;
 uniform samplerCube Utexture;
 
 varying vec2 Vixy;
@@ -14,7 +15,7 @@ varying vec3 Vnormal_part1;
 
 #if defined VS
 vec4 vertex () {
-    vec4 position = Umvp * vec4 (Apos2d, 0.0, 1.0);
+    vec4 position = Umvp * vec4 (UR * Apos2d, 0.0, 1.0);
     Vixy = Apos2d;
     Vuv = Apos2d * Uuvscale;
 	Vnormal_part1 = mat3 (Umv) * vec3 (Vuv, 0.0);

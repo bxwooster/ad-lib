@@ -4,6 +4,7 @@ struct glts_planeta {
     GLint Umv;
     GLint Umvp;
     GLint Ucolour;
+    GLint UR;
     GLint Uuvscale;
     GLint Utexture;
 };

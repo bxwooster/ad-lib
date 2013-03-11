@@ -76,11 +76,7 @@ mat4 mat4_multiply (mat4 const * a, mat4 const * b) {
     return out;
 }
 
-void mat4_rotate_aa (mat4 * m, vec3 const * axis, float angle) {
-    *m = mat4_rotated_aa (m, axis, angle);
-}
-
-mat4 mat4_rotated_aa (mat4 const * m, vec3 const * axis, float angle) {
+mat4 mat4_rotation_aa (vec3 const * axis, float angle) {
     float len = vec3_length (axis);
     assert (len != 0.0f);
    
@@ -115,7 +111,16 @@ mat4 mat4_rotated_aa (mat4 const * m, vec3 const * axis, float angle) {
         0.0f, 0.0f, 0.0f, 1.0f
 	}};
 
+    return mrot;
+}
+
+mat4 mat4_rotated_aa (mat4 const * m, vec3 const * axis, float angle) {
+    mat4 mrot = mat4_rotation_aa (axis, angle);
 	return mat4_multiply (m, & mrot);
+}
+
+void mat4_rotate_aa (mat4 * m, vec3 const * axis, float angle) {
+    *m = mat4_rotated_aa (m, axis, angle);
 }
 
 #define VEC4_FMT "(%.3f, %.3f, %.3f, %.3f)"
