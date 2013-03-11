@@ -9,7 +9,7 @@ end
 function Camera (this)
     CameraPointer (this)
     CameraArrows (this)
-    core.SetCamera (world.camera.tMat)
+    core.SetCamera (this)
 end
 
 function Orbitholder (this)
