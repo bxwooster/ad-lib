@@ -9,10 +9,6 @@ mat4 mat4_identity (void) {
     return out;
 }
 
-void mat4_invert_rtonly (mat4 * m) {
-    *m = mat4_inverted_rtonly (m);
-}
-
 mat4 mat4_inverted_rtonly (mat4 const * m) {
     mat4 out;
 
@@ -47,11 +43,6 @@ mat4 mat4_inverted_rtonly (mat4 const * m) {
 mat4 mat4_moved (mat4 const * m, vec3 const * v) {
     mat4 mtra = mat4_movement (v);
 	return mat4_multiply (m, & mtra);
-}
-
-void mat4_move (mat4 * m, vec3 const * v) {
-    mat4 mtra = mat4_movement (v);
-	*m =  mat4_multiply (m, & mtra);
 }
 
 mat4 mat4_movement (vec3 const * v) {
@@ -119,10 +110,6 @@ mat4 mat4_rotated_aa (mat4 const * m, vec3 const * axis, float angle) {
 	return mat4_multiply (m, & mrot);
 }
 
-void mat4_rotate_aa (mat4 * m, vec3 const * axis, float angle) {
-    *m = mat4_rotated_aa (m, axis, angle);
-}
-
 #define VEC4_FMT "(%.3f, %.3f, %.3f, %.3f)"
 #define VEC3_FMT "(%.3f, %.3f, %.3f)"
 #define VEC2_FMT "(%.3f, %.3f)"
@@ -180,11 +167,6 @@ float vec3_length (vec3 const * v) {
 	return sqrtf (vec3_dot (v, v));
 }
 
-void vec3_normalize (vec3 * v) {
-	float len = vec3_length (v);
-    if (len != 0.0f) *v = vec3_scaled (v, 1.0f / len);
-}
-
 vec3 vec3_normalized (vec3 const * v) {
 	float len = vec3_length (v);
     if (len == 0.0f) return (vec3) {0, 0, 0};
@@ -199,12 +181,6 @@ vec3 vec3_product (vec3 const * a, vec3 const * b) {
 	out.p[2] = a->p[0] * b->p[1] - a->p[1] * b->p[0];
 
     return out;
-}
-
-void vec3_scale (vec3 * v, float scale) {
-	v->p[0] *= scale;
-	v->p[1] *= scale;
-	v->p[2] *= scale;
 }
 
 vec3 vec3_scaled (vec3 const * v, float scale) {
@@ -277,20 +253,10 @@ float vec2_length (vec2 const * v) {
 	return sqrtf (vec2_dot (v, v));
 }
 
-void vec2_normalize (vec2 * v) {
-	float len = vec2_length (v);
-    if (len != 0.0f) *v = vec2_scaled (v, 1.0f / len);
-}
-
 vec2 vec2_normalized (vec2 const * v) {
 	float len = vec2_length (v);
     if (len == 0.0f) return (vec2) {0, 0};
     return vec2_scaled (v, 1.0f / len);
-}
-
-void vec2_scale (vec2 * v, float scale) {
-	v->p[0] *= scale;
-	v->p[1] *= scale;
 }
 
 vec2 vec2_scaled (vec2 const * v, float scale) {

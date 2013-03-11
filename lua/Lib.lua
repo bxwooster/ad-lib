@@ -43,18 +43,14 @@ function REPL ()
 end
 
 do
-    local v2t = {
+    vec2 = {
         New = core.vec2_new,
         Random = core.vec2_random,
         Print = core.vec2_print,
         Scaled = core.vec2_scaled,
-        Scale = core.vec2_scale,
         Normalized = core.vec2_normalized,
-        Normalize = core.vec2_normalize,
-        Length = core.vec2_length,
+        Dot = core.vec2_dot,
     }
-
-    vec2 = table.copy (v2t)
 
     vec2.left = vec2.New (-1, 0)
     vec2.right = vec2.New (1, 0)
@@ -74,31 +70,20 @@ do
         return type (a) == 'number' and v2s (b, a) or v2s (a, b)
     end
     v2mt.__unm = function (v) return v2s (v, -1) end
-    v2mt.__index = function (v, key)
-        if v2t[key] ~= nil then
-            return v2t[key]
-        else
-            return rawget (v, key)
-        end
-    end
 
     ffi.metatype ("vec2", v2mt)
 end
 
 do
-    local v3t = {
+    vec3 = {
         New = core.vec3_new,
         Random = core.vec3_random,
         Print = core.vec3_print,
         Scaled = core.vec3_scaled,
-        Scale = core.vec3_scale,
         Normalized = core.vec3_normalized,
-        Normalize = core.vec3_normalize,
         Length = core.vec3_length,
         Dot = core.vec3_dot,
     }
-
-    vec3 = table.copy (v3t)
 
     vec3.left = vec3.New (-1, 0, 0)
     vec3.right = vec3.New (1, 0, 0)
@@ -112,7 +97,7 @@ do
     vec3.y = vec3.forward
     vec3.z = vec3.up
 
-    local v3s = v3t.Scaled
+    local v3s = vec3.Scaled
     local v3mt = {}
     v3mt.__add = core.vec3_sum
     v3mt.__sub = core.vec3_diff
@@ -121,13 +106,6 @@ do
         return type (a) == 'number' and v3s (b, a) or v3s (a, b)
     end
     v3mt.__unm = function (v) return v3s (v, -1) end
-    v3mt.__index = function (v, key)
-        if v3t[key] ~= nil then
-            return v3t[key]
-        else
-            return rawget (v, key)
-        end
-    end
 
     ffi.metatype ("vec3", v3mt)
 end
@@ -146,13 +124,6 @@ do
 
     local m4mt = {}
     m4mt.__pow = core.mat4_multiply
-    m4mt.__index = function (m, key)
-        if mat4[key] ~= nil then
-            return mat4[key]
-        else
-            return rawget (v, key)
-        end
-    end
 
     ffi.metatype ("mat4", m4mt);
 end
@@ -160,6 +131,4 @@ end
 -- left:
 --  vec4_multiply
 --  vec3_product
---  vec3_dot
---  vec2_dot
---  from
+--  'from' adapters ?
