@@ -19,7 +19,7 @@ function Orbitholder (this)
         local A = math.pi * 2 / table.getn(orbit.cells)
         for i,cell in ipairs (orbit.cells) do
             core.Segment (this.tMat, cell.colour,
-                R1, R2, A, time + A * i, nil, 0)
+                R1, R2, A, A * (world.turn.float + i), nil, 0)
         end
         R1 = R2
     end
@@ -65,7 +65,7 @@ function Loop ()
     dt = newTime - (time or 0)
     time = newTime
 
-    world.center.tMat = world.center.tMat ^ mat4.Rotation (vec3.z, 0.3 * dt)
+    --world.center.tMat = world.center.tMat ^ mat4.Rotation (vec3.z, 0.3 * dt)
     apply (Node, world.nodes)
 
     Camera (world.camera)
@@ -75,10 +75,14 @@ function Loop ()
 
     core.PreSegment ()
     apply (Orbitholder, world.orbitholders)
-    core.Segment (world.center.tMat, vec3.New(0,0,1), 4, 4.3, math.pi, 0.8, nil, 0)
+    --core.Segment (world.center.tMat, vec3.New(0,0,1), 4, 4.3, math.pi, 0.8, nil, 0)
 
-    if (KeyDown (KEY.Space)) then
-        -- ;)
+    local left = world.turn.endTime - time
+    if left > 0 then
+        world.turn.float = world.turn.int - left / 2
+    elseif (KeyDown (KEY.Space)) then
+        world.turn.int = world.turn.int + 1
+        world.turn.endTime = time + 2
     end
 
     if (KeyDown (KEY.L)) then REPL () end
