@@ -24,7 +24,6 @@ function NewWorld ()
     }
 
     NewSystem (P1, world)
-
     table.insert (world.nodes, P1)
     table.insert (world.spheres, P1)
 
