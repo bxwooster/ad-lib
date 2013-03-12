@@ -8,8 +8,6 @@ function Init ()
     core.Pull ("Lib")
     core.Pull ("Loop")
     core.Pull ("World")
+    core.Pull ("Camera")
     core.Pull ("KeyDefs")
-
-    world = InitWorld ()
 end
-
