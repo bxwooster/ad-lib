@@ -69,8 +69,7 @@ API void PreSegment () {
 }
 
 API void Segment (mat4 const * tMat, vec3 const * colour,
-        float r1, float r2, float angsize, float angle,
-        vec3 const * hole_relative, float hole_size) {
+        float r1, float r2, float angsize, float angle) {
     struct glts_cello const * shader = & XE->gcell;
 
     unsigned M = XE->vsegment.size / 6 / (2*M_PI) * angsize;
@@ -81,19 +80,10 @@ API void Segment (mat4 const * tMat, vec3 const * colour,
     mat4 mvp = mat4_multiply
         (& XE->Sviewproj, & transform);
 
-    if (hole_relative != NULL) {
-        mat4 inverse = mat4_inverted_rtonly (& transform);
-        vec4 v4 = vec4_from3 (hole_relative);
-        vec4 cutout_center = vec4_multiply (& inverse, & v4);
-
-        glUniform2fv (shader->Ucutout_center, 1, cutout_center.p);
-    }
-
     glUniformMatrix4fv (shader->Umvp, 1, GL_FALSE, mvp.p);
     glUniform1f (shader->Uangle, angsize / M);
     glUniform1f (shader->UR1, r1);
     glUniform1f (shader->UR2, r2);
-    glUniform1f (shader->Ucutout_radius, hole_size);
     glUniform3fv (shader->Ucolour, 1, colour->p);
 
     glDrawArrays (GL_TRIANGLES, 0, M * 6);

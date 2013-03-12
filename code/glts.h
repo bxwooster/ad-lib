@@ -14,8 +14,6 @@ struct glts_cello {
     GLuint Apos2d;
     GLint Umvp;
     GLint Ucolour;
-    GLint Ucutout_center;
-    GLint Ucutout_radius;
     GLint UR1;
     GLint UR2;
     GLint Uangle;

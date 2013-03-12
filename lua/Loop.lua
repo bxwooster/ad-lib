@@ -6,17 +6,9 @@ function Sphere (this)
     core.Sphere (this.tMat, this.colour, this.radius)
 end
 
-function Orbitholder (this)
-    local R1 = this.radius
-    for _,orbit in ipairs (this.orbits) do
-        local R2 = R1 + orbit.width
-        local A = math.pi * 2 / table.getn(orbit.cells)
-        for i,cell in ipairs (orbit.cells) do
-            core.Segment (this.tMat, cell.colour,
-                R1, R2, A, A * (world.turn.float + i), nil, 0)
-        end
-        R1 = R2
-    end
+function Segment (this)
+    core.Segment (this.parent.tMat, this.colour,
+        this.R1, this.R2, this.A, this.phi + this.A * world.turn.float)
 end
 
 function Loop ()
@@ -26,6 +18,7 @@ function Loop ()
     time = newTime
 
     apply (Node, world.nodes)
+    apply (System, world.systems)
 
     Camera (world.camera)
 
@@ -33,17 +26,21 @@ function Loop ()
     apply (Sphere, world.spheres)
 
     core.PreSegment ()
-    apply (Orbitholder, world.orbitholders)
+    apply (Segment, world.segments)
 
-    local left = world.turn.endTime - time
-    if left > 0 then
-        world.turn.float = world.turn.int - left / 2
-    elseif (KeyDown (KEY.Space)) then
-        world.turn.int = world.turn.int + 1
-        world.turn.endTime = time + 2
-    end
+    Turn (world.turn)
 
     if (KeyDown (KEY.L)) then REPL () end
     if (KeyDown (KEY.R)) then world = NewWorld () end
     if (KeyDown (KEY.Escape)) then core.Halt () end
+end
+
+function Turn (this)
+    local left = this.endTime - time
+    if left > 0 then
+        this.float = this.int - left / 2
+    elseif (KeyDown (KEY.Space)) then
+        this.int = this.int + 1
+        this.endTime = time + 2
+    end
 end

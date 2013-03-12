@@ -9,5 +9,6 @@ function Init ()
     core.Pull ("Loop")
     core.Pull ("World")
     core.Pull ("Camera")
+    core.Pull ("System")
     core.Pull ("KeyDefs")
 end

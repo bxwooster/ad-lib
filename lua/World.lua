@@ -2,16 +2,9 @@ function NewWorld ()
     local world = {}
 
     world.nodes = {}
+    world.systems = {}
     world.spheres = {}
-    world.orbitholders = {}
-
-    local function genCells (n)
-        local cells = {}
-        for i = 1, n do
-            cells[i] = {colour = vec3.Random (true)}
-        end
-        return cells
-    end
+    world.segments = {}
 
     world.center = {
         colour = vec3.New (1, 0, 1),
@@ -25,35 +18,15 @@ function NewWorld ()
         rMat = mat4.Movement (10 * vec3.x),
         parent = world.center,
         orbits = {
-            {width = 4, cells = genCells (3)},
-            {width = 4, cells = genCells (5)}
+            {width = 4, nCells = 3},
+            {width = 4, nCells = 5}
         }
     }
 
-    local P2 = {
-        colour = vec3.New (0, 1, 1),
-        radius = 0.3,
-        rMat = mat4.Movement (-10 * vec3.x),
-        parent = world.center,
-        orbits = {
-            {width = 1, cells = genCells (8)},
-            {width = 1, cells = genCells (8)},
-            {width = 1, cells = genCells (12)},
-            {width = 1, cells = genCells (12)},
-            {width = 1, cells = genCells (16)},
-            {width = 1, cells = genCells (16)},
-            {width = 1, cells = genCells (20)},
-            {width = 1, cells = genCells (20)},
-        }
-    }
+    NewSystem (P1, world)
 
     table.insert (world.nodes, P1)
     table.insert (world.spheres, P1)
-    table.insert (world.orbitholders, P1)
-
-    table.insert (world.nodes, P2)
-    table.insert (world.spheres, P2)
-    table.insert (world.orbitholders, P2)
 
     local pos = vec3.New (0.0, 30, 30.0)
     local angle = 0.75 * math.pi

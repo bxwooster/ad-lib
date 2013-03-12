@@ -25,7 +25,7 @@ end
 function REPL ()
     local line
     while true do
-        io.write (">>> ")
+        io.write ">>> "
         line = io.read ()
         if line == "exit" then
             break

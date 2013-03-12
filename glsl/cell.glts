@@ -10,8 +10,6 @@ uniform float Uangle;
 
 uniform mat4 Umvp;
 uniform vec3 Ucolour;
-uniform vec2 Ucutout_center;
-uniform float Ucutout_radius;
 varying vec2 Vplanar;
 
 #if defined FS
@@ -19,9 +17,6 @@ vec3 fragment () {
 	float radius = length (Vplanar);
     float ambient = 0.5;
     float inner = ambient + (radius - UR1) / (UR2 - UR1);
-
-    float dist = length (Vplanar - Ucutout_center);
-    if (dist < Ucutout_radius) discard;
 
     float brightness = 0.5;
 	return brightness * Ucolour * inner;

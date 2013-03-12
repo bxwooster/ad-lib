@@ -177,8 +177,6 @@ struct glts_cello glts_load_cello (char * filename, char * text) {
 
     it.Umvp = glGetUniformLocation (it.program, "Umvp");
     it.Ucolour = glGetUniformLocation (it.program, "Ucolour");
-    it.Ucutout_center = glGetUniformLocation (it.program, "Ucutout_center");
-    it.Ucutout_radius = glGetUniformLocation (it.program, "Ucutout_radius");
     it.UR1 = glGetUniformLocation (it.program, "UR1");
     it.UR2 = glGetUniformLocation (it.program, "UR2");
     it.Uangle = glGetUniformLocation (it.program, "Uangle");
