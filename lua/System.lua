@@ -1,6 +1,6 @@
 function NewSystem (this, world)
     table.insert (world.systems, this)
-
+    this.segments = {}
     local R1 = this.radius
     for _,orbit in ipairs (this.orbits) do
         local R2 = R1 + orbit.width
@@ -15,10 +15,16 @@ function NewSystem (this, world)
                 phi = A * i,
             }
             table.insert (world.segments, segment)
+            table.insert (this.segments, segment)
         end
         R1 = R2
     end
 end
 
 function System (this)
+    if world.camera.lock then
+        if vec3.Length (world.camera.lock) < 1 then
+            print ("Hit!")
+        end
+    end
 end

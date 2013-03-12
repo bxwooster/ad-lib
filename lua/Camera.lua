@@ -14,6 +14,8 @@ function CameraPointer (this)
     elseif KeyHeld (KEY.P1) then
         local delta = this.lock - lock
         this.tMat = mat4.Movement (delta) ^ this.tMat
+    else
+        this.lock = nil
     end
 end
 

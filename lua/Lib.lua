@@ -132,3 +132,4 @@ end
 --  vec4_multiply
 --  vec3_product
 --  'from' adapters ?
+--  "newindex"? prevent mutation
