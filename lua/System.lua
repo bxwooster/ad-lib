@@ -54,7 +54,7 @@ function NewSystem (this, world)
                 local P = prev[k]
 
                 local F = function (turn)
-                    return Intersection (R, P, turn) and Time % 1 < 0.5
+                    return Intersection (R, P, turn)
                 end
                 R.links[P] = F
                 P.links[R] = F
