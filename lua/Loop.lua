@@ -14,6 +14,12 @@ function Loop ()
     Apply (System, World.systems)
     if Start then Selected[Start] = Colour.red end
     if End then Selected[End] = Colour.green end
+    if Start and End then 
+        local path = AStar (Start, End)
+        for _, C in ipairs (path) do
+            Selected[C] = Colour.yellow
+        end
+    end
 
     Core.PreSphere ()
     Apply (Sphere, World.spheres)
