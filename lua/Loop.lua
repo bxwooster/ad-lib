@@ -13,9 +13,16 @@ function Loop ()
 
     Apply (System, World.systems)
 
-    if Start and End then 
-        local path = AStar (Start, End)
-        for _, C in ipairs (path) do
+    if KeyDown (KEY.P3) then
+        Start = nil
+        End = nil
+        Path = nil
+    end
+    if Start and End and not Path then 
+        Path = AStar (Start, End)
+    end
+    if Path then
+        for _, C in ipairs (Path) do
             Selected[C] = Colour.yellow
         end
     end

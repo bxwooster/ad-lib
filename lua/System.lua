@@ -90,8 +90,10 @@ function System (this)
             Selected[s] = Colour.black
             if KeyDown (KEY.P1) then
                 Start = s
+                Path = nil
             elseif KeyDown (KEY.P2) then
                 End = s
+                Path = nil
             end
             for n, f in pairs (s.links) do
                 if f == true or f (World.turn.int) then

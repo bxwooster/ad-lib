@@ -19,8 +19,11 @@ function NewWorld ()
         parent = world.center,
         orbits = {
             {width = 4, nCells = 3},
-            {width = 4, nCells = 5},
-            {width = 4, nCells = 7},
+            {width = 3, nCells = 5},
+            {width = 4, nCells = 63},
+            {width = 2, nCells = 7},
+            {width = 5, nCells = 9},
+            {width = 4, nCells = 20},
         }
     }
 
@@ -28,7 +31,7 @@ function NewWorld ()
     table.insert (world.nodes, P1)
     table.insert (world.spheres, P1)
 
-    local pos = Vec3.New (0, 11.5, 30)
+    local pos = Vec3.New (0, 20, 60)
     local angle = 0.9 * math.pi
     world.camera = {
         speed = 3,
