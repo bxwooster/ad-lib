@@ -134,7 +134,7 @@ do
 end
 
 do
-    colour = {
+    Colour = {
         white = Vec3.New (1, 1, 1),
         red = Vec3.New (1, 0, 0),
         green = Vec3.New (0, 1, 0),
