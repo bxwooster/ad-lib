@@ -72,7 +72,7 @@ API void Segment (mat4 const * tMat, vec3 const * colour,
         float r1, float r2, float angsize, float angle) {
     struct glts_cello const * shader = & XE->gcell;
 
-    unsigned M = XE->vsegment.size / 6 / (2*M_PI) * angsize;
+    unsigned M = XE->vsegment.size * angsize / 6 / (2*M_PI) + 1;
 
     mat4 transform = mat4_rotated_aa
         (tMat, & (vec3) {0,0,1}, angle);

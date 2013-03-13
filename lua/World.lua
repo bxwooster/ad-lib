@@ -20,7 +20,7 @@ function NewWorld ()
         orbits = {
             {width = 4, nCells = 3},
             {width = 3, nCells = 5},
-            {width = 4, nCells = 63},
+            {width = 4, nCells = 65},
             {width = 2, nCells = 7},
             {width = 5, nCells = 9},
             {width = 4, nCells = 20},
