@@ -2,7 +2,7 @@ local function Intersection (R, P, turn)
     local r, p = R.A / 2, P.A / 2
     local d = (R.B + R.A * turn + r) - (P.B + P.A * turn + p)
     local s = r + p
-    local x = math.abs (d)
+    local x = d % (2 * math.pi)
     local y = math.pi * 2 - x
     local delta = 0.1
     return s - x > delta or s - y > delta
