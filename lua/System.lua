@@ -1,3 +1,13 @@
+local function Intersection (R, P, turn)
+    local r, p = R.A / 2, P.A / 2
+    local d = (R.B + R.A * turn + r) - (P.B + P.A * turn + p)
+    local s = r + p
+    local x = math.abs (d)
+    local y = math.pi * 2 - x
+    local delta = 0.1
+    return s - x > delta or s - y > delta
+end
+
 function NewSystem (this, world)
     -- Generate the segments inside rings
     local rings = {}
@@ -43,16 +53,9 @@ function NewSystem (this, world)
             for k = 0, #prev do
                 local P = prev[k]
 
-                local X = function (R, P)
-                    local d = R.phi + R.A / 2 - P.phi - P.A / 2
-                    local s = (R.A + P.A) / 2
-                    local x = math.abs (d)
-                    local y = math.pi * 2 - x
-                    local delta = 0.1
-                    return s - x > delta or s - y > delta
+                local F = function (turn)
+                    return Intersection (R, P, turn) and Time % 1 < 0.5
                 end
-
-                local F = function (turn) return X (R, P) and Time % 1 < 0.5 end
                 R.links[P] = F
                 P.links[R] = F
             end
