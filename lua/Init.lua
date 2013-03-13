@@ -1,14 +1,14 @@
 function Init ()
     local api_file = io.open ("API.h")
     local api_text = api_file:read ("*all")
-    ffi = require ("ffi")
-    ffi.cdef (api_text)
-    core = ffi.C
+    FFI = require ("ffi")
+    FFI.cdef (api_text)
+    Core = FFI.C
 
-    core.Pull ("Lib")
-    core.Pull ("Loop")
-    core.Pull ("World")
-    core.Pull ("Camera")
-    core.Pull ("System")
-    core.Pull ("KeyDefs")
+    Core.Pull ("Lib")
+    Core.Pull ("Loop")
+    Core.Pull ("World")
+    Core.Pull ("Camera")
+    Core.Pull ("System")
+    Core.Pull ("KeyDefs")
 end

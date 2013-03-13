@@ -1,37 +1,39 @@
 function Loop ()
-    world = world or NewWorld ()
+    World = World or NewWorld ()
 
-    local newTime = core.Time ()
-    dt = newTime - (time or 0)
-    time = newTime
-    selected = {}
+    local newTime = Core.Time ()
+    Dt = newTime - (Time or 0)
+    Time = newTime
 
-    apply (Node, world.nodes)
+    Selected = {}
 
-    Camera (world.camera)
+    Apply (Node, World.nodes)
 
-    apply (System, world.systems)
+    Camera (World.camera)
 
-    core.PreSphere ()
-    apply (Sphere, world.spheres)
+    Apply (System, World.systems)
 
-    core.PreSegment ()
-    apply (Segment, world.segments)
+    Core.PreSphere ()
+    Apply (Sphere, World.spheres)
 
-    Turn (world.turn)
+    Core.PreSegment ()
+    Apply (Segment, World.segments)
+
+    Turn (World.turn)
 
     if KeyDown (KEY.L) then REPL () end
-    if KeyDown (KEY.R) then world = NewWorld () end
-    if KeyDown (KEY.Escape) then core.Halt () end
+    if KeyDown (KEY.R) then World = NewWorld () end
+    if KeyDown (KEY.Escape) then Core.Halt () end
 end
 
 function Turn (this)
-    local left = this.endTime - time
+    local duration = 2
+    local left = this.endTime - Time
     if left > 0 then
-        this.float = this.int - left / 2
+        this.float = this.int - left / duration
     elseif KeyDown (KEY.Space) then
         this.int = this.int + 1
-        this.endTime = time + 2
+        this.endTime = Time + duration
     end
 end
 
@@ -40,5 +42,5 @@ function Node (this)
 end
 
 function Sphere (this)
-    core.Sphere (this.tMat, this.colour, this.radius)
+    Core.Sphere (this.tMat, this.colour, this.radius)
 end
