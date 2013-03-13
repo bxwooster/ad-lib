@@ -1,8 +1,8 @@
 KEY = {
     -- Not SDL
     P1 = 1,
-    P2 = 2,
-    P3 = 3,
+    P2 = 3,
+    P3 = 2,
 
     -- SDL Scancodes
     A = 4,

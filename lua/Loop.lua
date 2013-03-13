@@ -12,6 +12,8 @@ function Loop ()
     Camera (World.camera)
 
     Apply (System, World.systems)
+    if Start then Selected[Start] = Colour.red end
+    if End then Selected[End] = Colour.green end
 
     Core.PreSphere ()
     Apply (Sphere, World.spheres)

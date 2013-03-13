@@ -132,7 +132,7 @@ void bronze_frame_gl (struct bronze_engine * E) {
     glViewport (0, 0, E->sdl->width, E->sdl->height);
 
     glDepthMask (GL_TRUE);
-    glClearColor (1.0f, 1.0f, 1.0f, 0.0);
+    glClearColor (0.0f, 0.0f, 0.0f, 0.0);
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     GLuint error = glGetError ();

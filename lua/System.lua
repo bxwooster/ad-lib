@@ -22,7 +22,7 @@ function NewSystem (this, world)
         for i = 0, orbit.nCells - 1 do
             ring[i] = {
                 parent = this,
-                colour = Vec3.Random (true),
+                colour = Vec3.New (0, 0, A * i % 0.5 + 0.5),
                 R1 = R1,
                 R2 = R2,
                 A = A,
@@ -87,10 +87,15 @@ function System (this)
     if A < 0 then A = A + 2 * math.pi end
     for _,s in ipairs (this.segments) do
         if Y (A - s.phi) and Y (s.phi + s.A - A) and s.R1 < R and R < s.R2 then
-            Selected[s] = Colour.white
-            for n,f in pairs (s.links) do
+            Selected[s] = Colour.black
+            if KeyDown (KEY.P1) then
+                Start = s
+            elseif KeyDown (KEY.P2) then
+                End = s
+            end
+            for n, f in pairs (s.links) do
                 if f == true or f (World.turn.int) then
-                    Selected[n] = Colour.black
+                    Selected[n] = Colour.magenta
                 end
             end
         end

@@ -18,7 +18,7 @@ vec3 fragment () {
     float ambient = 0.5;
     float inner = ambient + (radius - UR1) / (UR2 - UR1);
 
-    float brightness = 0.5;
+    float brightness = 1.0;
 	return brightness * Ucolour * inner;
 }
 #elif defined VS
