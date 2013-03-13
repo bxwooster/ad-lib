@@ -19,7 +19,8 @@ function NewWorld ()
         parent = world.center,
         orbits = {
             {width = 4, nCells = 3},
-            {width = 4, nCells = 5}
+            {width = 4, nCells = 5},
+            {width = 4, nCells = 7},
         }
     }
 

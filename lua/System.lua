@@ -21,17 +21,18 @@ function NewSystem (this, world)
             table.insert (world.segments, segment)
             table.insert (this.segments, segment)
         end
-        for i = 0, N - 1 do
+        for i = 0, #ring do
             -- h, i, j
             local h = (i - 1) % N
             local j = (i + 1) % N
-            ring[i].neighbours = {[ring[h]]=true, [ring[j]]=true}
-            local segment = ring[i]
-            local F = function () return segment.phi % 1 < 0.5 end
+            ring[i].links = {[ring[h]]=true, [ring[j]]=true}
+            local R = ring[i]
+            local F = function () return Time % 1 < 0.5 end
             if prevring then
                 for k = 0, #prevring do
                     local P = prevring[k]
-                    ring[i].neighbours[P] = F
+                    R.links[P] = F
+                    P.links[R] = F
                 end
             end
         end
@@ -54,7 +55,7 @@ function System (this)
     for _,s in ipairs (this.segments) do
         if Y (A - s.phi) and Y (s.phi + s.A - A) and s.R1 < R and R < s.R2 then
             Selected[s] = Colour.white
-            for n,f in pairs (s.neighbours) do
+            for n,f in pairs (s.links) do
                 if f == true or f () then
                     Selected[n] = Colour.black
                 end
