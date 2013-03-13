@@ -6,9 +6,10 @@ function Loop ()
     time = newTime
 
     apply (Node, world.nodes)
-    apply (System, world.systems)
 
     Camera (world.camera)
+
+    apply (System, world.systems)
 
     core.PreSphere ()
     apply (Sphere, world.spheres)
