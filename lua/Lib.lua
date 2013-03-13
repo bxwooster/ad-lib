@@ -131,8 +131,17 @@ do
     ffi.metatype ("mat4", m4mt);
 end
 
--- left:
---  vec4_multiply
---  vec3_product
---  'from' adapters ?
+do
+    colour = {
+        white = vec3.New (1, 1, 1),
+        red = vec3.New (1, 0, 0),
+        green = vec3.New (0, 1, 0),
+        blue = vec3.New (0, 0, 1),
+        yellow = vec3.New (1, 1, 0),
+        magenta = vec3.New (1, 0, 1),
+        cyan = vec3.New (0, 1, 1),
+        black = vec3.New (0, 0, 0),
+    }
+end
+
 --  "newindex"? prevent mutation
