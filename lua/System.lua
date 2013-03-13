@@ -43,7 +43,16 @@ function NewSystem (this, world)
             for k = 0, #prev do
                 local P = prev[k]
 
-                local F = function () return Time % 1 < 0.5 end
+                local X = function (R, P)
+                    local d = R.phi + R.A / 2 - P.phi - P.A / 2
+                    local s = (R.A + P.A) / 2
+                    local x = math.abs (d)
+                    local y = math.pi * 2 - x
+                    local delta = 0.1
+                    return s - x > delta or s - y > delta
+                end
+
+                local F = function (turn) return X (R, P) and Time % 1 < 0.5 end
                 R.links[P] = F
                 P.links[R] = F
             end
@@ -77,7 +86,7 @@ function System (this)
         if Y (A - s.phi) and Y (s.phi + s.A - A) and s.R1 < R and R < s.R2 then
             Selected[s] = Colour.white
             for n,f in pairs (s.links) do
-                if f == true or f () then
+                if f == true or f (World.turn.int) then
                     Selected[n] = Colour.black
                 end
             end
