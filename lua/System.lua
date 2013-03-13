@@ -2,11 +2,12 @@ function NewSystem (this, world)
     table.insert (world.systems, this)
     this.segments = {}
     local R1 = this.radius
-    local prevring
-    for _,orbit in ipairs (this.orbits) do
+    local rings = {}
+    for r, orbit in ipairs (this.orbits) do
         local R2 = R1 + orbit.width
         local A = math.pi * 2 / orbit.nCells
         local ring = {}
+        rings[r - 1] = ring
         local N = orbit.nCells
         for i = 0, N - 1 do
             local segment = {
@@ -21,23 +22,32 @@ function NewSystem (this, world)
             table.insert (world.segments, segment)
             table.insert (this.segments, segment)
         end
+        R1 = R2
+    end
+
+    for r = 0, #rings do
+        local ring = rings[r]
         for i = 0, #ring do
             -- h, i, j
-            local h = (i - 1) % N
-            local j = (i + 1) % N
+            local h = (i - 1) % (#ring + 1)
+            local j = (i + 1) % (#ring + 1)
             ring[i].links = {[ring[h]]=true, [ring[j]]=true}
+        end
+    end
+
+    for r = 1, #rings do
+        local ring = rings[r]
+        local prev = rings[r - 1]
+        for i = 0, #ring do
             local R = ring[i]
-            local F = function () return Time % 1 < 0.5 end
-            if prevring then
-                for k = 0, #prevring do
-                    local P = prevring[k]
-                    R.links[P] = F
-                    P.links[R] = F
-                end
+            for k = 0, #prev do
+                local P = prev[k]
+
+                local F = function () return Time % 1 < 0.5 end
+                R.links[P] = F
+                P.links[R] = F
             end
         end
-        R1 = R2
-        prevring = ring
     end
 end
 
