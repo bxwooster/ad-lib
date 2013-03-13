@@ -27,22 +27,22 @@ function System (this)
     for _,s in ipairs (this.segments) do
         s.phi = s.B + s.A * world.turn.float
     end
-    if KeyDown (KEY.P1) and world.camera.lock then
-        V = mat4.Inverse (this.tMat) % world.camera.lock
-        R = vec3.Length (V) 
-        A = math.atan2 (V.e.y, V.e.x)
-        if A < 0 then A = A + 2 * math.pi end
-        for _,s in ipairs (this.segments) do
-            if Y (A - s.phi) and Y (s.phi + s.A - A) and
-                    s.R1 < R and R < s.R2 then
-                s.colour = vec3.Random (true)
-            end
+
+    V = mat4.Inverse (this.tMat) % lock
+    R = vec3.Length (V) 
+    A = math.atan2 (V.e.y, V.e.x)
+    if A < 0 then A = A + 2 * math.pi end
+    for _,s in ipairs (this.segments) do
+        if Y (A - s.phi) and Y (s.phi + s.A - A) and
+                s.R1 < R and R < s.R2 then
+            selected[s] = true
         end
     end
 end
 
 function Segment (this)
-    core.Segment (this.parent.tMat, this.colour,
+    local colour = selected[this] and colour.white or this.colour
+    core.Segment (this.parent.tMat, colour,
         this.R1, this.R2, this.A, this.phi)
 end
 

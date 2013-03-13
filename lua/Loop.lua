@@ -4,6 +4,7 @@ function Loop ()
     local newTime = core.Time ()
     dt = newTime - (time or 0)
     time = newTime
+    selected = {}
 
     apply (Node, world.nodes)
 

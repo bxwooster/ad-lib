@@ -1,13 +1,13 @@
 function Camera (this)
+    core.SetCamera (this.tMat)
     CameraPointer (this)
     CameraArrows (this)
-    core.SetCamera (this.tMat)
 end
 
 function CameraPointer (this)
     local C = this.tMat.c.w.v3
     local V = core.ScreenRay (core.Pointer ())
-    local lock = core.PlaneIntersection (C, V, vec3.z, vec3.zero)
+    lock = core.PlaneIntersection (C, V, vec3.z, vec3.zero)
 
     if KeyDown (KEY.P1) then
         this.lock = lock;
