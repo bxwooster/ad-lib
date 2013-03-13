@@ -1,16 +1,16 @@
 function NewSystem (this, world)
-    table.insert (world.systems, this)
-    this.segments = {}
-    local R1 = this.radius
+    -- Generate the segments inside rings
     local rings = {}
+    local R1 = this.radius
     for r, orbit in ipairs (this.orbits) do
-        local R2 = R1 + orbit.width
-        local A = math.pi * 2 / orbit.nCells
         local ring = {}
         rings[r - 1] = ring
-        local N = orbit.nCells
-        for i = 0, N - 1 do
-            local segment = {
+
+        local R2 = R1 + orbit.width
+        local A = math.pi * 2 / orbit.nCells
+
+        for i = 0, orbit.nCells - 1 do
+            ring[i] = {
                 parent = this,
                 colour = Vec3.Random (true),
                 R1 = R1,
@@ -18,13 +18,12 @@ function NewSystem (this, world)
                 A = A,
                 B = A * i,
             }
-            ring[i] = segment
-            table.insert (world.segments, segment)
-            table.insert (this.segments, segment)
         end
+
         R1 = R2
     end
 
+    -- Add ring-neighbour links
     for r = 0, #rings do
         local ring = rings[r]
         for i = 0, #ring do
@@ -35,6 +34,7 @@ function NewSystem (this, world)
         end
     end
 
+    -- Add conditional inter-ring links
     for r = 1, #rings do
         local ring = rings[r]
         local prev = rings[r - 1]
@@ -47,6 +47,17 @@ function NewSystem (this, world)
                 R.links[P] = F
                 P.links[R] = F
             end
+        end
+    end
+
+    -- Finally, inject it all into the world
+    table.insert (world.systems, this)
+    this.segments = {}
+    for r = 0, #rings do
+        local ring = rings[r]
+        for i = 0, #ring do
+            table.insert (world.segments, ring[i])
+            table.insert (this.segments, ring[i])
         end
     end
 end
