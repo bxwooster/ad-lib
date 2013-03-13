@@ -41,10 +41,3 @@ end
 function Sphere (this)
     core.Sphere (this.tMat, this.colour, this.radius)
 end
-
-function Segment (this)
-    local angle = this.phi + this.A * world.turn.float
-    core.Segment (this.parent.tMat, this.colour,
-        this.R1, this.R2, this.A, angle)
-end
-
