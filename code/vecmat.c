@@ -134,6 +134,11 @@ void vec2_print (vec2 const * v) {
     logi (VEC2_FMT, v->p[0], v->p[1]);
 }
 
+vec3 vec3_multiply (mat4 const * m, vec3 const * v) {
+    vec4 v4 = vec4_from3 (v);
+    return vec4_multiply (m, & v4).v3;
+}
+
 vec4 vec4_multiply (mat4 const * m, vec4 const * v) {
     vec4 out = {0};
 
@@ -191,6 +196,10 @@ vec3 vec3_scaled (vec3 const * v, float scale) {
 	out.p[2] = v->p[2] * scale;
 
     return out;
+}
+
+vec3 vec3_divided (vec3 const * v, float scale) {
+    return vec3_scaled (v, 1 / scale);
 }
 
 vec3 vec3_sum (vec3 const * a, vec3 const * b) {
@@ -257,6 +266,10 @@ vec2 vec2_normalized (vec2 const * v) {
 	float len = vec2_length (v);
     if (len == 0.0f) return (vec2) {0, 0};
     return vec2_scaled (v, 1.0f / len);
+}
+
+vec2 vec2_divided (vec2 const * v, float scale) {
+    return vec2_scaled (v, 1 / scale);
 }
 
 vec2 vec2_scaled (vec2 const * v, float scale) {

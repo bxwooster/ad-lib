@@ -69,6 +69,7 @@ do
     v2mt.__mul = function (a, b)
         return type (a) == 'number' and v2s (b, a) or v2s (a, b)
     end
+    v2mt.__div = core.vec2_divided
     v2mt.__unm = function (v) return v2s (v, -1) end
 
     ffi.metatype ("vec2", v2mt)
@@ -105,6 +106,8 @@ do
     v3mt.__mul = function (a, b)
         return type (a) == 'number' and v3s (b, a) or v3s (a, b)
     end
+    v3mt.__div = core.vec3_divided
+    v3mt.__mod = core.vec3_multiply
     v3mt.__unm = function (v) return v3s (v, -1) end
 
     ffi.metatype ("vec3", v3mt)
@@ -116,7 +119,7 @@ do
         Moved = core.mat4_moved,
         Rotation = core.mat4_rotation_aa,
         Rotated = core.mat4_rotated_aa,
-        InvertedRT = core.mat4_inverted_rtonly,
+        Inverse = core.mat4_inverted_rtonly,
         Print = core.mat4_print,
 
         id = core.mat4_identity ()

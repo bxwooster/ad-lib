@@ -28,7 +28,7 @@ function System (this)
         s.phi = s.B + s.A * world.turn.float
     end
     if KeyDown (KEY.P1) and world.camera.lock then
-        V = world.camera.lock
+        V = mat4.Inverse (this.tMat) % world.camera.lock
         R = vec3.Length (V) 
         A = math.atan2 (V.e.y, V.e.x)
         if A < 0 then A = A + 2 * math.pi end

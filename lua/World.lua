@@ -15,7 +15,7 @@ function NewWorld ()
     local P1 = {
         colour = vec3.New (1, 1, 1),
         radius = 1,
-        rMat = mat4.id,
+        rMat = mat4.Movement (vec3.x * 10),
         parent = world.center,
         orbits = {
             {width = 4, nCells = 3},
