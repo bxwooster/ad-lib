@@ -2,6 +2,7 @@ function NewSystem (this, world)
     table.insert (world.systems, this)
     this.segments = {}
     local R1 = this.radius
+    local prevring
     for _,orbit in ipairs (this.orbits) do
         local R2 = R1 + orbit.width
         local A = math.pi * 2 / orbit.nCells
@@ -14,7 +15,7 @@ function NewSystem (this, world)
                 R1 = R1,
                 R2 = R2,
                 A = A,
-                B = A * (i - 1),
+                B = A * i,
             }
             ring[i] = segment
             table.insert (world.segments, segment)
@@ -24,9 +25,18 @@ function NewSystem (this, world)
             -- h, i, j
             local h = (i - 1) % N
             local j = (i + 1) % N
-            ring[i].neighbours = {ring[h], ring[j]}
+            ring[i].neighbours = {[ring[h]]=true, [ring[j]]=true}
+            local segment = ring[i]
+            local F = function () return segment.phi % 1 < 0.5 end
+            if prevring then
+                for k = 0, #prevring do
+                    local P = prevring[k]
+                    ring[i].neighbours[P] = F
+                end
+            end
         end
         R1 = R2
+        prevring = ring
     end
 end
 
@@ -34,7 +44,7 @@ function System (this)
     local function X (angle) return angle % (2 * math.pi) end
     local function Y (angle) return X (angle) < math.pi end
     for _,s in ipairs (this.segments) do
-        s.phi = s.B + s.A * World.turn.float
+        s.phi = (s.B + s.A * World.turn.float) % (2 * math.pi)
     end
 
     V = Mat4.Inverse (this.tMat) % Lock
@@ -44,8 +54,10 @@ function System (this)
     for _,s in ipairs (this.segments) do
         if Y (A - s.phi) and Y (s.phi + s.A - A) and s.R1 < R and R < s.R2 then
             Selected[s] = Colour.white
-            for _,n in ipairs (s.neighbours) do
-                Selected[n] = Colour.black
+            for n,f in pairs (s.neighbours) do
+                if f == true or f () then
+                    Selected[n] = Colour.black
+                end
             end
         end
     end
@@ -56,4 +68,3 @@ function Segment (this)
     Core.Segment (this.parent.tMat, colour,
         this.R1, this.R2, this.A, this.phi)
 end
-
