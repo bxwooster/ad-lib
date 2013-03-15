@@ -58,8 +58,13 @@ API void PreSegment () {
     struct glts_cello const * shader = & XE->gcell;
 
     glDepthMask (GL_FALSE);
+    glEnable (GL_DEPTH_TEST);
     glEnable (GL_BLEND);
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable (GL_STENCIL_TEST);
+    glStencilFunc (GL_GREATER, 1, 1);
+    glStencilOp (GL_KEEP, GL_KEEP, GL_REPLACE);
+
     glUseProgram (shader->program);
 
     glBindBuffer (GL_ARRAY_BUFFER, XE->vsegment.vbo);
@@ -92,15 +97,20 @@ API void Segment (mat4 const * tMat, vec3 const * colour,
 API void PreSphere () {
     struct glts_planeta const * shader = XE->gplanets;
 
-    glBindBuffer (GL_ARRAY_BUFFER, XE->vimposter.vbo);
-
     glDepthMask (GL_TRUE);
+    glEnable (GL_DEPTH_TEST);
     glDisable (GL_BLEND);
+    glDisable (GL_STENCIL_TEST);
 
     glUseProgram (shader->program);
 
+    glBindBuffer (GL_ARRAY_BUFFER, XE->vimposter.vbo);
+    // these two guys need to be called after glBindBuffer
     glVertexAttribPointer (shader->Apos2d, 2, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray (shader->Apos2d);
+
+    // kind of hacky...
+    glActiveTexture (GL_TEXTURE0);
 }
 
 API void Sphere (mat4 const * tMat, vec3 const * colour, float radius) {

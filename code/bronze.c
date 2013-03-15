@@ -72,6 +72,7 @@ bronze_init (struct SDL * sdl) {
     memset (E->key, -1, max);
 
     E->Sproj = util_projection (E->sdl->width, E->sdl->height, k_fov);
+    glViewport (0, 0, E->sdl->width, E->sdl->height);
 
     E->tex = util_earth ();
     E->vsegment = util_segment ();
@@ -128,12 +129,12 @@ void bronze_destroy (struct bronze_engine * E) {
 }
 
 void bronze_frame_gl (struct bronze_engine * E) {
-    glActiveTexture (GL_TEXTURE0); glEnable (GL_DEPTH_TEST);
-    glViewport (0, 0, E->sdl->width, E->sdl->height);
-
+    (void) E;
     glDepthMask (GL_TRUE);
     glClearColor (0.0f, 0.0f, 0.0f, 0.0);
-    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearStencil (0);
+    glClearDepth (1.0);
+    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     GLuint error = glGetError ();
     if (error != 0) {

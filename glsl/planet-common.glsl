@@ -20,6 +20,8 @@ vec4 vertex () {
     Vuv = Apos2d * Uuvscale;
 	Vnormal_part1 = mat3 (Umv) * vec3 (Vuv, 0.0);
 
+    // slight hack so that planets are above segments
+    position.z -= 0.01;
 	return position;
 }
 #elif defined FS
