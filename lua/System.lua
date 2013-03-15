@@ -11,6 +11,12 @@ end
 function NewSystem (this, world)
     -- Generate the segments inside rings
     local rings = {}
+
+    local RTotal = this.radius
+    for r, orbit in ipairs (this.orbits) do
+        RTotal = RTotal + orbit.width
+    end
+
     local R1 = this.radius
     for r, orbit in ipairs (this.orbits) do
         local ring = {}
@@ -23,8 +29,8 @@ function NewSystem (this, world)
             ring[i] = {
                 parent = this,
                 colour = Vec3.New (0, 0, A * i % 0.5 + 0.5),
-                R1 = R1,
-                R2 = R2,
+                R1 = R1 / RTotal,
+                R2 = R2 / RTotal,
                 A = A,
                 B = A * i,
             }
@@ -32,6 +38,8 @@ function NewSystem (this, world)
 
         R1 = R2
     end
+
+    this.radius = this.radius / RTotal
 
     -- Add ring-neighbour links
     for r = 0, #rings do

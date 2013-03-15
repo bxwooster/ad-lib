@@ -15,7 +15,7 @@ function NewWorld ()
     local P1 = {
         colour = Vec3.New (1, 1, 1),
         radius = 1,
-        rMat = Mat4.Movement (Vec3.x * 12),
+        rMat = Mat4.id,
         parent = world.center,
         orbits = {
             {width = 4, nCells = 3},
@@ -34,8 +34,8 @@ function NewWorld ()
     local P2 = {
         colour = Vec3.New (1, 1, 1),
         radius = 1,
-        rMat = Mat4.Movement (Vec3.x * -11),
-        parent = world.center,
+        rMat = Mat4.Movement (Vec3.x * -2),
+        parent = P1,
         orbits = {
             {width = 4, nCells = 3},
             {width = 3, nCells = 5},
@@ -50,7 +50,7 @@ function NewWorld ()
     table.insert (world.nodes, P2)
     table.insert (world.spheres, P2)
 
-    local pos = Vec3.New (0, 40, 100)
+    local pos = Vec3.New (0, 1, 4)
     local angle = 0.9 * math.pi
     world.camera = {
         speed = 3,
