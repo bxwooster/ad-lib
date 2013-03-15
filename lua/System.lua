@@ -1,6 +1,6 @@
 local function Intersection (R, P, turn)
-    local r, p = R.A / 2, P.A / 2
-    local d = (R.B + R.A * turn + r) - (P.B + P.A * turn + p)
+    local r, p = R.parent.A / 2, P.parent.A / 2
+    local d = (R.B + R.parent.A * turn + r) - (P.B + P.parent.A * turn + p)
     local s = r + p
     local x = d % (2 * math.pi)
     local y = math.pi * 2 - x
@@ -21,18 +21,20 @@ function NewSystem (this, world)
     local R1 = this.radius
     for r, orbit in ipairs (this.orbits) do
         local A = math.pi * 2 / orbit.nCells
-        local ring = {A = A, parent = this}
-        rings[r - 1] = ring
-
         local R2 = R1 + orbit.width
+
+        local ring = {
+            A = A,
+            parent = this,
+            R1 = R1 / RTotal,
+            R2 = R2 / RTotal,
+        }
+        rings[r - 1] = ring
 
         for i = 0, orbit.nCells - 1 do
             ring[i] = {
                 parent = ring,
                 colour = Vec3.New (0, 0, A * i % 0.5 + 0.5),
-                R1 = R1 / RTotal,
-                R2 = R2 / RTotal,
-                A = A,
                 B = A * i,
             }
         end
@@ -79,7 +81,6 @@ function NewSystem (this, world)
         for _, segment in zpairs (ring) do
             -- reverse order in world.segments
             table.insert (world.segments, 1, segment)
-            table.insert (this.segments, segment)
         end
         table.insert (world.rings, ring)
     end
@@ -97,23 +98,25 @@ function System (this)
     R = Vec3.Length (V) 
     A = math.atan2 (V.e.y, V.e.x)
     if A < 0 then A = A + 2 * math.pi end
-    for _,s in ipairs (this.segments) do
-        if Y (A - s.B - s.parent.phi) and Y (s.B + s.parent.phi + s.A - A) and s.R1 < R and R < s.R2 then
-            Selected[s] = Colour.black
-            if KeyDown (KEY.P1) then
-                if not Start then
-                    Start = s
-                elseif not End then
-                    End = s
-                else
-                    Start = nil
-                    End = nil
-                    Path = nil
+    for _, ring in zpairs (this.rings) do
+        for _, segment in zpairs (ring) do
+            if Y (A - segment.B - ring.phi) and Y (segment.B + ring.phi + ring.A - A) and ring.R1 < R and R < ring.R2 then
+                Selected[segment] = Colour.black
+                if KeyDown (KEY.P1) then
+                    if not Start then
+                        Start = segment
+                    elseif not End then
+                        End = segment
+                    else
+                        Start = nil
+                        End = nil
+                        Path = nil
+                    end
                 end
-            end
-            for n, f in pairs (s.links) do
-                if f == true or f (World.turn.int) then
-                    Selected[n] = Colour.magenta
+                for link, f in pairs (segment.links) do
+                    if f == true or f (World.turn.int) then
+                        Selected[link] = Colour.magenta
+                    end
                 end
             end
         end
@@ -123,7 +126,7 @@ end
 function Segment (this)
     local colour = Selected[this] or this.colour
     Core.Segment (this.parent.tMat, colour,
-        this.R1, this.R2, this.A, this.B)
+        this.parent.R1, this.parent.R2, this.parent.A, this.B)
 end
 
 local function Reconstruct (cameFrom, current)
