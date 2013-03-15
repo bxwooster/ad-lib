@@ -98,23 +98,7 @@ function System (this)
     for _, ring in zpairs (this.rings) do
         for _, segment in zpairs (ring) do
             if Y (A - segment.B - ring.phi) and Y (segment.B + ring.phi + ring.A - A) and ring.R1 < R and R < ring.R2 then
-                Selected[segment] = Colour.black
-                if KeyDown (KEY.P1) then
-                    if not Start then
-                        Start = segment
-                    elseif not End then
-                        End = segment
-                    else
-                        Start = nil
-                        End = nil
-                        Path = nil
-                    end
-                end
-                for link, f in pairs (segment.links) do
-                    if f == true or f (World.turn.int) then
-                        Selected[link] = Colour.magenta
-                    end
-                end
+                Hovered = segment
             end
         end
     end
