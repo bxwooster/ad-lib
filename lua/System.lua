@@ -25,7 +25,6 @@ function NewSystem (this, world)
         local ring = this.external.parent
         local size = 0.5 * (ring.R2 - ring.R1)
         local dist = size + ring.R1
-        local i = 1
         local phi = ring.A * 0.5 + this.external.B
         this.rMat = Mat4.Movement (dist * Vec3.New (math.cos (phi), math.sin (phi), 0))
         this.scale = 0.9 * size
