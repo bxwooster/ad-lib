@@ -90,7 +90,7 @@ function Ring (this)
     this.rMat = Mat4.Rotation(Vec3.z, this.phi)
 end
 
-function SelectSystem (this)
+function System (this)
     local function X (angle) return angle % (2 * math.pi) end
     local function Y (angle) return X (angle) < math.pi end
     V = Mat4.Inverse (this.tMat) % Lock
@@ -101,11 +101,15 @@ function SelectSystem (this)
         if Y (A - s.B - s.parent.phi) and Y (s.B + s.parent.phi + s.A - A) and s.R1 < R and R < s.R2 then
             Selected[s] = Colour.black
             if KeyDown (KEY.P1) then
-                Start = s
-                Path = nil
-            elseif KeyDown (KEY.P2) then
-                End = s
-                Path = nil
+                if not Start then
+                    Start = s
+                elseif not End then
+                    End = s
+                else
+                    Start = nil
+                    End = nil
+                    Path = nil
+                end
             end
             for n, f in pairs (s.links) do
                 if f == true or f (World.turn.int) then

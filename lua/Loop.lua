@@ -10,13 +10,8 @@ function Loop ()
     apply (Ring, World.rings)
     apply (Node, World.nodes)
     Camera (World.camera)
-    apply (SelectSystem, World.systems)
+    apply (System, World.systems)
 
-    if KeyDown (KEY.P3) then
-        Start = nil
-        End = nil
-        Path = nil
-    end
     if Start and End and not Path then 
         Path = AStar (Start, End)
     end
