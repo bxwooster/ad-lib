@@ -15,15 +15,12 @@ function NewWorld ()
     local P1 = {
         colour = Vec3.New (1, 1, 1),
         radius = 1,
+        scale = 2,
         rMat = Mat4.id,
         parent = world.center,
         orbits = {
-            {width = 4, nCells = 3},
-            {width = 3, nCells = 5},
-            {width = 4, nCells = 65},
+            {width = 2, nCells = 3},
             {width = 2, nCells = 7},
-            {width = 5, nCells = 9},
-            {width = 4, nCells = 20},
         }
     }
 
@@ -34,15 +31,11 @@ function NewWorld ()
     local P2 = {
         colour = Vec3.New (1, 1, 1),
         radius = 1,
-        rMat = Mat4.Movement (Vec3.x * -2),
+        scale = 0.33,
+        rMat = Mat4.Movement (Vec3.x * -1.6),
         parent = P1,
         orbits = {
-            {width = 4, nCells = 3},
-            {width = 3, nCells = 5},
-            {width = 4, nCells = 65},
-            {width = 2, nCells = 7},
-            {width = 5, nCells = 9},
-            {width = 4, nCells = 20},
+            {width = 1, nCells = 4},
         }
     }
 

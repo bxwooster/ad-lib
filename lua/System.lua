@@ -16,6 +16,7 @@ function NewSystem (this, world)
     for r, orbit in ipairs (this.orbits) do
         RTotal = RTotal + orbit.width
     end
+    RTotal = RTotal / this.scale
 
     local R1 = this.radius
     for r, orbit in ipairs (this.orbits) do
@@ -76,7 +77,8 @@ function NewSystem (this, world)
     for r = 0, #rings do
         local ring = rings[r]
         for i = 0, #ring do
-            table.insert (world.segments, ring[i])
+            -- reverse order in world.segments
+            table.insert (world.segments, 1, ring[i])
             table.insert (this.segments, ring[i])
         end
     end
