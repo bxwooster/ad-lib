@@ -43,13 +43,13 @@ function NewSystem (this, world)
     this.radius = this.radius / RTotal
 
     -- Add ring-neighbour links
-    for r = 0, #rings do
-        local ring = rings[r]
-        for i = 0, #ring do
+    for _, ring in zpairs (rings) do
+        for i, R in zpairs (ring) do
             -- h, i, j
-            local h = (i - 1) % (#ring + 1)
-            local j = (i + 1) % (#ring + 1)
-            ring[i].links = {[ring[h]]=true, [ring[j]]=true}
+            local len = #ring + 1
+            local h = (i - 1) % len
+            local j = (i + 1) % len
+            R.links = {[ring[h]]=true, [ring[j]]=true}
         end
     end
 
@@ -57,11 +57,8 @@ function NewSystem (this, world)
     for r = 1, #rings do
         local ring = rings[r]
         local prev = rings[r - 1]
-        for i = 0, #ring do
-            local R = ring[i]
-            for k = 0, #prev do
-                local P = prev[k]
-
+        for _, R in zpairs (ring) do
+            for _, P in zpairs (prev) do
                 local F = function (turn)
                     return Intersection (R, P, turn)
                 end
@@ -77,12 +74,12 @@ function NewSystem (this, world)
     table.insert (world.spheres, this)
     this.rings = rings
     this.segments = {}
-    for r = 0, #rings do
-        local ring = rings[r]
+    for _, ring in zpairs (rings) do
         table.insert (world.nodes, ring)
-        for i = 0, #ring do
+        for _, segment in zpairs (ring) do
             -- reverse order in world.segments
-            table.insert (world.segments, 1, ring[i])
+            table.insert (world.segments, 1, segment)
+            table.insert (this.segments, segment)
         end
     end
 end

@@ -1,15 +1,29 @@
 -- vecmat: "newindex"? prevent mutation
 
+function apply (f, x)
+    for _,xi in ipairs (x) do f (xi) end
+end
+
+do
+    local function iter (a, i)
+        i = i + 1
+        local v = a[i]
+        if v then
+            return i, v
+        end
+    end
+
+    function zpairs (a)
+        return iter, a, -1
+    end
+end
+
 function KeyDown (key)
     return (Core.Key (key) > 1)
 end
 
 function KeyHeld (key)
     return (Core.Key (key) > 0)
-end
-
-function Apply (f, x)
-    for _,xi in ipairs (x) do f (xi) end
 end
 
 function table.print (t)

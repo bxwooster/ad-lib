@@ -7,10 +7,10 @@ function Loop ()
 
     Selected = {}
 
-    Apply (UpdateSystem, World.systems)
-    Apply (Node, World.nodes)
+    apply (UpdateSystem, World.systems)
+    apply (Node, World.nodes)
     Camera (World.camera)
-    Apply (SelectSystem, World.systems)
+    apply (SelectSystem, World.systems)
 
     if KeyDown (KEY.P3) then
         Start = nil
@@ -29,10 +29,10 @@ function Loop ()
     if End then Selected[End] = Colour.green end
 
     Core.PreSphere ()
-    Apply (Sphere, World.spheres)
+    apply (Sphere, World.spheres)
 
     Core.PreSegment ()
-    Apply (Segment, World.segments)
+    apply (Segment, World.segments)
 
     Turn (World.turn)
 
