@@ -26,8 +26,9 @@ function NewWorld ()
         radius = 1,
         orbits = {
             {width = 1, nCells = 3},
-            {width = 2, nCells = 7},
-            {width = 2, nCells = 14},
+            {width = 3, nCells = 7},
+            {width = 1, nCells = 65},
+            {width = 3, nCells = 5},
         }
     }
     NewSystem (P1, world)
@@ -37,18 +38,18 @@ function NewWorld ()
         colour = Vec3.New (1, 1, 1),
         radius = 1,
         orbits = {
-            {width = 1, nCells = 4},
+            {width = 1, nCells = 3},
         }
     }
     NewSystem (P2, world)
 
     local P3 = {
-        external = P1.rings[2][2],
-        external2 = P1.rings[2][3],
+        external = P1.rings[3][0],
+        external2 = P1.rings[3][1],
         colour = Vec3.New (1, 1, 1),
         radius = 1,
         orbits = {
-            {width = 1, nCells = 6},
+            {width = 1, nCells = 4},
         }
     }
     NewSystem (P3, world)

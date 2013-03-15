@@ -1,7 +1,7 @@
 local function CloseEnough (s, d)
     local x = d % (2 * math.pi)
     local y = math.pi * 2 - x
-    local delta = 0.1
+    local delta = 0.001
     return s - x > delta or s - y > delta
 end
 
@@ -14,7 +14,7 @@ end
 
 local function HalfIntersection (R, half, turn)
     local r = R.parent.A / 2
-    local d = (R.B + R.parent.A * turn + r)
+    local d = (R.B + R.parent.A * turn + r) + math.pi / 2
     if half then d = d + math.pi end
     local s = r + math.pi / 2
     return CloseEnough (s, d)
@@ -39,7 +39,7 @@ function NewSystem (this, world)
             phi = (phi + phi2) / 2
         end
         local dir = Vec3.New (math.cos (phi), math.sin (phi), 0)
-        this.rMat = Mat4.Movement (dist * dir)
+        this.rMat = Mat4.Movement (dist * dir) ^ Mat4.Rotation (Vec3.z, ring.A)
         this.scale = 0.9 * size
         this.parent = ring
     else
