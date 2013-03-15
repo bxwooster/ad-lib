@@ -1,11 +1,23 @@
-local function Intersection (R, P, turn)
-    local r, p = R.parent.A / 2, P.parent.A / 2
-    local d = (R.B + R.parent.A * turn + r) - (P.B + P.parent.A * turn + p)
-    local s = r + p
+local function CloseEnough (s, d)
     local x = d % (2 * math.pi)
     local y = math.pi * 2 - x
     local delta = 0.1
     return s - x > delta or s - y > delta
+end
+
+local function Intersection (R, P, turn)
+    local r, p = R.parent.A / 2, P.parent.A / 2
+    local d = (R.B + R.parent.A * turn + r) - (P.B + P.parent.A * turn + p)
+    local s = r + p
+    return CloseEnough (s, d)
+end
+
+local function HalfIntersection (R, half, turn)
+    local r = R.parent.A / 2
+    local d = (R.B + R.parent.A * turn + r)
+    if half then d = d + math.pi end
+    local s = r + math.pi / 2
+    return CloseEnough (s, d)
 end
 
 local function Scaling (this)
@@ -17,18 +29,23 @@ local function Scaling (this)
 end
 
 function NewSystem (this, world)
-    if not this.external then
-        this.scale = 1
-        this.rMat = Mat4.id
-        this.parent = world.center
-    else
+    if this.external then
         local ring = this.external.parent
         local size = 0.5 * (ring.R2 - ring.R1)
         local dist = size + ring.R1
         local phi = ring.A * 0.5 + this.external.B
-        this.rMat = Mat4.Movement (dist * Vec3.New (math.cos (phi), math.sin (phi), 0))
+        if this.external2 then
+            local phi2 = ring.A * 0.5 + this.external2.B
+            phi = (phi + phi2) / 2
+        end
+        local dir = Vec3.New (math.cos (phi), math.sin (phi), 0)
+        this.rMat = Mat4.Movement (dist * dir)
         this.scale = 0.9 * size
         this.parent = ring
+    else
+        this.scale = 1
+        this.rMat = Mat4.id
+        this.parent = world.center
     end
 
     local scale = Scaling (this)
@@ -89,7 +106,22 @@ function NewSystem (this, world)
     end
 
     -- External links
-    if this.external then
+    if this.external2 then
+        local O1 = this.external
+        local O2 = this.external2
+        for _, R in zpairs (rings[#rings]) do
+            local F1 = function (turn)
+                return HalfIntersection (R, false, turn)
+            end
+            local F2 = function (turn)
+                return HalfIntersection (R, true, turn)
+            end
+            R.links[O1] = F1
+            O1.links[R] = F1
+            R.links[O2] = F2
+            O2.links[R] = F2
+        end
+    elseif this.external then
         local O = this.external
         for _, R in zpairs (rings[#rings]) do
             R.links[O] = true
@@ -137,7 +169,9 @@ function HoverInSystem (this)
     for _, ring in zpairs (this.rings) do
         if ring.R1 < R and R < ring.R2 then
             for _, segment in zpairs (ring) do
-                if Y (A - segment.B - ring.phi) and Y (segment.B + ring.phi + ring.A - A) then
+                local y1 = A - segment.B - ring.phi
+                local y2 = segment.B + ring.phi + ring.A - A
+                if Y (y1) and Y (y2) then
                     Hovered = segment
                 end
             end

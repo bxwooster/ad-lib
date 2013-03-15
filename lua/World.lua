@@ -44,6 +44,7 @@ function NewWorld ()
 
     local P3 = {
         external = P1.rings[2][2],
+        external2 = P1.rings[2][3],
         colour = Vec3.New (1, 1, 1),
         radius = 1,
         orbits = {
