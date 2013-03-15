@@ -22,11 +22,10 @@ function NewWorld ()
 
     NewSystem (P1, world)
 
-    local P2 = {
-        rMat = Mat4.Movement (0.8 * Vec3.x),
-        parent = P1.rings[1],
-        scale = 0.16,
+    local ring = P1.rings[1]
 
+    local P2 = {
+        external = P1.rings[1][4],
         colour = Vec3.New (1, 1, 1),
         radius = 1,
         orbits = {
@@ -34,7 +33,7 @@ function NewWorld ()
         }
     }
 
-    NewSystem (P2, world, P1.rings[1])
+    NewSystem (P2, world)
 
     local pos = Vec3.New (0, 1.75, 1.5)
     local angle = 0.75 * math.pi

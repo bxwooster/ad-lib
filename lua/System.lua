@@ -16,12 +16,22 @@ local function Scaling (this)
     return this.scale / total
 end
 
-function NewSystem (this, world, where)
-    if not where then
+function NewSystem (this, world)
+    if not this.external then
         this.scale = 1
         this.rMat = Mat4.id
         this.parent = world.center
+    else
+        local ring = this.external.parent
+        local size = 0.5 * (ring.R2 - ring.R1)
+        local dist = size + ring.R1
+        local i = 1
+        local phi = ring.A * 0.5 + this.external.B
+        this.rMat = Mat4.Movement (dist * Vec3.New (math.cos (phi), math.sin (phi), 0))
+        this.scale = 0.9 * size
+        this.parent = ring
     end
+
     local scale = Scaling (this)
     local rings = {}
     this.rings = rings
@@ -76,6 +86,15 @@ function NewSystem (this, world, where)
                 R.links[P] = F
                 P.links[R] = F
             end
+        end
+    end
+
+    -- External links
+    if this.external then
+        local O = this.external
+        for _, R in zpairs (rings[#rings]) do
+            R.links[O] = true
+            O.links[R] = true
         end
     end
 
