@@ -1,4 +1,4 @@
-function Camera (this)
+function UpdateCamera (this)
     Core.SetCamera (this.tMat)
     CameraPointer (this)
     CameraArrows (this)

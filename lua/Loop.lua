@@ -4,16 +4,16 @@ function Loop ()
     Dt = newTime - (Time or 0)
     Time = newTime
     Selected = {}
-    apply (Ring, World.rings)
-    apply (Node, World.nodes)
-    Camera (World.camera)
-    apply (System, World.systems)
+    apply (UpdateRing, World.rings)
+    apply (UpdateNode, World.nodes)
+    UpdateCamera (World.camera)
+    apply (HoverInSystem, World.systems)
     Highlight ()
     Core.PreSphere ()
-    apply (Sphere, World.spheres)
+    apply (DrawSphere, World.spheres)
     Core.PreSegment ()
-    apply (Segment, World.segments)
-    Turn (World.turn)
+    apply (DrawSegment, World.segments)
+    DoTurn (World.turn)
     if KeyDown (KEY.L) then REPL () end
     if KeyDown (KEY.R) then World = NewWorld () end
     if KeyDown (KEY.Escape) then Core.Halt () end
@@ -53,7 +53,7 @@ function Highlight ()
     if End then Selected[End] = Colour.green end
 end
 
-function Turn (this)
+function DoTurn (this)
     local duration = 2
     local left = this.endTime - Time
     if left > 0 then
@@ -64,10 +64,10 @@ function Turn (this)
     end
 end
 
-function Node (this)
+function UpdateNode (this)
     this.tMat = this.parent.tMat ^ this.rMat
 end
 
-function Sphere (this)
+function DrawSphere (this)
     Core.Sphere (this.tMat, this.colour, this.radius)
 end

@@ -16,7 +16,12 @@ local function Scaling (this)
     return this.scale / total
 end
 
-function NewSystem (this, world)
+function NewSystem (this, world, where)
+    if not where then
+        this.scale = 1
+        this.rMat = Mat4.id
+        this.parent = world.center
+    end
     local scale = Scaling (this)
     local rings = {}
     this.rings = rings
@@ -99,7 +104,7 @@ function NewSystem (this, world)
     end
 end
 
-function System (this)
+function HoverInSystem (this)
     if Hovered == false then return end
     local function X (angle) return angle % (2 * math.pi) end
     local function Y (angle) return X (angle) < math.pi end
@@ -122,13 +127,13 @@ function System (this)
     end
 end
 
-function Segment (this)
+function DrawSegment (this)
     local colour = Selected[this] or this.colour
     Core.Segment (this.parent.tMat, colour,
         this.parent.R1, this.parent.R2, this.parent.A, this.B)
 end
 
-function Ring (this)
+function UpdateRing (this)
     this.phi = (this.A * World.turn.float) % (2 * math.pi)
     this.rMat = Mat4.Rotation(Vec3.z, this.phi)
 end
