@@ -81,15 +81,13 @@ function NewSystem (this, world)
             table.insert (world.segments, 1, segment)
             table.insert (this.segments, segment)
         end
+        table.insert (world.rings, ring)
     end
 end
 
-function UpdateSystem (this)
-    for r = 0, #this.rings do
-        local ring = this.rings[r]
-        ring.phi = (ring.A * World.turn.float) % (2 * math.pi)
-        ring.rMat = Mat4.Rotation(Vec3.z, ring.A * World.turn.float)
-    end
+function Ring (this)
+    this.phi = (this.A * World.turn.float) % (2 * math.pi)
+    this.rMat = Mat4.Rotation(Vec3.z, this.phi)
 end
 
 function SelectSystem (this)

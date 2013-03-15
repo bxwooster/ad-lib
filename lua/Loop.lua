@@ -7,7 +7,7 @@ function Loop ()
 
     Selected = {}
 
-    apply (UpdateSystem, World.systems)
+    apply (Ring, World.rings)
     apply (Node, World.nodes)
     Camera (World.camera)
     apply (SelectSystem, World.systems)

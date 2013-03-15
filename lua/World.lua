@@ -2,6 +2,7 @@ function NewWorld ()
     local world = {}
 
     world.nodes = {}
+    world.rings = {}
     world.systems = {}
     world.spheres = {}
     world.segments = {}
@@ -31,7 +32,7 @@ function NewWorld ()
         radius = 1,
         scale = 0.33,
         rMat = Mat4.Movement (Vec3.x * -1.6),
-        parent = P1,
+        parent = P1.rings[1],
         orbits = {
             {width = 1, nCells = 4},
         }
