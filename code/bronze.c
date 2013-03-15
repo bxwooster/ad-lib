@@ -7,7 +7,7 @@ char * GPLANETS [] = {
     "glsl/planet-wireframe.glts",
 };
 
-char CELL [] = "glsl/cell.glts";
+char SEGMENT [] = "glsl/segment.glts";
 char GALAXY [] = "data/galaxy";
 
 char * func2file (char const * func) {
@@ -35,13 +35,13 @@ void lua_hot (void * data, char const * file, char const * text) {
     }
 }
 
-void cell_hot (void * data, char const * file, char const * text) {
+void segment_hot (void * data, char const * file, char const * text) {
     struct bronze_engine * E = data;
     (void) file;
 
-    glDeleteProgram (E->gcell.program); /* Dup. */
+    glDeleteProgram (E->gsegment.program); /* Dup. */
 
-    E->gcell = glts_load_cello (CELL, (char /*const*/ *) text);
+    E->gsegment = glts_load_segmento ((char /*const*/ *) file, (char /*const*/ *) text);
 }
 
 void planet_hot (void * data, char const * file, char const * text) {
@@ -85,9 +85,9 @@ bronze_init (struct SDL * sdl) {
         hot_pull (E->H, GPLANETS[i], planet_hot, EnP, sizeof (EnP));
     }
 
-    E->gcell = (struct glts_cello) {0};
-    E->gcell.program = GL_FALSE;
-    hot_pull (E->H, CELL, cell_hot, E, 0);
+    E->gsegment = (struct glts_segmento) {0};
+    E->gsegment.program = GL_FALSE;
+    hot_pull (E->H, SEGMENT, segment_hot, E, 0);
 
     core_init (E);
     E->L = luaL_newstate ();
@@ -123,7 +123,7 @@ void bronze_destroy (struct bronze_engine * E) {
         glDeleteProgram (E->gplanets[i].program);
     }
 
-    glDeleteProgram (E->gcell.program);
+    glDeleteProgram (E->gsegment.program);
 
     free (E);
 }

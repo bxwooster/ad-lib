@@ -13,7 +13,7 @@ struct bronze_engine {
     struct GLvbo_and_size vsegment;
     struct GLvbo_and_size vimposter;
     struct glts_planeta gplanets [3];
-    struct glts_cello gcell;
+    struct glts_segmento gsegment;
 
     int8_t * key;
     unsigned key_max;

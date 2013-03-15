@@ -55,7 +55,7 @@ API void SetCamera (mat4 const * mcam) {
 }
 
 API void PreSegment () {
-    struct glts_cello const * shader = & XE->gcell;
+    struct glts_segmento const * shader = & XE->gsegment;
 
     glDepthMask (GL_FALSE);
     glEnable (GL_DEPTH_TEST);
@@ -75,7 +75,7 @@ API void PreSegment () {
 
 API void Segment (mat4 const * tMat, vec3 const * colour,
         float r1, float r2, float angsize, float angle) {
-    struct glts_cello const * shader = & XE->gcell;
+    struct glts_segmento const * shader = & XE->gsegment;
 
     unsigned M = XE->vsegment.size * angsize / 6 / (2*M_PI) + 1;
 

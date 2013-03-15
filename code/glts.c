@@ -165,8 +165,8 @@ end:
     return program;        
 }
 
-struct glts_cello glts_load_cello (char * filename, char * text) {
-    struct glts_cello it;
+struct glts_segmento glts_load_segmento (char * filename, char * text) {
+    struct glts_segmento it;
 
     it.program = glts_load (filename, text, "");
 

@@ -9,7 +9,7 @@ struct glts_planeta {
     GLint Utexture;
 };
 
-struct glts_cello {
+struct glts_segmento {
     GLuint program;
     GLuint Apos2d;
     GLint Umvp;
