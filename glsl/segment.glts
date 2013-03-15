@@ -10,13 +10,12 @@ uniform float Uangle;
 
 uniform mat4 Umvp;
 uniform vec3 Ucolour;
-varying vec2 Vplanar;
+varying float VR;
 
 #if defined FS
 vec3 fragment () {
-	float radius = length (Vplanar);
     float ambient = 0.5;
-    float inner = ambient + (radius - UR1) / (UR2 - UR1);
+    float inner = ambient + (VR - UR1) / (UR2 - UR1);
 
     float brightness = 1.0;
 	return brightness * Ucolour * inner;
@@ -28,7 +27,7 @@ vec4 vertex () {
     vec2 cartesian = vec2 (r * cos(a), r * sin(a));
     vec4 position = Umvp * vec4 (cartesian, 0.0, 1.0);
 
-	Vplanar = cartesian;
+	VR = r;
     return position;
 }
 #endif

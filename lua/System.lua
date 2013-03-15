@@ -9,11 +9,11 @@ local function Intersection (R, P, turn)
 end
 
 local function Scaling (this)
-    local RTotal = this.radius
+    local total = this.radius
     for r, orbit in ipairs (this.orbits) do
-        RTotal = RTotal + orbit.width
+        total = total + orbit.width
     end
-    return RTotal / this.scale
+    return this.scale / total
 end
 
 function NewSystem (this, world)
@@ -30,9 +30,10 @@ function NewSystem (this, world)
         local ring = {
             A = A,
             parent = this,
-            R1 = R1 / scale,
-            R2 = R2 / scale,
+            R1 = R1 * scale,
+            R2 = R2 * scale,
         }
+        print (R1, R2, scale)
         rings[r - 1] = ring
 
         for i = 0, orbit.nCells - 1 do
@@ -46,7 +47,7 @@ function NewSystem (this, world)
         R1 = R2
     end
 
-    this.radius = this.radius / scale
+    this.radius = this.radius * scale
 
     -- Add ring-neighbour links
     for _, ring in zpairs (rings) do
