@@ -25,8 +25,6 @@ function NewWorld ()
     }
 
     NewSystem (P1, world)
-    table.insert (world.nodes, P1)
-    table.insert (world.spheres, P1)
 
     local P2 = {
         colour = Vec3.New (1, 1, 1),
@@ -40,8 +38,6 @@ function NewWorld ()
     }
 
     NewSystem (P2, world)
-    table.insert (world.nodes, P2)
-    table.insert (world.spheres, P2)
 
     local pos = Vec3.New (0, 1, 4)
     local angle = 0.9 * math.pi

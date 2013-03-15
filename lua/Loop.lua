@@ -7,11 +7,10 @@ function Loop ()
 
     Selected = {}
 
+    Apply (UpdateSystem, World.systems)
     Apply (Node, World.nodes)
-
     Camera (World.camera)
-
-    Apply (System, World.systems)
+    Apply (SelectSystem, World.systems)
 
     if KeyDown (KEY.P3) then
         Start = nil

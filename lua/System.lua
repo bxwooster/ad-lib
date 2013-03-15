@@ -20,15 +20,15 @@ function NewSystem (this, world)
 
     local R1 = this.radius
     for r, orbit in ipairs (this.orbits) do
-        local ring = {}
+        local A = math.pi * 2 / orbit.nCells
+        local ring = {A = A, parent = this}
         rings[r - 1] = ring
 
         local R2 = R1 + orbit.width
-        local A = math.pi * 2 / orbit.nCells
 
         for i = 0, orbit.nCells - 1 do
             ring[i] = {
-                parent = this,
+                parent = ring,
                 colour = Vec3.New (0, 0, A * i % 0.5 + 0.5),
                 R1 = R1 / RTotal,
                 R2 = R2 / RTotal,
@@ -73,30 +73,37 @@ function NewSystem (this, world)
 
     -- Finally, inject it all into the world
     table.insert (world.systems, this)
+    table.insert (world.nodes, this)
+    table.insert (world.spheres, this)
+    this.rings = rings
     this.segments = {}
     for r = 0, #rings do
         local ring = rings[r]
+        table.insert (world.nodes, ring)
         for i = 0, #ring do
             -- reverse order in world.segments
             table.insert (world.segments, 1, ring[i])
-            table.insert (this.segments, ring[i])
         end
     end
 end
 
-function System (this)
+function UpdateSystem (this)
+    for r = 0, #this.rings do
+        local ring = this.rings[r]
+        ring.phi = (ring.A * World.turn.float) % (2 * math.pi)
+        ring.rMat = Mat4.Rotation(Vec3.z, ring.A * World.turn.float)
+    end
+end
+
+function SelectSystem (this)
     local function X (angle) return angle % (2 * math.pi) end
     local function Y (angle) return X (angle) < math.pi end
-    for _,s in ipairs (this.segments) do
-        s.phi = (s.B + s.A * World.turn.float) % (2 * math.pi)
-    end
-
     V = Mat4.Inverse (this.tMat) % Lock
     R = Vec3.Length (V) 
     A = math.atan2 (V.e.y, V.e.x)
     if A < 0 then A = A + 2 * math.pi end
     for _,s in ipairs (this.segments) do
-        if Y (A - s.phi) and Y (s.phi + s.A - A) and s.R1 < R and R < s.R2 then
+        if Y (A - s.B - s.parent.phi) and Y (s.B + s.parent.phi + s.A - A) and s.R1 < R and R < s.R2 then
             Selected[s] = Colour.black
             if KeyDown (KEY.P1) then
                 Start = s
@@ -117,7 +124,7 @@ end
 function Segment (this)
     local colour = Selected[this] or this.colour
     Core.Segment (this.parent.tMat, colour,
-        this.R1, this.R2, this.A, this.phi)
+        this.R1, this.R2, this.A, this.B)
 end
 
 local function Reconstruct (cameFrom, current)
