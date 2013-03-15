@@ -8,16 +8,20 @@ local function Intersection (R, P, turn)
     return s - x > delta or s - y > delta
 end
 
-function NewSystem (this, world)
-    -- Generate the segments inside rings
-    local rings = {}
-
+local function Scaling (this)
     local RTotal = this.radius
     for r, orbit in ipairs (this.orbits) do
         RTotal = RTotal + orbit.width
     end
-    RTotal = RTotal / this.scale
+    return RTotal / this.scale
+end
 
+function NewSystem (this, world)
+    local scale = Scaling (this)
+    local rings = {}
+    this.rings = rings
+
+    -- Generate the rings and segments inside rings
     local R1 = this.radius
     for r, orbit in ipairs (this.orbits) do
         local A = math.pi * 2 / orbit.nCells
@@ -26,8 +30,8 @@ function NewSystem (this, world)
         local ring = {
             A = A,
             parent = this,
-            R1 = R1 / RTotal,
-            R2 = R2 / RTotal,
+            R1 = R1 / scale,
+            R2 = R2 / scale,
         }
         rings[r - 1] = ring
 
@@ -42,7 +46,7 @@ function NewSystem (this, world)
         R1 = R2
     end
 
-    this.radius = this.radius / RTotal
+    this.radius = this.radius / scale
 
     -- Add ring-neighbour links
     for _, ring in zpairs (rings) do
@@ -74,8 +78,6 @@ function NewSystem (this, world)
     table.insert (world.systems, this)
     table.insert (world.nodes, this)
     table.insert (world.spheres, this)
-    this.rings = rings
-    this.segments = {}
     for _, ring in zpairs (rings) do
         table.insert (world.nodes, ring)
         for _, segment in zpairs (ring) do
