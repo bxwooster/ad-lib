@@ -22,7 +22,7 @@ end
 function Highlight ()
     if Hovered then
         local segment = Hovered
-        Selected[segment] = Colour.black
+        Selected[segment] = Colour.yellow
         if KeyDown (KEY.P1) then
             if not Start then
                 Start = segment
@@ -45,12 +45,15 @@ function Highlight ()
         Path = AStar (Start, End)
     end
     if Path then
-        for _, C in ipairs (Path) do
-            Selected[C] = Colour.yellow
+        local N = #Path
+        for i, C in ipairs (Path) do
+            local k = (i - 1) / (N - 1)
+            print (k)
+            Selected[C] = Colour.black * (1 - k) + Colour.white * (k)
         end
     end
-    if Start then Selected[Start] = Colour.red end
-    if End then Selected[End] = Colour.green end
+    if Start then Selected[Start] = Colour.black end
+    if End then Selected[End] = Colour.white end
 end
 
 function DoTurn (this)
