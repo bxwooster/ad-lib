@@ -77,7 +77,7 @@ API void Segment (mat4 const * tMat, vec3 const * colour,
         float r1, float r2, float angsize, float angle) {
     struct glts_segmento const * shader = & XE->gsegment;
 
-    unsigned M = XE->vsegment.size * angsize / 6 / (2*M_PI) + 1;
+    unsigned M = (XE->vsegment.size / 6 - 1) * angsize / (2 * M_PI) + 1;
 
     mat4 transform = mat4_rotated_aa
         (tMat, & (vec3) {0,0,1}, angle);

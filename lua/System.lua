@@ -100,16 +100,23 @@ function NewSystem (this, world)
 end
 
 function System (this)
+    if Hovered == false then return end
     local function X (angle) return angle % (2 * math.pi) end
     local function Y (angle) return X (angle) < math.pi end
     V = Mat4.Inverse (this.tMat) % Lock
     R = Vec3.Length (V) 
     A = math.atan2 (V.e.y, V.e.x)
     if A < 0 then A = A + 2 * math.pi end
+    if R < this.radius then
+        Hovered = false
+        return
+    end
     for _, ring in zpairs (this.rings) do
-        for _, segment in zpairs (ring) do
-            if Y (A - segment.B - ring.phi) and Y (segment.B + ring.phi + ring.A - A) and ring.R1 < R and R < ring.R2 then
-                Hovered = segment
+        if ring.R1 < R and R < ring.R2 then
+            for _, segment in zpairs (ring) do
+                if Y (A - segment.B - ring.phi) and Y (segment.B + ring.phi + ring.A - A) then
+                    Hovered = segment
+                end
             end
         end
     end
