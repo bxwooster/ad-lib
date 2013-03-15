@@ -33,7 +33,6 @@ function NewSystem (this, world)
             R1 = R1 * scale,
             R2 = R2 * scale,
         }
-        print (R1, R2, scale)
         rings[r - 1] = ring
 
         for i = 0, orbit.nCells - 1 do
@@ -74,6 +73,17 @@ function NewSystem (this, world)
             end
         end
     end
+
+    -- phony segment
+    this.R1 = 0
+    this.R2 = this.radius
+    this.A = 2 * math.pi
+    local phony = {
+        parent = this,
+        colour = -Colour.white,
+        B = 0
+    }
+    table.insert (world.segments, 1, phony)
 
     -- Finally, inject it all into the world
     table.insert (world.systems, this)

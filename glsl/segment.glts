@@ -1,5 +1,3 @@
-#pragma include simple-vf
-
 #if defined VS
 attribute vec2 Apos2d;
 #endif
@@ -13,22 +11,24 @@ uniform vec3 Ucolour;
 varying float VR;
 
 #if defined FS
-vec3 fragment () {
+void main(void) {
+    float alpha = (Ucolour.r < 0) ? 0.0 : 0.5;
     float ambient = 0.5;
     float inner = ambient + (VR - UR1) / (UR2 - UR1);
 
     float brightness = 1.0;
-	return brightness * Ucolour * inner;
+	vec3 result = brightness * Ucolour * inner;
+    gl_FragColor = vec4 (result, alpha);
 }
 #elif defined VS
-vec4 vertex () {
+	void main(void) {
     float r = UR1 + Apos2d.r * (UR2 - UR1);
     float a = Apos2d.g * Uangle;
     vec2 cartesian = vec2 (r * cos(a), r * sin(a));
     vec4 position = Umvp * vec4 (cartesian, 0.0, 1.0);
 
 	VR = r;
-    return position;
+    gl_Position = position;
 }
 #endif
 
