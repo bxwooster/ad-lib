@@ -1,9 +1,6 @@
 function Loop ()
     World = World or NewWorld ()
-    local newTime = core.Time ()
-    Dt = newTime - (Time or 0)
-    Time = newTime
-    Selected = {}
+    DoTime ()
     apply (UpdateRing, World.rings)
     apply (UpdateNode, World.nodes)
     UpdateCamera (World.camera)
@@ -20,6 +17,7 @@ function Loop ()
 end
 
 function Highlight ()
+    Selected = {}
     if Hovered then
         local segment = Hovered
         Selected[segment] = colour.yellow
@@ -53,6 +51,12 @@ function Highlight ()
     end
     if Start then Selected[Start] = colour.black end
     if End then Selected[End] = colour.white end
+end
+
+function DoTime ()
+    local newTime = core.Time ()
+    Dt = newTime - (Time or 0)
+    Time = newTime
 end
 
 function DoTurn (this)
