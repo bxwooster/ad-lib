@@ -3,13 +3,14 @@ function Init ()
     local api_text = api_file:read ("*all")
     FFI = require ("ffi")
     FFI.cdef (api_text)
-    Core = FFI.C
+    core = FFI.C
 
-    Core.Pull ("Lib")
-    Core.Pull ("Loop")
-    Core.Pull ("World")
-    Core.Pull ("AStar")
-    Core.Pull ("Camera")
-    Core.Pull ("System")
-    Core.Pull ("KeyDefs")
+    core.Pull ("Lib")
+    core.Pull ("Util")
+    core.Pull ("Loop")
+    core.Pull ("World")
+    core.Pull ("AStar")
+    core.Pull ("Camera")
+    core.Pull ("System")
+    core.Pull ("KeyDefs")
 end

@@ -1,6 +1,6 @@
 function Loop ()
     World = World or NewWorld ()
-    local newTime = Core.Time ()
+    local newTime = core.Time ()
     Dt = newTime - (Time or 0)
     Time = newTime
     Selected = {}
@@ -9,20 +9,20 @@ function Loop ()
     UpdateCamera (World.camera)
     apply (HoverInSystem, World.systems)
     Highlight ()
-    Core.PreSphere ()
+    core.PreSphere ()
     apply (DrawSphere, World.spheres)
-    Core.PreSegment ()
+    core.PreSegment ()
     apply (DrawSegment, World.segments)
     DoTurn (World.turn)
     if KeyDown (KEY.L) then REPL () end
     if KeyDown (KEY.R) then World = NewWorld () end
-    if KeyDown (KEY.Escape) then Core.Halt () end
+    if KeyDown (KEY.Escape) then core.Halt () end
 end
 
 function Highlight ()
     if Hovered then
         local segment = Hovered
-        Selected[segment] = Colour.yellow
+        Selected[segment] = colour.yellow
         if KeyDown (KEY.P1) then
             if not Start then
                 Start = segment
@@ -36,7 +36,7 @@ function Highlight ()
         end
         for link, f in pairs (segment.links) do
             if f == true or f (World.turn.int) then
-                Selected[link] = Colour.magenta
+                Selected[link] = colour.magenta
             end
         end
     end
@@ -48,12 +48,11 @@ function Highlight ()
         local N = #Path
         for i, C in ipairs (Path) do
             local k = (i - 1) / (N - 1)
-            print (k)
-            Selected[C] = Colour.black * (1 - k) + Colour.white * (k)
+            Selected[C] = colour.black * (1 - k) + colour.white * (k)
         end
     end
-    if Start then Selected[Start] = Colour.black end
-    if End then Selected[End] = Colour.white end
+    if Start then Selected[Start] = colour.black end
+    if End then Selected[End] = colour.white end
 end
 
 function DoTurn (this)
@@ -72,5 +71,5 @@ function UpdateNode (this)
 end
 
 function DrawSphere (this)
-    Core.Sphere (this.tMat, this.colour, this.radius)
+    core.Sphere (this.tMat, this.colour, this.radius)
 end

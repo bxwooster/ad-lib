@@ -38,13 +38,13 @@ function NewSystem (this, world)
             local phi2 = ring.A * 0.5 + this.external2.B
             phi = (phi + phi2) / 2
         end
-        local dir = Vec3.New (math.cos (phi), math.sin (phi), 0)
-        this.rMat = Mat4.Movement (dist * dir) ^ Mat4.Rotation (Vec3.z, ring.A)
+        local dir = vec3.New (math.cos (phi), math.sin (phi), 0)
+        this.rMat = mat4.Movement (dist * dir) ^ mat4.Rotation (vec3.z, ring.A)
         this.scale = 0.9 * size
         this.parent = ring
     else
         this.scale = 1
-        this.rMat = Mat4.id
+        this.rMat = mat4.id
         this.parent = world.center
     end
 
@@ -69,7 +69,7 @@ function NewSystem (this, world)
         for i = 0, orbit.nCells - 1 do
             ring[i] = {
                 parent = ring,
-                colour = Vec3.New (0, 0, A * i % 0.5 + 0.5),
+                colour = vec3.New (0, 0, A * i % 0.5 + 0.5),
                 B = A * i,
             }
         end
@@ -135,7 +135,7 @@ function NewSystem (this, world)
     this.A = 2 * math.pi
     local phony = {
         parent = this,
-        colour = -Colour.white,
+        colour = -colour.white,
         B = 0
     }
     table.insert (world.segments, 1, phony)
@@ -158,8 +158,8 @@ function HoverInSystem (this)
     if Hovered == false then return end
     local function X (angle) return angle % (2 * math.pi) end
     local function Y (angle) return X (angle) < math.pi end
-    V = Mat4.Inverse (this.tMat) % Lock
-    R = Vec3.Length (V) 
+    V = mat4.Inverse (this.tMat) % Lock
+    R = vec3.Length (V) 
     A = math.atan2 (V.e.y, V.e.x)
     if A < 0 then A = A + 2 * math.pi end
     if R < this.radius then
@@ -181,11 +181,11 @@ end
 
 function DrawSegment (this)
     local colour = Selected[this] or this.colour
-    Core.Segment (this.parent.tMat, colour,
+    core.Segment (this.parent.tMat, colour,
         this.parent.R1, this.parent.R2, this.parent.A, this.B)
 end
 
 function UpdateRing (this)
     this.phi = (this.A * World.turn.float) % (2 * math.pi)
-    this.rMat = Mat4.Rotation(Vec3.z, this.phi)
+    this.rMat = mat4.Rotation(vec3.z, this.phi)
 end
