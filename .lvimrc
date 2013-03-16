@@ -2,10 +2,9 @@ if exists('s:guard') == 0 " guard
 
 let s:guard = 1
 let s:thispath = expand('<sfile>:p:h')
-let s:flags = '--c-kinds=fgstuv'
-let s:file = './.ctags'
+let s:file = '.tags'
 
-set tags=./.ctags;
+set tags=.tags;/
 
 function s:sys(cmd)
   let pref = 'cd ' . s:thispath . '; '
@@ -31,21 +30,20 @@ function AL_update_tags()
     let cmd = 'sed -i "/' . efile . '/d" tags'
     call s:sys(cmd)
 
-    let cmd = 'ctags -f ' . s:file . ' -a ' . s:flags . ' "' . file . '"'
+    let cmd = 'ctags -f ' . s:file . ' -a "' . file . '"'
     call s:sys(cmd)
 endfunction
 
 function AL_do_tags()
-  if filereadable(s:thispath . '/ctags') == 0
-    let cmd = 'ctags -f ' . s:file . ' -R ' . s:flags . ' code'
+  if filereadable(s:file) == 0
+    let cmd = 'ctags -f ' . s:file . ' -R code lua'
     call s:sys(cmd)
   endif
 endfunction
 
-set expandtab
 call AL_do_tags()
-autocmd BufWritePost *.h,*.c call AL_update_tags()
-autocmd FileChangedShell *.h,*.c call AL_update_tags()
+autocmd BufWritePost *.h,*.c,*.lua call AL_update_tags()
+autocmd FileChangedShell *.h,*.c,*.lua call AL_update_tags()
 
 map <F13> :call AL_make('run')<CR>
 map <S-F13> :call AL_make('debug')<CR>

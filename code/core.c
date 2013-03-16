@@ -30,7 +30,7 @@ API vec2 Pointer () {
 
     float mx = (x - hw) / hw;
     float my = (y - hh) / hw;
-    
+
     return (vec2) {mx, my};
 }
 

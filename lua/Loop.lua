@@ -39,7 +39,7 @@ function Highlight ()
         end
     end
     Hovered = nil
-    if Start and End and not Path then 
+    if Start and End and not Path then
         Path = AStar (Start, End)
     end
     if Path then

@@ -1,5 +1,5 @@
 *.swp
-.ctags
+.tags
 .DS_Store
 
 /.build/
