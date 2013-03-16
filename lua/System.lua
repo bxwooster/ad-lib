@@ -187,5 +187,5 @@ end
 
 function UpdateRing (this)
     this.phi = (this.A * World.turn.float) % (2 * math.pi)
-    this.rMat = mat4.Rotation(vec3.z, this.phi)
+    this.rMat = mat4.Rotation (vec3.z, this.phi)
 end

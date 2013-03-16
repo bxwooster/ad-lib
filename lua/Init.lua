@@ -13,4 +13,6 @@ function Init ()
     core.Pull ("Camera")
     core.Pull ("System")
     core.Pull ("KeyDefs")
+
+    World = NewWorld ()
 end

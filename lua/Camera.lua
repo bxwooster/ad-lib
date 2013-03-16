@@ -1,40 +1,36 @@
-function UpdateCamera (this)
-    core.SetCamera (this.tMat)
-    CameraPointer (this)
-    CameraArrows (this)
+function UpdateCamera (C)
+    core.SetCamera (C.tMat)
+    CameraPointer (C)
+    CameraArrows (C)
 end
 
-function CameraPointer (this)
-    local C = this.tMat.c.w.v3
-    local V = core.ScreenRay (core.Pointer ())
-    Lock = core.PlaneIntersection (C, V, vec3.z, vec3.zero)
-
+function CameraPointer (C)
     if KeyDown (KEY.P1) then
-        this.lock = Lock;
+        C.lock = Lock;
     elseif KeyHeld (KEY.P1) then
-        local delta = this.lock - Lock
-        this.tMat = mat4.Movement (delta) ^ this.tMat
+        local delta = C.lock - Lock
+        C.tMat = mat4.Movement (delta) ^ C.tMat
     else
-        this.lock = nil
+        C.lock = nil
     end
 end
 
-function CameraArrows (this)
-    local dist = Dt * this.speed
+function CameraArrows (C)
+    local dist = Dt * C.speed
 
     if KeyHeld (KEY.Left) then
-        this.tMat = mat4.Movement (dist * vec3.left) ^ this.tMat
+        C.tMat = mat4.Movement (dist * vec3.left) ^ C.tMat
     end
 
     if KeyHeld (KEY.Right) then
-        this.tMat = mat4.Movement (dist * vec3.right) ^ this.tMat
+        C.tMat = mat4.Movement (dist * vec3.right) ^ C.tMat
     end
 
     if KeyHeld (KEY.Up) then
-        this.tMat = mat4.Movement (dist * vec3.back) ^ this.tMat
+        C.tMat = mat4.Movement (dist * vec3.back) ^ C.tMat
     end
 
     if KeyHeld (KEY.Down) then
-        this.tMat = mat4.Movement (dist * vec3.forward) ^ this.tMat
+        C.tMat = mat4.Movement (dist * vec3.forward) ^ C.tMat
     end
 end
