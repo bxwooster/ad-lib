@@ -68,13 +68,13 @@ if(DEFINED IOS)
 
     set_target_properties(cosmos PROPERTIES XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "iPhone Developer")
     set_target_properties(cosmos PROPERTIES XCODE_ATTRIBUTE_DEAD_CODE_STRIPPING NO)
-    set_target_properties(cosmos PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${DIR}/cmake/iOS.plist")
+    set_target_properties(cosmos PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${DIR}/build/iOS.plist")
     set(CMAKE_XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "1,2")
     set(CMAKE_OSX_SYSROOT iphoneos)
     target_link_libraries(cosmos luajit)
     add_custom_command(TARGET cosmos
         POST_BUILD
-        COMMAND cp -r mode art data lua API.h "\${TARGET_BUILD_DIR}/\${FULL_PRODUCT_NAME}"
+        COMMAND cp -r art glsl lua API.h "\${TARGET_BUILD_DIR}/\${FULL_PRODUCT_NAME}"
         WORKING_DIRECTORY "${DIR}"
     )
 elseif(DEFINED DARWIN)
