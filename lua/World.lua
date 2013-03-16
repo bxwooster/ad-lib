@@ -1,17 +1,5 @@
 function NewWorld ()
-    local world = {}
-
-    world.nodes = {}
-    world.rings = {}
-    world.systems = {}
-    world.spheres = {}
-    world.segments = {}
-
-    world.turn = {
-        int = 0,
-        float = 0,
-        endTime = 0
-    }
+    world = PrepareWorld ()
 
     world.camera = {
         speed = 3,
@@ -53,6 +41,24 @@ function NewWorld ()
         }
     }
     NewSystem (P3, world)
+
+    return world
+end
+
+function PrepareWorld ()
+    local world = {}
+
+    world.nodes = {}
+    world.rings = {}
+    world.systems = {}
+    world.spheres = {}
+    world.segments = {}
+
+    world.turn = {
+        int = 0,
+        float = 0,
+        endTime = 0
+    }
 
     return world
 end
