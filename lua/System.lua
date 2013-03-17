@@ -1,23 +1,35 @@
-local function CloseEnough (s, d)
-    local x = d % (2 * math.pi)
-    local y = math.pi * 2 - x
-    local delta = 0.001
-    return s - x > delta or s - y > delta
+-- is a given angle inside a segment of given size with center at zero?
+local function CloseEnough (a, s)
+	-- angle might be > 2 PI, negative, obtuse
+	-- normalize it to [-PI, PI]
+    a = (a + math.pi) % (2 * math.pi) - math.pi
+	return s - math.abs (a) > 0
 end
 
-local function Intersection (R, P, turn)
-    local r, p = R.parent.A / 2, P.parent.A / 2
-    local d = (R.B + R.parent.A * turn + r) - (P.B + P.parent.A * turn + p)
-    local s = r + p
-    return CloseEnough (s, d)
+-- do the arcs of two segments intersect?
+local function Intersection (S1, S2, turn)
+	-- half angular size
+    local h1 = S1.parent.A / 2
+	local h2 = S2.parent.A / 2
+	-- angle where the segment center is
+    local c1 = S1.B + S1.parent.A * turn + h1
+	local c2 = S2.B + S2.parent.A * turn + h2
+	-- segments intersect if the difference between the angles
+	-- is less than sum of half-angular sizes
+    local s = h1 + h2
+	local a = c1 - c2
+    return CloseEnough (a, s)
 end
 
-local function HalfIntersection (R, half, turn)
-    local r = R.parent.A / 2
-    local d = (R.B + R.parent.A * turn + r) + math.pi / 2
-    if half then d = d + math.pi end
-    local s = r + math.pi / 2
-    return CloseEnough (s, d)
+-- does a segment intersect the left/right semicircle?
+local function HalfIntersection (S, half, turn)
+    local h1 = S.parent.A / 2
+	local h2 = math.pi / 2
+    local c1 = S.B + S.parent.A * turn + h1
+	local c2 = half and math.pi / 2 or -math.pi / 2
+    local s = h1 + h2
+	local a = c1 - c2
+    return CloseEnough (a, s)
 end
 
 local function Scaling (this)
