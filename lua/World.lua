@@ -16,7 +16,7 @@ function NewWorld ()
             {width = 1, nCells = 3},
             {width = 3, nCells = 7},
             {width = 1, nCells = 65},
-            {width = 3, nCells = 5},
+            {width = 3, nCells = 13},
         }
     }
     NewSystem (P1, world)

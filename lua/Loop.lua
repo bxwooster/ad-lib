@@ -2,23 +2,23 @@ function Loop ()
 	-- update Time, Dt
     DoTime ()
 
+	-- Update World.turn
+    DoTurn ()
+
 	-- update rings. Must be done before nodes
     apply (UpdateRing, World.rings)
 
 	-- update nodes of the 3D transform hierarchy 
     apply (UpdateNode, World.nodes)
 
-	-- update Lock
-	DoLock ()
-
 	-- camera updated and sent to core
     UpdateCamera (World.camera)
 
-	-- TODO: needs renaming/splitting
-    apply (HoverInSystem, World.systems)
+	-- where is the pointer hovering on the 2D ground plane?
+	Lock = GetLock ()
 
-	-- TODO: rename/return value?
-    Highlight ()
+	-- which sector must be highlighted or "selected"?
+    Selected = Selection (GetHovered ())
 
 	-- Draw all the "spheres" (but each has an Earth texture ATM)
     core.PreSphere ()
@@ -28,25 +28,22 @@ function Loop ()
     core.PreSector ()
     apply (DrawSector, World.sectors)
 
-	-- Update World.turn
-    DoTurn ()
-
     if KeyDown (KEY.L) then REPL () end
     if KeyDown (KEY.R) then World = NewWorld () end
     if KeyDown (KEY.Escape) then core.Halt () end
 end
 
-function DoLock ()
+function GetLock ()
     local C = World.camera.tMat.c.w.v3
     local V = core.ScreenRay (core.Pointer ())
-    Lock = core.PlaneIntersection (C, V, vec3.z, vec3.zero)
+    return core.PlaneIntersection (C, V, vec3.z, vec3.zero)
 end
 
-function Highlight ()
-    Selected = {}
-    if Hovered then
-        local sector = Hovered
-        Selected[sector] = colour.yellow
+function Selection (hovered)
+    local selected = {}
+    if hovered then
+        local sector = hovered
+        selected[sector] = colour.yellow
         if KeyDown (KEY.P1) then
             if not Start then
                 Start = sector
@@ -60,11 +57,10 @@ function Highlight ()
         end
         for link, f in pairs (sector.links) do
             if f == true or f (World.turn.int) then
-                Selected[link] = colour.magenta
+                selected[link] = colour.magenta
             end
         end
     end
-    Hovered = nil
     if Start and End and not Path then
         Path = AStar (Start, End)
     end
@@ -72,11 +68,12 @@ function Highlight ()
         local N = #Path
         for i, C in ipairs (Path) do
             local k = (i - 1) / (N - 1)
-            Selected[C] = colour.black * (1 - k) + colour.white * (k)
+            selected[C] = colour.black * (1 - k) + colour.white * (k)
         end
     end
-    if Start then Selected[Start] = colour.black end
-    if End then Selected[End] = colour.white end
+    if Start then selected[Start] = colour.black end
+    if End then selected[End] = colour.white end
+	return selected
 end
 
 function DoTime ()

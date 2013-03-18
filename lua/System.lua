@@ -1,12 +1,12 @@
 -- is a given angle inside a sector of given size with center at zero?
 local function CloseEnough (a, s)
 	-- angle might be > 2 PI, negative, obtuse
-	-- normalize it to [-PI, PI]
+	-- so normalize it to [-PI, PI]
     a = (a + math.pi) % (2 * math.pi) - math.pi
 	return s - math.abs (a) > 0
 end
 
--- do the arcs of two sectors intersect?
+-- do two sectors intersect?
 local function Intersection (S1, S2, turn)
 	-- half angular size
     local h1 = S1.parent.A / 2
@@ -23,6 +23,7 @@ end
 
 -- does a sector intersect the left/right semicircle?
 local function HalfIntersection (S, half, turn)
+	-- see Intersecton
     local h1 = S.parent.A / 2
 	local h2 = math.pi / 2
     local c1 = S.B + S.parent.A * turn + h1
@@ -153,7 +154,7 @@ function NewSystem (this, world)
     table.insert (world.sectors, 1, phony)
 
     -- Finally, inject it all into the world
-    table.insert (world.systems, this)
+    table.insert (world.systems, 1, this)
     table.insert (world.nodes, this)
     table.insert (world.spheres, this)
     for _, ring in zpairs (rings) do
@@ -166,17 +167,22 @@ function NewSystem (this, world)
     end
 end
 
-function HoverInSystem (this)
-    if Hovered == false then return end
-    local function X (angle) return angle % (2 * math.pi) end
-    local function Y (angle) return X (angle) < math.pi end
+function GetHovered ()
+	for _, S in ipairs (World.systems) do
+		local hovered = HoveredInSystem (S)
+		if hovered ~= nil then return hovered end
+	end
+	return false
+end
+
+function HoveredInSystem (this)
+    local function Y (angle) return angle % (2 * math.pi) < math.pi end
     V = mat4.Inverse (this.tMat) % Lock
     R = vec3.Length (V) 
     A = math.atan2 (V.e.y, V.e.x)
     if A < 0 then A = A + 2 * math.pi end
     if R < this.radius then
-        Hovered = false
-        return
+        return false
     end
     for _, ring in zpairs (this.rings) do
         if ring.R1 < R and R < ring.R2 then
@@ -184,7 +190,7 @@ function HoverInSystem (this)
                 local y1 = A - sector.B - ring.phi
                 local y2 = sector.B + ring.phi + ring.A - A
                 if Y (y1) and Y (y2) then
-                    Hovered = sector
+					return sector
                 end
             end
         end

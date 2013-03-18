@@ -1,7 +1,7 @@
 function UpdateCamera (C)
-    core.SetCamera (C.tMat)
     CameraPointer (C)
     CameraArrows (C)
+    core.SetCamera (C.tMat)
 end
 
 function CameraPointer (C)
