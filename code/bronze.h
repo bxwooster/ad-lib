@@ -10,10 +10,10 @@ struct bronze_engine {
     lua_State * L;
 
     GLuint tex;
-    struct GLvbo_and_size vsegment;
+    struct GLvbo_and_size vsector;
     struct GLvbo_and_size vimposter;
     struct glts_planeta gplanets [3];
-    struct glts_segmento gsegment;
+    struct glts_sectoro gsector;
 
     int8_t * key;
     unsigned key_max;

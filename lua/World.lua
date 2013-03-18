@@ -52,7 +52,7 @@ function PrepareWorld ()
     world.rings = {}
     world.systems = {}
     world.spheres = {}
-    world.segments = {}
+    world.sectors = {}
 
     world.turn = {
         int = 0,

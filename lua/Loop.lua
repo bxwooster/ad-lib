@@ -24,9 +24,9 @@ function Loop ()
     core.PreSphere ()
     apply (DrawSphere, World.spheres)
 
-	-- Draw all the segments
-    core.PreSegment ()
-    apply (DrawSegment, World.segments)
+	-- Draw all the sectors
+    core.PreSector ()
+    apply (DrawSector, World.sectors)
 
 	-- Update World.turn
     DoTurn ()
@@ -45,20 +45,20 @@ end
 function Highlight ()
     Selected = {}
     if Hovered then
-        local segment = Hovered
-        Selected[segment] = colour.yellow
+        local sector = Hovered
+        Selected[sector] = colour.yellow
         if KeyDown (KEY.P1) then
             if not Start then
-                Start = segment
+                Start = sector
             elseif not End then
-                End = segment
+                End = sector
             else
                 Start = nil
                 End = nil
                 Path = nil
             end
         end
-        for link, f in pairs (segment.links) do
+        for link, f in pairs (sector.links) do
             if f == true or f (World.turn.int) then
                 Selected[link] = colour.magenta
             end

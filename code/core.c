@@ -54,8 +54,8 @@ API void SetCamera (mat4 const * mcam) {
     XE->Sviewproj = mat4_multiply (& XE->Sproj, & view);
 }
 
-API void PreSegment () {
-    struct glts_segmento const * shader = & XE->gsegment;
+API void PreSector () {
+    struct glts_sectoro const * shader = & XE->gsector;
 
     glDepthMask (GL_FALSE);
     glEnable (GL_DEPTH_TEST);
@@ -67,17 +67,17 @@ API void PreSegment () {
 
     glUseProgram (shader->program);
 
-    glBindBuffer (GL_ARRAY_BUFFER, XE->vsegment.vbo);
+    glBindBuffer (GL_ARRAY_BUFFER, XE->vsector.vbo);
     // these two guys need to be called after glBindBuffer
     glVertexAttribPointer (shader->Apos2d, 2, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray (shader->Apos2d);
 }
 
-API void Segment (mat4 const * tMat, vec3 const * colour,
+API void Sector (mat4 const * tMat, vec3 const * colour,
         float r1, float r2, float angsize, float angle) {
-    struct glts_segmento const * shader = & XE->gsegment;
+    struct glts_sectoro const * shader = & XE->gsector;
 
-    unsigned M = (XE->vsegment.size / 6 - 1) * angsize / (2 * M_PI) + 1;
+    unsigned M = (XE->vsector.size / 6 - 1) * angsize / (2 * M_PI) + 1;
 
     mat4 transform = mat4_rotated_aa
         (tMat, & (vec3) {0,0,1}, angle);

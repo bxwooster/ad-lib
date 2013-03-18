@@ -21,4 +21,4 @@ for file in $files; do
 	git mv $file $renamed
 done ;
 
-gsed -i s/$1/$2/g `find code -name \*.c -o -name \*.h`
+gsed -i s/$1/$2/g `find code -name \*.c -o -name \*.h` `find lua -name \*.lua`

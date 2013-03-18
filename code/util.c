@@ -1,4 +1,4 @@
-static unsigned const k_segment_quads = 64;
+static unsigned const k_sector_quads = 64;
 
 GLenum // GLformat
 util_earth_load (SDL_Surface * earth [6]) {
@@ -129,8 +129,8 @@ util_imposter (void) {
 }
 
 struct GLvbo_and_size
-util_segment (void) {
-    unsigned N = k_segment_quads;
+util_sector (void) {
+    unsigned N = k_sector_quads;
 
     struct {
         float x;

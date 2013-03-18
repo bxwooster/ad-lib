@@ -7,7 +7,7 @@ char * GPLANETS [] = {
     "glsl/planet-wireframe.glts",
 };
 
-char SEGMENT [] = "glsl/segment.glts";
+char SEGMENT [] = "glsl/sector.glts";
 char GALAXY [] = "data/galaxy";
 
 char * func2file (char const * func) {
@@ -35,13 +35,13 @@ void lua_hot (void * data, char const * file, char const * text) {
     }
 }
 
-void segment_hot (void * data, char const * file, char const * text) {
+void sector_hot (void * data, char const * file, char const * text) {
     struct bronze_engine * E = data;
     (void) file;
 
-    glDeleteProgram (E->gsegment.program); /* Dup. */
+    glDeleteProgram (E->gsector.program); /* Dup. */
 
-    E->gsegment = glts_load_segmento ((char /*const*/ *) file, (char /*const*/ *) text);
+    E->gsector = glts_load_sectoro ((char /*const*/ *) file, (char /*const*/ *) text);
 }
 
 void planet_hot (void * data, char const * file, char const * text) {
@@ -75,7 +75,7 @@ bronze_init (struct SDL * sdl) {
     glViewport (0, 0, E->sdl->width, E->sdl->height);
 
     E->tex = util_earth ();
-    E->vsegment = util_segment ();
+    E->vsector = util_sector ();
     E->vimposter = util_imposter ();
 
     for (unsigned i = 0; i < 3; ++i) {
@@ -85,9 +85,9 @@ bronze_init (struct SDL * sdl) {
         hot_pull (E->H, GPLANETS[i], planet_hot, EnP, sizeof (EnP));
     }
 
-    E->gsegment = (struct glts_segmento) {0};
-    E->gsegment.program = GL_FALSE;
-    hot_pull (E->H, SEGMENT, segment_hot, E, 0);
+    E->gsector = (struct glts_sectoro) {0};
+    E->gsector.program = GL_FALSE;
+    hot_pull (E->H, SEGMENT, sector_hot, E, 0);
 
     core_init (E);
     E->L = luaL_newstate ();
@@ -115,7 +115,7 @@ void bronze_destroy (struct bronze_engine * E) {
     lua_close (E->L);
     free (E->key);
 
-    glDeleteBuffers (1, & E->vsegment.vbo);
+    glDeleteBuffers (1, & E->vsector.vbo);
     glDeleteBuffers (1, & E->vimposter.vbo);
     glDeleteTextures (1, & E->tex);
 
@@ -123,7 +123,7 @@ void bronze_destroy (struct bronze_engine * E) {
         glDeleteProgram (E->gplanets[i].program);
     }
 
-    glDeleteProgram (E->gsegment.program);
+    glDeleteProgram (E->gsector.program);
 
     free (E);
 }

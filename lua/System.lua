@@ -1,4 +1,4 @@
--- is a given angle inside a segment of given size with center at zero?
+-- is a given angle inside a sector of given size with center at zero?
 local function CloseEnough (a, s)
 	-- angle might be > 2 PI, negative, obtuse
 	-- normalize it to [-PI, PI]
@@ -6,22 +6,22 @@ local function CloseEnough (a, s)
 	return s - math.abs (a) > 0
 end
 
--- do the arcs of two segments intersect?
+-- do the arcs of two sectors intersect?
 local function Intersection (S1, S2, turn)
 	-- half angular size
     local h1 = S1.parent.A / 2
 	local h2 = S2.parent.A / 2
-	-- angle where the segment center is
+	-- angle where the sector center is
     local c1 = S1.B + S1.parent.A * turn + h1
 	local c2 = S2.B + S2.parent.A * turn + h2
-	-- segments intersect if the difference between the angles
+	-- sectors intersect if the difference between the angles
 	-- is less than sum of half-angular sizes
     local s = h1 + h2
 	local a = c1 - c2
     return CloseEnough (a, s)
 end
 
--- does a segment intersect the left/right semicircle?
+-- does a sector intersect the left/right semicircle?
 local function HalfIntersection (S, half, turn)
     local h1 = S.parent.A / 2
 	local h2 = math.pi / 2
@@ -64,7 +64,7 @@ function NewSystem (this, world)
     local rings = {}
     this.rings = rings
 
-    -- Generate the rings and segments inside rings
+    -- Generate the rings and sectors inside rings
     local R1 = this.radius
     for r, orbit in ipairs (this.orbits) do
         local A = math.pi * 2 / orbit.nCells
@@ -141,7 +141,7 @@ function NewSystem (this, world)
         end
     end
 
-    -- phony segment
+    -- phony sector
     this.R1 = 0
     this.R2 = this.radius
     this.A = 2 * math.pi
@@ -150,7 +150,7 @@ function NewSystem (this, world)
         colour = -colour.white,
         B = 0
     }
-    table.insert (world.segments, 1, phony)
+    table.insert (world.sectors, 1, phony)
 
     -- Finally, inject it all into the world
     table.insert (world.systems, this)
@@ -158,9 +158,9 @@ function NewSystem (this, world)
     table.insert (world.spheres, this)
     for _, ring in zpairs (rings) do
         table.insert (world.nodes, ring)
-        for _, segment in zpairs (ring) do
-            -- reverse order in world.segments
-            table.insert (world.segments, 1, segment)
+        for _, sector in zpairs (ring) do
+            -- reverse order in world.sectors
+            table.insert (world.sectors, 1, sector)
         end
         table.insert (world.rings, ring)
     end
@@ -180,20 +180,20 @@ function HoverInSystem (this)
     end
     for _, ring in zpairs (this.rings) do
         if ring.R1 < R and R < ring.R2 then
-            for _, segment in zpairs (ring) do
-                local y1 = A - segment.B - ring.phi
-                local y2 = segment.B + ring.phi + ring.A - A
+            for _, sector in zpairs (ring) do
+                local y1 = A - sector.B - ring.phi
+                local y2 = sector.B + ring.phi + ring.A - A
                 if Y (y1) and Y (y2) then
-                    Hovered = segment
+                    Hovered = sector
                 end
             end
         end
     end
 end
 
-function DrawSegment (this)
+function DrawSector (this)
     local colour = Selected[this] or this.colour
-    core.Segment (this.parent.tMat, colour,
+    core.Sector (this.parent.tMat, colour,
         this.parent.R1, this.parent.R2, this.parent.A, this.B)
 end
 
