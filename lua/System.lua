@@ -3,7 +3,7 @@ local function CloseEnough (a, s)
 	-- angle might be > 2 PI, negative, obtuse
 	-- so normalize it to [-PI, PI]
     a = (a + math.pi) % (2 * math.pi) - math.pi
-	return s - math.abs (a) > 0
+	return s - math.abs (a) > 0.001
 end
 
 -- do two sectors intersect?
