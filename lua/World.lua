@@ -19,7 +19,7 @@ function NewWorld ()
             {width = 3, nCells = 13},
         }
     }
-    NewSystem (P1, world)
+    P1 = NewSystem (P1, world)
 
     local P2 = {
         external = P1.rings[1][4],
@@ -29,7 +29,7 @@ function NewWorld ()
             {width = 1, nCells = 3},
         }
     }
-    NewSystem (P2, world)
+    P2 = NewSystem (P2, world)
 
     local P3 = {
         external = P1.rings[3][0],
@@ -40,7 +40,7 @@ function NewWorld ()
             {width = 1, nCells = 4},
         }
     }
-    NewSystem (P3, world)
+    P3 = NewSystem (P3, world)
 
     return world
 end

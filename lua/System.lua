@@ -34,22 +34,26 @@ local function HalfIntersection (S, half, turn)
     return CloseEnough (a, s)
 end
 
-local function Scaling (this)
-    local total = this.radius
-    for r, orbit in ipairs (this.orbits) do
+local function Scaling (options)
+    local total = options.radius
+    for r, orbit in ipairs (options.orbits) do
         total = total + orbit.width
     end
-    return this.scale / total
+    return 1 / total
 end
 
-function NewSystem (this, world)
-    if this.external then
-        local ring = this.external.parent
+function NewSystem (options, world)
+	this = {
+		colour = options.colour,
+		radius = options.radius,
+	}
+    if options.external then
+        local ring = options.external.parent
         local size = 0.5 * (ring.R2 - ring.R1)
         local dist = size + ring.R1
-        local phi = ring.A * 0.5 + this.external.B
-        if this.external2 then
-            local phi2 = ring.A * 0.5 + this.external2.B
+        local phi = ring.A * 0.5 + options.external.B
+        if options.external2 then
+            local phi2 = ring.A * 0.5 + options.external2.B
             phi = (phi + phi2) / 2
         end
         local dir = vec3.New (math.cos (phi), math.sin (phi), 0)
@@ -62,13 +66,13 @@ function NewSystem (this, world)
         this.parent = world.center
     end
 
-    local scale = Scaling (this)
+    local scale = this.scale * Scaling (options)
     local rings = {}
     this.rings = rings
 
     -- Generate the rings and sectors inside rings
     local R1 = this.radius
-    for r, orbit in ipairs (this.orbits) do
+    for r, orbit in ipairs (options.orbits) do
         local A = math.pi * 2 / orbit.nCells
         local R2 = R1 + orbit.width
 
@@ -120,9 +124,9 @@ function NewSystem (this, world)
     end
 
     -- External links
-    if this.external2 then
-        local O1 = this.external
-        local O2 = this.external2
+    if options.external2 then
+        local O1 = options.external
+        local O2 = options.external2
         for _, R in zpairs (rings[#rings]) do
             local F1 = function (turn)
                 return HalfIntersection (R, false, turn)
@@ -135,8 +139,8 @@ function NewSystem (this, world)
             R.links[O2] = F2
             O2.links[R] = F2
         end
-    elseif this.external then
-        local O = this.external
+    elseif options.external then
+        local O = options.external
         for _, R in zpairs (rings[#rings]) do
             R.links[O] = true
             O.links[R] = true
@@ -152,9 +156,9 @@ function NewSystem (this, world)
         colour = -colour.white,
         B = 0
     }
-    table.insert (world.sectors, 1, phony)
 
     -- Finally, inject it all into the world
+    table.insert (world.sectors, 1, phony)
     table.insert (world.systems, 1, this)
     table.insert (world.nodes, this)
     table.insert (world.spheres, this)
@@ -166,6 +170,7 @@ function NewSystem (this, world)
         end
         table.insert (world.rings, ring)
     end
+	return this
 end
 
 function GetHovered ()
