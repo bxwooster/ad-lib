@@ -43,7 +43,7 @@ local function Scaling (options)
 end
 
 function NewSystem (options, world)
-	this = {
+	S = {
 		colour = options.colour,
 		radius = options.radius,
 	}
@@ -57,28 +57,28 @@ function NewSystem (options, world)
             phi = (phi + phi2) / 2
         end
         local dir = vec3.New (math.cos (phi), math.sin (phi), 0)
-        this.rMat = mat4.Movement (dist * dir) ^ mat4.Rotation (vec3.z, ring.A)
-        this.scale = 0.9 * size
-        this.parent = ring
+        S.rMat = mat4.Movement (dist * dir) ^ mat4.Rotation (vec3.z, ring.A)
+        S.scale = 0.9 * size
+        S.parent = ring
     else
-        this.scale = 1
-        this.rMat = mat4.id
-        this.parent = world.center
+        S.scale = 1
+        S.rMat = mat4.id
+        S.parent = world.center
     end
 
-    local scale = this.scale * Scaling (options)
+    local scale = S.scale * Scaling (options)
     local rings = {}
-    this.rings = rings
+    S.rings = rings
 
     -- Generate the rings and sectors inside rings
-    local R1 = this.radius
+    local R1 = S.radius
     for r, orbit in ipairs (options.orbits) do
         local A = math.pi * 2 / orbit.nCells
         local R2 = R1 + orbit.width
 
         local ring = {
             A = A,
-            parent = this,
+            parent = S,
             R1 = R1 * scale,
             R2 = R2 * scale,
         }
@@ -95,7 +95,7 @@ function NewSystem (options, world)
         R1 = R2
     end
 
-    this.radius = this.radius * scale
+    S.radius = S.radius * scale
 
     -- Add ring-neighbour links
     for _, ring in zpairs (rings) do
@@ -148,20 +148,20 @@ function NewSystem (options, world)
     end
 
     -- phony sector
-    this.R1 = 0
-    this.R2 = this.radius
-    this.A = 2 * math.pi
+    S.R1 = 0
+    S.R2 = S.radius
+    S.A = 2 * math.pi
     local phony = {
-        parent = this,
+        parent = S,
         colour = -colour.white,
         B = 0
     }
 
     -- Finally, inject it all into the world
     table.insert (world.sectors, 1, phony)
-    table.insert (world.systems, 1, this)
-    table.insert (world.nodes, this)
-    table.insert (world.spheres, this)
+    table.insert (world.systems, 1, S)
+    table.insert (world.nodes, S)
+    table.insert (world.spheres, S)
     for _, ring in zpairs (rings) do
         table.insert (world.nodes, ring)
         for _, sector in zpairs (ring) do
@@ -170,7 +170,7 @@ function NewSystem (options, world)
         end
         table.insert (world.rings, ring)
     end
-	return this
+	return S
 end
 
 function GetHovered ()
@@ -181,16 +181,16 @@ function GetHovered ()
 	return false
 end
 
-function HoveredInSystem (this)
+function HoveredInSystem (S)
     local function Y (angle) return angle % (2 * math.pi) < math.pi end
-    V = mat4.Inverse (this.tMat) % Lock
+    V = mat4.Inverse (S.tMat) % Lock
     R = vec3.Length (V) 
     A = math.atan2 (V.e.y, V.e.x)
     if A < 0 then A = A + 2 * math.pi end
-    if R < this.radius then
+    if R < S.radius then
         return false
     end
-    for _, ring in zpairs (this.rings) do
+    for _, ring in zpairs (S.rings) do
         if ring.R1 < R and R < ring.R2 then
             for _, sector in zpairs (ring) do
                 local y1 = A - sector.B - ring.phi
@@ -203,13 +203,13 @@ function HoveredInSystem (this)
     end
 end
 
-function DrawSector (this)
-    local colour = Selected[this] or this.colour
-    core.Sector (this.parent.tMat, colour,
-        this.parent.R1, this.parent.R2, this.parent.A, this.B)
+function DrawSector (S)
+    local colour = Selected[S] or S.colour
+    core.Sector (S.parent.tMat, colour,
+        S.parent.R1, S.parent.R2, S.parent.A, S.B)
 end
 
-function UpdateRing (this)
-    this.phi = (this.A * World.turn.float) % (2 * math.pi)
-    this.rMat = mat4.Rotation (vec3.z, this.phi)
+function UpdateRing (R)
+    R.phi = (R.A * World.turn.float) % (2 * math.pi)
+    R.rMat = mat4.Rotation (vec3.z, R.phi)
 end
