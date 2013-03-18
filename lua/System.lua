@@ -34,12 +34,12 @@ local function HalfIntersection (S, half, turn)
     return CloseEnough (a, s)
 end
 
-local function Scaling (options)
+local function TotalSize (options)
     local total = options.radius
     for r, orbit in ipairs (options.orbits) do
         total = total + orbit.width
     end
-    return 1 / total
+    return total
 end
 
 function NewSystem (options, world)
@@ -47,28 +47,28 @@ function NewSystem (options, world)
 		colour = options.colour,
 		radius = options.radius,
 	}
+	local scale
     if options.external then
         local ring = options.external.parent
         local size = 0.5 * (ring.R2 - ring.R1)
         local dist = size + ring.R1
-        local phi = ring.A * 0.5 + options.external.B
+        local phi = ring.A / 2 + options.external.B
         if options.external2 then
-            local phi2 = ring.A * 0.5 + options.external2.B
+            local phi2 = ring.A / 2 + options.external2.B
             phi = (phi + phi2) / 2
         end
         local dir = vec3.New (math.cos (phi), math.sin (phi), 0)
         S.rMat = mat4.Movement (dist * dir) ^ mat4.Rotation (vec3.z, ring.A)
-        S.scale = 0.9 * size
         S.parent = ring
+        scale = 0.9 * size
     else
-        S.scale = 1
         S.rMat = mat4.id
         S.parent = world.center
+        scale = 1
     end
 
-    local scale = S.scale * Scaling (options)
-    local rings = {}
-    S.rings = rings
+    scale = scale / TotalSize (options)
+    S.rings = {}
 
     -- Generate the rings and sectors inside rings
     local R1 = S.radius
@@ -82,12 +82,12 @@ function NewSystem (options, world)
             R1 = R1 * scale,
             R2 = R2 * scale,
         }
-        rings[r - 1] = ring
+        S.rings[r - 1] = ring
 
         for i = 0, orbit.nCells - 1 do
             ring[i] = {
                 parent = ring,
-                colour = vec3.New (0, 0, A * i % 0.5 + 0.5),
+                colour = vec3.New (0, 0, A * i % 0.689 + 0.3),
                 B = A * i,
             }
         end
@@ -98,7 +98,7 @@ function NewSystem (options, world)
     S.radius = S.radius * scale
 
     -- Add ring-neighbour links
-    for _, ring in zpairs (rings) do
+    for _, ring in zpairs (S.rings) do
         for i, R in zpairs (ring) do
             -- h, i, j
             local len = #ring + 1
@@ -109,9 +109,9 @@ function NewSystem (options, world)
     end
 
     -- Add conditional inter-ring links
-    for r = 1, #rings do
-        local ring = rings[r]
-        local prev = rings[r - 1]
+    for r = 1, #S.rings do
+        local ring = S.rings[r]
+        local prev = S.rings[r - 1]
         for _, R in zpairs (ring) do
             for _, P in zpairs (prev) do
                 local F = function (turn)
@@ -127,7 +127,7 @@ function NewSystem (options, world)
     if options.external2 then
         local O1 = options.external
         local O2 = options.external2
-        for _, R in zpairs (rings[#rings]) do
+        for _, R in zpairs (S.rings[#S.rings]) do
             local F1 = function (turn)
                 return HalfIntersection (R, false, turn)
             end
@@ -141,7 +141,7 @@ function NewSystem (options, world)
         end
     elseif options.external then
         local O = options.external
-        for _, R in zpairs (rings[#rings]) do
+        for _, R in zpairs (S.rings[#S.rings]) do
             R.links[O] = true
             O.links[R] = true
         end
@@ -162,7 +162,7 @@ function NewSystem (options, world)
     table.insert (world.systems, 1, S)
     table.insert (world.nodes, S)
     table.insert (world.spheres, S)
-    for _, ring in zpairs (rings) do
+    for _, ring in zpairs (S.rings) do
         table.insert (world.nodes, ring)
         for _, sector in zpairs (ring) do
             -- reverse order in world.sectors
