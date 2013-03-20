@@ -203,12 +203,6 @@ function HoveredInSystem (S)
     end
 end
 
-function DrawSector (S)
-    local colour = Selected[S] or S.colour
-    core.Sector (S.parent.tMat, colour,
-        S.parent.R1, S.parent.R2, S.parent.A, S.B)
-end
-
 function UpdateRing (R)
     R.phi = (R.A * World.turn.float) % (2 * math.pi)
     R.rMat = mat4.Rotation (vec3.z, R.phi)

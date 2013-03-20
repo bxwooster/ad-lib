@@ -12,6 +12,7 @@ function Init ()
     core.Pull ("World")
     core.Pull ("AStar")
     core.Pull ("Camera")
+    core.Pull ("Sector")
     core.Pull ("System")
     core.Pull ("KeyDefs")
 

@@ -54,45 +54,6 @@ API void SetCamera (mat4 const * mcam) {
     XE->Sviewproj = mat4_multiply (& XE->Sproj, & view);
 }
 
-API void PreSector () {
-    struct glts_sectoro const * shader = & XE->gsector;
-/*
-    glDepthMask (GL_FALSE);
-    glEnable (GL_DEPTH_TEST);
-    glEnable (GL_BLEND);
-    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable (GL_STENCIL_TEST);
-    glStencilFunc (GL_GREATER, 1, 1);
-    glStencilOp (GL_KEEP, GL_KEEP, GL_REPLACE);
-    glUseProgram (shader->program);
-    glBindBuffer (GL_ARRAY_BUFFER, XE->vsector.vbo);
-    // these two guys need to be called after glBindBuffer
-    glVertexAttribPointer (shader->Apos2d, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray (shader->Apos2d);
-*/
-}
-
-API void Sector (mat4 const * tMat, vec3 const * colour,
-        float r1, float r2, float angsize, float angle) {
-    struct glts_sectoro const * shader = & XE->gsector;
-
-    unsigned M = (XE->vsector.size / 6 - 1) * angsize / (2 * M_PI) + 1;
-
-    mat4 transform = mat4_rotated_aa
-        (tMat, & (vec3) {0,0,1}, angle);
-
-    mat4 mvp = mat4_multiply
-        (& XE->Sviewproj, & transform);
-
-    glUniformMatrix4fv (shader->Umvp, 1, GL_FALSE, mvp.p);
-    glUniform1f (shader->Uangle, angsize / M);
-    glUniform1f (shader->UR1, r1);
-    glUniform1f (shader->UR2, r2);
-    glUniform3fv (shader->Ucolour, 1, colour->p);
-
-    glDrawArrays (GL_TRIANGLES, 0, M * 6);
-}
-
 API void PreSphere () {
     struct glts_planeta const * shader = XE->gplanets;
 

@@ -24,32 +24,11 @@ function Loop ()
     core.PreSphere ()
     apply (DrawSphere, World.spheres)
 
-	-- Draw all the sectors
-	PreSector ()
-    core.PreSector ()
-    apply (DrawSector, World.sectors)
+	DrawSectors ()
 
     if KeyDown (KEY.L) then REPL () end
     if KeyDown (KEY.R) then World = NewWorld () end
     if KeyDown (KEY.Escape) then core.Halt () end
-end
-
-function PreSector ()
-	local program = core.XE.gsector.program
-	local Apos2d = core.XE.gsector.Apos2d
-	local vbo = core.XE.vsector.vbo
-    GL.DepthMask (GL.FALSE)
-    GL.Enable (GL.DEPTH_TEST)
-    GL.Enable (GL.BLEND)
-    GL.BlendFunc (GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA)
-    GL.Enable (GL.STENCIL_TEST)
-    GL.StencilFunc (GL.GREATER, 1, 1)
-    GL.StencilOp (GL.KEEP, GL.KEEP, GL.REPLACE)
-    GL.UseProgram (program)
-    GL.BindBuffer (GL.ARRAY_BUFFER, vbo)
-    -- these two guys need to be called after glBindBuffer
-    GL.VertexAttribPointer (Apos2d, 2, GL.FLOAT, GL.FALSE, 0, nil)
-    GL.EnableVertexAttribArray (Apos2d)
 end
 
 function GetLock ()
