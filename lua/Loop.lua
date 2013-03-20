@@ -38,18 +38,18 @@ function PreSector ()
 	local program = core.XE.gsector.program
 	local Apos2d = core.XE.gsector.Apos2d
 	local vbo = core.XE.vsector.vbo
-    GL.glDepthMask (GL.GL_FALSE)
-    GL.glEnable (GL.GL_DEPTH_TEST)
-    GL.glEnable (GL.GL_BLEND)
-    GL.glBlendFunc (GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA)
-    GL.glEnable (GL.GL_STENCIL_TEST)
-    GL.glStencilFunc (GL.GL_GREATER, 1, 1)
-    GL.glStencilOp (GL.GL_KEEP, GL.GL_KEEP, GL.GL_REPLACE)
-    GL.glUseProgram (program)
-    GL.glBindBuffer (GL.GL_ARRAY_BUFFER, vbo)
+    GL.DepthMask (GL.FALSE)
+    GL.Enable (GL.DEPTH_TEST)
+    GL.Enable (GL.BLEND)
+    GL.BlendFunc (GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA)
+    GL.Enable (GL.STENCIL_TEST)
+    GL.StencilFunc (GL.GREATER, 1, 1)
+    GL.StencilOp (GL.KEEP, GL.KEEP, GL.REPLACE)
+    GL.UseProgram (program)
+    GL.BindBuffer (GL.ARRAY_BUFFER, vbo)
     -- these two guys need to be called after glBindBuffer
-    GL.glVertexAttribPointer (Apos2d, 2, GL.GL_FLOAT, GL.GL_FALSE, 0, nil)
-    GL.glEnableVertexAttribArray (Apos2d)
+    GL.VertexAttribPointer (Apos2d, 2, GL.FLOAT, GL.FALSE, 0, nil)
+    GL.EnableVertexAttribArray (Apos2d)
 end
 
 function GetLock ()
