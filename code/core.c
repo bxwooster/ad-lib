@@ -1,4 +1,4 @@
-struct bronze_engine * XE = NULL;
+API struct bronze_engine * XE = NULL;
 
 void core_init (struct bronze_engine * E) {XE = E;}
 
@@ -56,7 +56,7 @@ API void SetCamera (mat4 const * mcam) {
 
 API void PreSector () {
     struct glts_sectoro const * shader = & XE->gsector;
-
+/*
     glDepthMask (GL_FALSE);
     glEnable (GL_DEPTH_TEST);
     glEnable (GL_BLEND);
@@ -64,13 +64,12 @@ API void PreSector () {
     glEnable (GL_STENCIL_TEST);
     glStencilFunc (GL_GREATER, 1, 1);
     glStencilOp (GL_KEEP, GL_KEEP, GL_REPLACE);
-
     glUseProgram (shader->program);
-
     glBindBuffer (GL_ARRAY_BUFFER, XE->vsector.vbo);
     // these two guys need to be called after glBindBuffer
     glVertexAttribPointer (shader->Apos2d, 2, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray (shader->Apos2d);
+*/
 }
 
 API void Sector (mat4 const * tMat, vec3 const * colour,

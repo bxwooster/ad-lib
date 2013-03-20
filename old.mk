@@ -221,17 +221,17 @@ cflags := -std=c99 \
 
 .PHONY: all package clean run debug prepare
 
-all: $(exe)
+all: $(exe) $(api)
 
 package: $(package_archive)
 
 clean:
 	rm -rf $(platform_dir)
 
-run: $(exe)
+run: $(exe) $(api)
 	@./$(exe)
 
-debug: $(exe)
+debug: $(exe) $(api)
 	@gdb $(exe)
 
 prepare: $(source_c) $(source_h) $(source_ext_h)
@@ -241,7 +241,7 @@ prepare: $(source_c) $(source_h) $(source_ext_h)
 SHELL := bash
 export
 
-$(exe): $(api) $(all_headers) $(all_source) $(superheader) $(main) | $(output_dir)
+$(exe): $(all_headers) $(all_source) $(superheader) $(main) | $(output_dir)
 	@echo "Making the executable..."
 	$(cc) -o $(exe) $(all_source) $(main) $(cflags)
 
@@ -249,11 +249,13 @@ $(superheader): $(all_source) | $(output_dir)
 	@echo "Making superheader..."
 	@makeheaders -h $(all_source) > $(superheader)
 
-$(api): $(superheader)
+$(api): $(superheader) code/*.h code/*.c
 ifeq ($(program),cosmos)
 	@echo "Making API.h..."
 	@rm -f API.h
 	@makeheaders -h code/vecmat.h code/vecmat.c | grep -v '#' >> API.h
+	@makeheaders -h code/util.h code/util.c | grep -v '#' >> API.h
+	@makeheaders -h code/glts.h code/bronze.h | grep -v '#' >> API.h
 	@cat $(superheader) | grep API | grep -v '#' | sed 's/API //' >> API.h
 endif
 

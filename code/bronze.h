@@ -4,6 +4,7 @@ struct bronze_G1 {
     float size;
 };
 
+typedef struct lua_State lua_State;
 struct bronze_engine {
     struct SDL * sdl;
     struct hot_player * H;

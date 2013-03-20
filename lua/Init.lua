@@ -1,7 +1,8 @@
 function Init ()
+    FFI = require ("ffi")
+	require ("lua/GL")
     local api_file = io.open ("API.h")
     local api_text = api_file:read ("*all")
-    FFI = require ("ffi")
     FFI.cdef (api_text)
     core = FFI.C
 
