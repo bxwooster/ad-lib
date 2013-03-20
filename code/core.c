@@ -48,12 +48,6 @@ API vec3 PlaneIntersection (vec3 const * C, vec3 const * V,
     return vec3_sum (C, & Vr);
 }
 
-API void SetCamera (mat4 const * mcam) {
-    XE->Sviewi = *mcam;
-    mat4 view = mat4_inverted_rtonly (mcam);
-    XE->Sviewproj = mat4_multiply (& XE->Sproj, & view);
-}
-
 API void PreSphere () {
     struct glts_planeta const * shader = XE->gplanets;
 

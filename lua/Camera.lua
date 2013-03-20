@@ -1,7 +1,7 @@
 function UpdateCamera (C)
     CameraPointer (C)
     CameraArrows (C)
-    core.SetCamera (C.tMat)
+    SetCamera (C.tMat)
 end
 
 function CameraPointer (C)
@@ -33,4 +33,9 @@ function CameraArrows (C)
     if KeyHeld (KEY.Down) then
         C.tMat = mat4.Movement (dist * vec3.forward) ^ C.tMat
     end
+end
+
+function SetCamera (mCam)
+    core.XE.Sviewi = mCam
+    core.XE.Sviewproj = core.XE.Sproj ^ mat4.Inverse (mCam)
 end
