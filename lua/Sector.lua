@@ -22,7 +22,7 @@ function Sector (tMat, colour, r1, r2, angsize, angle)
 		angsize / (2*math.pi) + 1)
 
 	local transform = mat4.Rotated (tMat, vec3.z, angle)
-    local mvp = core.XE.Sviewproj ^ transform
+    local mvp = Sviewproj ^ transform
 
     GL.UniformMatrix4fv (shader.Umvp, 1, GL.FALSE, mvp.p)
     GL.Uniform1f (shader.Uangle, angsize / M)

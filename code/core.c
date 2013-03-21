@@ -23,6 +23,10 @@ API int8_t Key (unsigned key) {
     return XE->key[key];
 }
 
+API vec2 ScreenSize () {
+	return (vec2) {XE->sdl->width, XE->sdl->height};
+}
+
 API vec2 Pointer () {
     int x, y;
     SDL_GetMouseState (& x, & y);

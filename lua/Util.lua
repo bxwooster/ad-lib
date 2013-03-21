@@ -21,7 +21,7 @@ end
 function ScreenRay (pointer)
     local q = 1 / math.tan (math.pi * FOV / 180 / 2);
     local screen = vec4.New (pointer.e.x / q, -pointer.e.y / q, 1, 0)
-    return (core.XE.Sviewi % screen).v3;
+    return (Sviewi % screen).v3;
 end
 
 function GetLock ()

@@ -39,7 +39,7 @@ function Sphere (tMat, colour, radius)
     mRot.c.w = vec4.zero
     mRot = mat4.Inverse (mRot)
 
-	local first = mModel.c.w.v3 - core.XE.Sviewi.c.w.v3
+	local first = mModel.c.w.v3 - Sviewi.c.w.v3
     local p = vec3.Length (first)
     local r = radius
     local apparent = math.sqrt (p * p - r * r) * r / p
@@ -59,7 +59,7 @@ function Sphere (tMat, colour, radius)
 	local mFinalRot = mRot ^ mFinalModel
 
 	local mSuperModel = mat4.Moved (mFinalModel, vec3.New (0, 0, -offset))
-	local mvp = core.XE.Sviewproj ^ mSuperModel
+	local mvp = Sviewproj ^ mSuperModel
 
     local shader = GPlanet
 

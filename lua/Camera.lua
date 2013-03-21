@@ -38,7 +38,8 @@ function CameraArrows (C)
 end
 
 function SetCamera (mCam)
-    core.XE.Sproj = core.util_projection (core.XE.sdl.width, core.XE.sdl.height, FOV);
-    core.XE.Sviewi = mCam
-    core.XE.Sviewproj = core.XE.Sproj ^ mat4.Inverse (mCam)
+	local size = core.ScreenSize ()
+    Sproj = core.util_projection (size.e.x, size.e.y, FOV);
+    Sviewi = mCam
+    Sviewproj = Sproj ^ mat4.Inverse (mCam)
 end
