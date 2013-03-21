@@ -1,4 +1,6 @@
 function PrepareGL ()
+	local size = core.ScreenSize ()
+    GL.Viewport (0, 0, size.e.x, size.e.y)
     GL.DepthMask (GL.TRUE);
     GL.ClearColor (0, 0, 0, 0);
     GL.ClearStencil (0);

@@ -39,14 +39,12 @@ bronze_init (struct SDL * sdl) {
     OK (E->key);
     memset (E->key, -1, max);
 
-    glViewport (0, 0, E->sdl->width, E->sdl->height);
-
-	XE = E;
     E->L = luaL_newstate ();
     OK (E->L != NULL);
     luaL_openlibs (E->L);
-    lua_pushlightuserdata (E->L, E);
-    lua_setglobal (E->L, "_E");
+
+	XE = E;
+
     hot_pull (E->H, "lua/Init.lua", lua_hot, E, 0);
     lua_getglobal (E->L, "Init");
     bronze_pcall (E);
