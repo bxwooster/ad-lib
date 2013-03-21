@@ -1,9 +1,3 @@
-char * GPLANETS [] = {
-    "glsl/planet.glts",
-    "glsl/planet-normals.glts",
-    "glsl/planet-wireframe.glts",
-};
-
 char * func2file (char const * func) {
     char before [] = "lua/"; int B = strlen (before);
     char after [] = ".lua"; int A = strlen (after);
@@ -29,17 +23,6 @@ void lua_hot (void * data, char const * file, char const * text) {
     }
 }
 
-void planet_hot (void * data, char const * file, char const * text) {
-    struct bronze_engine * E = *((void **) data + 0);
-    struct glts_planeta * P = *((void **) data + 1);
-    (void) file;
-
-    glDeleteProgram (P->program); /* Dup. */
-
-    int index = P - &E->gplanets[0];
-    *P = glts_load_planeta (GPLANETS[index], (char /*const*/ *) text);
-}
-
 struct bronze_engine *
 bronze_init (struct SDL * sdl) {
     struct bronze_engine * E = malloc (sizeof (*E));
@@ -58,14 +41,7 @@ bronze_init (struct SDL * sdl) {
 
     glViewport (0, 0, E->sdl->width, E->sdl->height);
 
-    for (unsigned i = 0; i < 3; ++i) {
-        void * EnP [] = { E, &E->gplanets[0] + i };
-        E->gplanets[i] = (struct glts_planeta) {0};
-        E->gplanets[i].program = GL_FALSE;
-        hot_pull (E->H, GPLANETS[i], planet_hot, EnP, sizeof (EnP));
-    }
-
-    core_init (E);
+	XE = E;
     E->L = luaL_newstate ();
     OK (E->L != NULL);
     luaL_openlibs (E->L);
@@ -90,11 +66,6 @@ void bronze_destroy (struct bronze_engine * E) {
     hot_del_player (E->H);
     lua_close (E->L);
     free (E->key);
-
-    for (unsigned i = 0; i < 3; ++i) {
-        glDeleteProgram (E->gplanets[i].program);
-    }
-
     free (E);
 }
 

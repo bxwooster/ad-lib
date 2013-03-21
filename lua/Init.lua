@@ -22,5 +22,6 @@ function Init ()
 	GSectorInit ()
 	VSectorInit ()
 	VImposterInit ()
+	GPlanetInit ()
 	TexInit ()
 end

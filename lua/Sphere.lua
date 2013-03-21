@@ -8,7 +8,7 @@ function DrawSpheres ()
 end
 
 function PreSphere ()
-	local shader = core.XE.gplanets[0]
+	local shader = GPlanet
 
     GL.DepthMask (GL.TRUE)
     GL.Enable (GL.DEPTH_TEST)
@@ -24,20 +24,6 @@ function PreSphere ()
 
     -- kind of hacky...
     GL.ActiveTexture (GL.TEXTURE0)
-end
-
-function TexInit ()
-	local function gc (T)
-		GL.DeleteTextures (1, T.tex);
-	end
-    Tex = FFI.gc (core.util_earth (), gc)
-end
-
-function VImposterInit ()
-	local function gc (V)
-    	GL.DeleteBuffers (1, V.vbo);
-	end
-	VImposter = FFI.gc (core.util_imposter (), gc)
 end
 
 function Sphere (tMat, colour, radius)
@@ -75,7 +61,7 @@ function Sphere (tMat, colour, radius)
 	local mSuperModel = mat4.Moved (mFinalModel, vec3.New (0, 0, -offset))
 	local mvp = core.XE.Sviewproj ^ mSuperModel
 
-    local shader = core.XE.gplanets[0]
+    local shader = GPlanet
 
     GL.UniformMatrix4fv (shader.Umvp, 1, GL.FALSE, mvp.p)
     GL.UniformMatrix4fv (shader.Umv, 1, GL.FALSE, mFinalRot.p)
@@ -85,4 +71,28 @@ function Sphere (tMat, colour, radius)
     GL.Uniform3fv (shader.Ucolour, 1, colour.p)
 
     GL.DrawArrays (GL.TRIANGLES, 0, VImposter.size)
+end
+
+function VImposterInit ()
+	local function gc (V)
+    	GL.DeleteBuffers (1, V.vbo);
+	end
+	VImposter = FFI.gc (core.util_imposter (), gc)
+end
+
+function GPlanetInit ()
+	local function gc (G)
+		GL.DeleteProgram (G.program)
+	end
+	local function hot (null, file, text)
+		GPlanet = FFI.gc (core.glts_load_planeta (file, text), gc)
+	end
+	core.Pull ("glsl/planet.glts", hot)
+end
+
+function TexInit ()
+	local function gc (T)
+		GL.DeleteTextures (1, T.tex);
+	end
+    Tex = FFI.gc (core.util_earth (), gc)
 end

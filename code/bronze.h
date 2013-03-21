@@ -10,8 +10,6 @@ struct bronze_engine {
     struct hot_player * H;
     lua_State * L;
 
-    struct glts_planeta gplanets [3];
-
     int8_t * key;
     unsigned key_max;
 

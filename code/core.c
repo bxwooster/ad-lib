@@ -1,7 +1,5 @@
 API struct bronze_engine * XE = NULL;
 
-void core_init (struct bronze_engine * E) {XE = E;}
-
 API void Pull (char const * filename, hot_callback call) {
 	hot_pull (XE->H, filename, call, NULL, 0);
 }
