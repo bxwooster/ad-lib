@@ -574,6 +574,7 @@ typedef void (* PFNGLUNIFORM4IVPROC) (GLint location, GLsizei count, const GLint
 typedef void (* PFNGLUNIFORMMATRIX2FVPROC) (GLint location, GLsizei count, GLboolean transpose, const GLfloat *value);
 typedef void (* PFNGLUNIFORMMATRIX3FVPROC) (GLint location, GLsizei count, GLboolean transpose, const GLfloat *value);
 typedef void (* PFNGLUNIFORMMATRIX4FVPROC) (GLint location, GLsizei count, GLboolean transpose, const GLfloat *value);
+typedef void (* PFNGLACTIVETEXTUREPROC) (GLenum texture);
 	]]
 end
 

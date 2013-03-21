@@ -15,6 +15,7 @@ function Init ()
     core.Pull ("Camera")
     core.Pull ("Sector")
     core.Pull ("System")
+    core.Pull ("Sphere")
     core.Pull ("KeyDefs")
 
     World = NewWorld ()

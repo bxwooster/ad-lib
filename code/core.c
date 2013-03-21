@@ -34,25 +34,6 @@ API vec2 Pointer () {
     return (vec2) {mx, my};
 }
 
-API void PreSphere () {
-    struct glts_planeta const * shader = XE->gplanets;
-
-    glDepthMask (GL_TRUE);
-    glEnable (GL_DEPTH_TEST);
-    glDisable (GL_BLEND);
-    glDisable (GL_STENCIL_TEST);
-
-    glUseProgram (shader->program);
-
-    glBindBuffer (GL_ARRAY_BUFFER, XE->vimposter.vbo);
-    // these two guys need to be called after glBindBuffer
-    glVertexAttribPointer (shader->Apos2d, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray (shader->Apos2d);
-
-    // kind of hacky...
-    glActiveTexture (GL_TEXTURE0);
-}
-
 API void Sphere (mat4 const * tMat, vec3 const * colour, float radius) {
     /* this is somewhat hacky and might need more work
      * we want to split tMat into pure translation and rotation

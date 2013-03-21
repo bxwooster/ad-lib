@@ -21,10 +21,8 @@ function Loop ()
 	-- which sector must be highlighted or "selected"?
     Selected = Selection (GetHovered ())
 
-	-- Draw all the "spheres" (but each has an Earth texture ATM)
-    core.PreSphere ()
-    apply (DrawSphere, World.spheres)
-
+	-- Ready, set... draw!
+	DrawSpheres ()
 	DrawSectors ()
 
     if KeyDown (KEY.L) then REPL () end
@@ -91,6 +89,3 @@ function UpdateNode (N)
     N.tMat = N.parent.tMat ^ N.rMat
 end
 
-function DrawSphere (S)
-    core.Sphere (S.tMat, S.colour, S.radius)
-end
