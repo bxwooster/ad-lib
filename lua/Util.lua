@@ -35,13 +35,38 @@ do
 			local v = rawget (t, k)
 			if not v then
 				v = GL.GetUniformLocation (glsl.program, k)
-				t[k] = v
+				rawset (t, k, v)
 			end
 			return v
 		end
 
+		-- experimantal ;)
+		--[[
+		local vec2type = FFI.typeof (vec2.zero)
+		local vec3type = FFI.typeof (vec3.zero)
+		local vec4type = FFI.typeof (vec4.zero)
+		local mat4type = FFI.typeof (mat4.id)
+		local function un (t, k, data)
+			local v = ui (t, k)
+			if type (data) == "number" then
+				GL.Uniform1f (v, data)
+			elseif FFI.typeof (data) == vec2type then
+				GL.Uniform2fv (v, 1, data.p)
+			elseif FFI.typeof (data) == vec3type then
+				GL.Uniform3fv (v, 1, data.p)
+			elseif FFI.typeof (data) == vec4type then
+				GL.Uniform4fv (v, 1, data.p)
+			elseif FFI.typeof (data) == mat4type then
+				GL.UniformMatrix4fv (v, 1, GL.FALSE, data.p)
+			else
+				error ("While setting uniform " .. k .. ": " .. tostring (data))
+			end
+		end
+		--]]
+		local un = nil
+
 		attribute = setmetatable ({}, {__index = ai})
-		uniform = setmetatable ({}, {__index = ui})
+		uniform = setmetatable ({}, {__index = ui, __newindex = un})
 		return {
 			glsl = glsl,
 			attribute = attribute,
