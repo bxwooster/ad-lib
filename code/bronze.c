@@ -126,19 +126,6 @@ void bronze_destroy (struct bronze_engine * E) {
     free (E);
 }
 
-void bronze_frame_gl (struct bronze_engine * E) {
-    (void) E;
-    glDepthMask (GL_TRUE);
-    glClearColor (0.0f, 0.0f, 0.0f, 0.0);
-    glClearStencil (0);
-    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-    GLuint error = glGetError ();
-    if (error != 0) {
-        logi ("There occurred a GL error, # %d.", error);
-    }
-}
-
 void bronze_frame_input (struct bronze_engine * E) {
     SDL_Event event;
     while (SDL_PollEvent (&event)) {
@@ -163,7 +150,6 @@ void bronze_frame_input (struct bronze_engine * E) {
 }
 
 char bronze_frame (struct bronze_engine * E) {
-    bronze_frame_gl (E);
     bronze_frame_input (E);
 
     lua_getglobal (E->L, "Loop");

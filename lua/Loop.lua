@@ -1,6 +1,7 @@
 function Loop ()
-	-- update Time, Dt
-    DoTime ()
+	PrepareGL ()
+
+    UpdateTimers ()
 
 	-- Update World.turn
     DoTurn ()
@@ -29,6 +30,21 @@ function Loop ()
     if KeyDown (KEY.L) then REPL () end
     if KeyDown (KEY.R) then World = NewWorld () end
     if KeyDown (KEY.Escape) then core.Halt () end
+end
+
+function PrepareGL ()
+    GL.DepthMask (GL.TRUE);
+    GL.ClearColor (0, 0, 0, 0);
+    GL.ClearStencil (0);
+	local flags = BIT.bor (GL.COLOR_BUFFER_BIT,
+						   GL.DEPTH_BUFFER_BIT,
+						   GL.STENCIL_BUFFER_BIT)
+    GL.Clear (flags);
+
+    local E = GL.GetError ();
+	if E ~= 0 then
+        print ("There occurred a GL error, # " .. tostring (E) .. ".");
+	end
 end
 
 function GetLock ()
@@ -74,7 +90,7 @@ function Selection (hovered)
 	return selected
 end
 
-function DoTime ()
+function UpdateTimers ()
     local newTime = core.Time ()
     Dt = newTime - (Time or 0)
     Time = newTime
