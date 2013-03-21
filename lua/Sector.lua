@@ -1,6 +1,6 @@
 function PreSector ()
-	local program = core.XE.gsector.program
-	local Apos2d = core.XE.gsector.Apos2d
+	local program = GSector.program
+	local Apos2d = GSector.Apos2d
 	local vbo = VSector.vbo
     GL.DepthMask (GL.FALSE)
     GL.Enable (GL.DEPTH_TEST)
@@ -17,7 +17,7 @@ function PreSector ()
 end
 
 function Sector (tMat, colour, r1, r2, angsize, angle)
-	local shader = core.XE.gsector
+	local shader = GSector
     local M = math.floor ((math.floor (VSector.size / 6) - 1) *
 		angsize / (2*math.pi) + 1)
 
@@ -43,9 +43,19 @@ function DrawSectors ()
 	apply (DrawSector, World.sectors)
 end
 
+function GSectorInit ()
+	local function gc (G)
+		GL.DeleteProgram (G.program)
+	end
+	local function hot (null, file, text)
+		GSector = FFI.gc (core.glts_load_sectoro (file, text), gc)
+	end
+	core.Pull ("glsl/sector.glts", hot)
+end
+
 function VSectorInit ()
 	local function gc (V)
     	GL.DeleteBuffers (1, V.vbo);
 	end
-	return FFI.gc (core.util_sector (), gc)
+	VSector = FFI.gc (core.util_sector (), gc)
 end

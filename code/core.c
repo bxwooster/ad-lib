@@ -2,7 +2,11 @@ API struct bronze_engine * XE = NULL;
 
 void core_init (struct bronze_engine * E) {XE = E;}
 
-API void Pull (char const * func) {
+API void Pull (char const * filename, hot_callback call) {
+	hot_pull (XE->H, filename, call, NULL, 0);
+}
+
+API void Require (char const * func) {
     char * file = func2file (func);
     hot_pull (XE->H, file, lua_hot, XE, 0);
     free (file);

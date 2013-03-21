@@ -1,13 +1,8 @@
-float const k_planet_size_minifier = 0.9f;
-
 char * GPLANETS [] = {
     "glsl/planet.glts",
     "glsl/planet-normals.glts",
     "glsl/planet-wireframe.glts",
 };
-
-char SEGMENT [] = "glsl/sector.glts";
-char GALAXY [] = "data/galaxy";
 
 char * func2file (char const * func) {
     char before [] = "lua/"; int B = strlen (before);
@@ -32,15 +27,6 @@ void lua_hot (void * data, char const * file, char const * text) {
     } else {
         bronze_pcall (E);
     }
-}
-
-void sector_hot (void * data, char const * file, char const * text) {
-    struct bronze_engine * E = data;
-    (void) file;
-
-    glDeleteProgram (E->gsector.program); /* Dup. */
-
-    E->gsector = glts_load_sectoro ((char /*const*/ *) file, (char /*const*/ *) text);
 }
 
 void planet_hot (void * data, char const * file, char const * text) {
@@ -79,10 +65,6 @@ bronze_init (struct SDL * sdl) {
         hot_pull (E->H, GPLANETS[i], planet_hot, EnP, sizeof (EnP));
     }
 
-    E->gsector = (struct glts_sectoro) {0};
-    E->gsector.program = GL_FALSE;
-    hot_pull (E->H, SEGMENT, sector_hot, E, 0);
-
     core_init (E);
     E->L = luaL_newstate ();
     OK (E->L != NULL);
@@ -112,8 +94,6 @@ void bronze_destroy (struct bronze_engine * E) {
     for (unsigned i = 0; i < 3; ++i) {
         glDeleteProgram (E->gplanets[i].program);
     }
-
-    glDeleteProgram (E->gsector.program);
 
     free (E);
 }

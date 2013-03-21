@@ -11,7 +11,6 @@ struct bronze_engine {
     lua_State * L;
 
     struct glts_planeta gplanets [3];
-    struct glts_sectoro gsector;
 
     int8_t * key;
     unsigned key_max;

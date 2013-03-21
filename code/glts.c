@@ -102,7 +102,7 @@ load_it (
 
 GLuint // program
 glts_load (
-        char * filename,
+        char const * filename,
         char const * text,
         char const * typecode
 ) {
@@ -165,7 +165,7 @@ end:
     return program;        
 }
 
-struct glts_sectoro glts_load_sectoro (char * filename, char * text) {
+struct glts_sectoro glts_load_sectoro (char const * filename, char const * text) {
     struct glts_sectoro it;
 
     it.program = glts_load (filename, text, "");
@@ -184,7 +184,7 @@ struct glts_sectoro glts_load_sectoro (char * filename, char * text) {
     return it;
 }
 
-struct glts_planeta glts_load_planeta (char * filename, char * text) {
+struct glts_planeta glts_load_planeta (char const * filename, char const * text) {
     struct glts_planeta it;
 
     it.program = glts_load (filename, text, "");

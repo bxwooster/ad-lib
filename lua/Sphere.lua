@@ -30,14 +30,14 @@ function TexInit ()
 	local function gc (T)
 		GL.DeleteTextures (1, T.tex);
 	end
-    return FFI.gc (core.util_earth (), gc)
+    Tex = FFI.gc (core.util_earth (), gc)
 end
 
 function VImposterInit ()
 	local function gc (V)
     	GL.DeleteBuffers (1, V.vbo);
 	end
-	return FFI.gc (core.util_imposter (), gc)
+	VImposter = FFI.gc (core.util_imposter (), gc)
 end
 
 function Sphere (tMat, colour, radius)
