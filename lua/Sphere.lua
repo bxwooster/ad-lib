@@ -29,15 +29,15 @@ function Sphere (tMat, colour, radius)
      * we want to split tMat into pure translation and rotation
      * for some unknown yet reason I had to invert the rotation
      * so it looked right. Well, that's it! --]]
-    local mModel = mat4.Copy (tMat)
-    mModel.c.x = vec4 (1,0,0,0)
-    mModel.c.y = vec4 (0,1,0,0)
-    mModel.c.z = vec4 (0,0,1,0)
+    local mTra = mat4.Copy (tMat)
+    mTra.c.x = vec4 (1,0,0,0)
+    mTra.c.y = vec4 (0,1,0,0)
+    mTra.c.z = vec4 (0,0,1,0)
 	local mRot = mat4.Copy (tMat)
     mRot.c.w = vec4.zero
     mRot = mat4.Inverse (mRot)
 
-	local first = mModel.c.w.v3 - Sviewi.c.w.v3
+	local first = mTra.c.w.v3 - Sviewi.c.w.v3
     local p = vec3.Length (first)
     local r = radius
     local apparent = math.sqrt (p * p - r * r) * r / p
@@ -53,16 +53,15 @@ function Sphere (tMat, colour, radius)
     rotation.c.z.v3 = vec3.Normalized (first)
     rotation.c.x.v3 = vec3.Normalized (second)
     rotation.c.y.v3 = vec3.Normalized (third)
-    local mFinalModel = mModel ^ rotation
-	local mFinalRot = mRot ^ mFinalModel
+    local mTmp = mTra ^ rotation
 
-	local mSuperModel = mat4.Moved (mFinalModel, vec3 (0, 0, -offset))
-	local mvp = Sviewproj ^ mSuperModel
+	local mvp = Sviewproj ^ mat4.Moved (mTmp, vec3 (0, 0, -offset))
+	local mv = mRot ^ mTmp
 
     local uniform = GPlanet.uniform
 
     GL.UniformMatrix4fv (uniform.Umvp, 1, GL.FALSE, mvp.p)
-    GL.UniformMatrix4fv (uniform.Umv, 1, GL.FALSE, mFinalRot.p)
+    GL.UniformMatrix4fv (uniform.Umv, 1, GL.FALSE, mv.p)
     GL.Uniform1f (uniform.Uuvscale, apparent / r)
     GL.Uniform1f (uniform.UR, r)
     GL.Uniform1i (uniform.Utexture, Tex.tex)
