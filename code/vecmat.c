@@ -322,6 +322,14 @@ vec2 vec2_random (char octant) {
     return (vec2) {};
 }
 
+vec2 vec2_elmul (vec2 const * a, vec2 const * b) {
+	return (vec2) {a->e.x * b->e.x, a->e.y * b->e.y};
+}
+
+vec2 vec2_eldiv (vec2 const * a, vec2 const * b) {
+	return (vec2) {a->e.x / b->e.x, a->e.y / b->e.y};
+}
+
 vec4 vec4_new (float x, float y, float z, float w) {
     vec4 out;
 

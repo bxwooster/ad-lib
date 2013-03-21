@@ -102,6 +102,25 @@ util_earth (void) {
 }
 
 struct GLvbo_and_size
+util_rect (void) {
+    struct {
+        float x;
+        float y;
+    } const tris [] [3] = {
+        {{1,1}, {1,0}, {0,1}},
+        {{1,0}, {0,1}, {0,0}},
+    };
+    unsigned vertices = sizeof (tris) / sizeof (tris[0][0]);
+
+    GLuint vbo;
+    glGenBuffers (1, &vbo);
+    glBindBuffer (GL_ARRAY_BUFFER, vbo);
+    glBufferData (GL_ARRAY_BUFFER, sizeof (tris), tris, GL_STATIC_DRAW);
+
+    return (struct GLvbo_and_size) {vbo, vertices};
+}
+
+struct GLvbo_and_size
 util_imposter (void) {
     float const y = (float) (1.0 - sqrt(2.0));
 

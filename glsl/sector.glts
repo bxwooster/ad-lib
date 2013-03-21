@@ -21,7 +21,7 @@ void main(void) {
     gl_FragColor = vec4 (result, alpha);
 }
 #elif defined VS
-	void main(void) {
+void main(void) {
     float r = UR1 + Apos2d.r * (UR2 - UR1);
     float a = Apos2d.g * Uangle;
     vec2 cartesian = vec2 (r * cos(a), r * sin(a));
@@ -31,4 +31,3 @@ void main(void) {
     gl_Position = position;
 }
 #endif
-

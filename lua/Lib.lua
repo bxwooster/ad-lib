@@ -36,6 +36,8 @@ do
         Scaled = core.vec2_scaled,
         Normalized = core.vec2_normalized,
         Dot = core.vec2_dot,
+        Elmul = core.vec2_elmul,
+        Eldiv = core.vec2_eldiv,
     }
 
     vec2.left = vec2.New (-1, 0)

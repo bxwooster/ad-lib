@@ -25,6 +25,8 @@ function Loop ()
 	DrawSpheres ()
 	DrawSectors ()
 
+	DrawGUI ()
+
     if KeyDown (KEY.L) then REPL () end
     if KeyDown (KEY.R) then World = NewWorld () end
     if KeyDown (KEY.Escape) then core.Halt () end

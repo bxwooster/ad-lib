@@ -72,14 +72,7 @@ do
 			attribute = attribute,
 			uniform = uniform,
 		}
-		end
-
-	local function index (t, k)
-		local cached = rawget (t, k)
-		if cached then return cached end
 	end
-
-	FFI.metatype ("GLprog", {__index = index})
 end
 
 function PlaneIntersection (C, V, N, P)

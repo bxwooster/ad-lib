@@ -1,0 +1,18 @@
+#if defined VS
+attribute vec2 Apos2d;
+#endif
+
+uniform vec2 Us1;
+uniform vec2 Us2;
+varying vec2 Vplanar;
+
+#if defined FS
+void main(void) {
+    gl_FragColor = vec4 (Vplanar, 0.0, 0.5);
+}
+#elif defined VS
+void main(void) {
+	Vplanar = Apos2d;
+    gl_Position = vec4 (Us1 + (Us2 - Us1) * Apos2d, 0.0, 1.0);
+}
+#endif
