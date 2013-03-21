@@ -1,7 +1,7 @@
 function Init ()
     FFI = require ("ffi")
     BIT = require ("bit")
-	require ("lua/GL")
+	GL = require ("lua/GL")
     local api_file = io.open ("API.h")
     local api_text = api_file:read ("*all")
     FFI.cdef (api_text)
