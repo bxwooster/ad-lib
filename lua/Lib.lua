@@ -100,6 +100,17 @@ do
 end
 
 do
+    vec4 = {
+		New = core.vec4_new
+    }
+
+    local v4mt = {}
+    v4mt.__mod = core.vec4_multiply
+
+    FFI.metatype ("vec4", v4mt)
+end
+
+do
     mat4 = {
         Movement = core.mat4_movement,
         Moved = core.mat4_moved,

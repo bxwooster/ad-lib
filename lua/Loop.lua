@@ -32,27 +32,6 @@ function Loop ()
     if KeyDown (KEY.Escape) then core.Halt () end
 end
 
-function PrepareGL ()
-    GL.DepthMask (GL.TRUE);
-    GL.ClearColor (0, 0, 0, 0);
-    GL.ClearStencil (0);
-	local flags = BIT.bor (GL.COLOR_BUFFER_BIT,
-						   GL.DEPTH_BUFFER_BIT,
-						   GL.STENCIL_BUFFER_BIT)
-    GL.Clear (flags);
-
-    local E = GL.GetError ();
-	if E ~= 0 then
-        print ("There occurred a GL error, # " .. tostring (E) .. ".");
-	end
-end
-
-function GetLock ()
-    local C = World.camera.tMat.c.w.v3
-    local V = core.ScreenRay (core.Pointer ())
-    return core.PlaneIntersection (C, V, vec3.z, vec3.zero)
-end
-
 function Selection (hovered)
     local selected = {}
     if hovered then

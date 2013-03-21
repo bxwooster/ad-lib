@@ -1,3 +1,5 @@
+FOV = 60 -- yes, just like that
+
 function UpdateCamera (C)
     CameraPointer (C)
     CameraArrows (C)
@@ -36,6 +38,7 @@ function CameraArrows (C)
 end
 
 function SetCamera (mCam)
+    core.XE.Sproj = core.util_projection (core.XE.sdl.width, core.XE.sdl.height, FOV);
     core.XE.Sviewi = mCam
     core.XE.Sviewproj = core.XE.Sproj ^ mat4.Inverse (mCam)
 end

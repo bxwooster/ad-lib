@@ -256,6 +256,7 @@ ifeq ($(program),cosmos)
 	@makeheaders -h code/vecmat.h code/vecmat.c | grep -v '#' >> API.h
 	@makeheaders -h code/util.h code/util.c | grep -v '#' >> API.h
 	@makeheaders -h code/glts.h code/bronze.h | grep -v '#' >> API.h
+	@makeheaders -h code/SDL.h | grep -v '#' >> API.h
 	@cat $(superheader) | grep API | grep -v '#' | sed 's/API //' >> API.h
 endif
 

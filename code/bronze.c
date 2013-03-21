@@ -1,5 +1,4 @@
 float const k_planet_size_minifier = 0.9f;
-float const k_fov = 60.0f;
 
 char * GPLANETS [] = {
     "glsl/planet.glts",
@@ -71,7 +70,6 @@ bronze_init (struct SDL * sdl) {
     OK (E->key);
     memset (E->key, -1, max);
 
-    E->Sproj = util_projection (E->sdl->width, E->sdl->height, k_fov);
     glViewport (0, 0, E->sdl->width, E->sdl->height);
 
     E->tex = util_earth ();

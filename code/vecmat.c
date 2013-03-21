@@ -318,6 +318,17 @@ vec2 vec2_random (char octant) {
     return (vec2) {};
 }
 
+vec4 vec4_new (float x, float y, float z, float w) {
+    vec4 out;
+
+    out.p[0] = x;
+    out.p[1] = y;
+    out.p[2] = z;
+    out.p[3] = w;
+
+    return out;
+}
+
 vec4 vec4_from3 (vec3 const * v3) {
     vec4 out;
 
