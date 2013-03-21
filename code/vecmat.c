@@ -1,3 +1,7 @@
+mat4 mat4_copy (mat4 const * m) {
+	return *m;
+}
+
 mat4 mat4_identity (void) {
     mat4 out = {{
         1.0f, 0.0f, 0.0f, 0.0f,

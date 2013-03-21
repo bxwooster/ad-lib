@@ -20,4 +20,5 @@ function Init ()
 
     World = NewWorld ()
 	VSector = VSectorInit ()
+	VImposter = VImposterInit ()
 end

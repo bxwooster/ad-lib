@@ -73,7 +73,6 @@ bronze_init (struct SDL * sdl) {
     glViewport (0, 0, E->sdl->width, E->sdl->height);
 
     E->tex = util_earth ();
-    E->vimposter = util_imposter ();
 
     for (unsigned i = 0; i < 3; ++i) {
         void * EnP [] = { E, &E->gplanets[0] + i };
@@ -112,7 +111,6 @@ void bronze_destroy (struct bronze_engine * E) {
     lua_close (E->L);
     free (E->key);
 
-    glDeleteBuffers (1, & E->vimposter.vbo);
     glDeleteTextures (1, & E->tex);
 
     for (unsigned i = 0; i < 3; ++i) {

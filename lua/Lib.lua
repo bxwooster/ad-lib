@@ -103,6 +103,8 @@ do
     vec4 = {
 		New = core.vec4_new
     }
+	
+    vec4.zero = vec4.New (0, 0, 0, 0)
 
     local v4mt = {}
     v4mt.__mod = core.vec4_multiply
@@ -118,6 +120,7 @@ do
         Rotated = core.mat4_rotated_aa,
         Inverse = core.mat4_inverted_rtonly,
         Print = core.mat4_print,
+        Copy = core.mat4_copy,
 
         id = core.mat4_identity ()
     }
