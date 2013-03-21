@@ -11,7 +11,6 @@ struct bronze_engine {
     lua_State * L;
 
     GLuint tex;
-    struct GLvbo_and_size vsector;
     struct GLvbo_and_size vimposter;
     struct glts_planeta gplanets [3];
     struct glts_sectoro gsector;
