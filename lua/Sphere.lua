@@ -32,9 +32,9 @@ function Sphere (tMat, colour, radius)
      * for some unknown yet reason I had to invert the rotation
      * so it looked right. Well, that's it! --]]
     local mModel = mat4.Copy (tMat)
-    mModel.c.x = vec4.New (1,0,0,0)
-    mModel.c.y = vec4.New (0,1,0,0)
-    mModel.c.z = vec4.New (0,0,1,0)
+    mModel.c.x = vec4 (1,0,0,0)
+    mModel.c.y = vec4 (0,1,0,0)
+    mModel.c.z = vec4 (0,0,1,0)
 	local mRot = mat4.Copy (tMat)
     mRot.c.w = vec4.zero
     mRot = mat4.Inverse (mRot)
@@ -58,7 +58,7 @@ function Sphere (tMat, colour, radius)
     local mFinalModel = mModel ^ rotation
 	local mFinalRot = mRot ^ mFinalModel
 
-	local mSuperModel = mat4.Moved (mFinalModel, vec3.New (0, 0, -offset))
+	local mSuperModel = mat4.Moved (mFinalModel, vec3 (0, 0, -offset))
 	local mvp = Sviewproj ^ mSuperModel
 
     local shader = GPlanet

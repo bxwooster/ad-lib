@@ -58,6 +58,7 @@ do
     v2mt.__div = core.vec2_divided
     v2mt.__unm = function (v) return v2s (v, -1) end
 
+	setmetatable (vec2, {__call = function (t, ...) return vec2.New(...) end})
     FFI.metatype ("vec2", v2mt)
 end
 
@@ -96,6 +97,7 @@ do
     v3mt.__mod = core.vec3_multiply
     v3mt.__unm = function (v) return v3s (v, -1) end
 
+	setmetatable (vec3, {__call = function (t, ...) return vec3.New(...) end})
     FFI.metatype ("vec3", v3mt)
 end
 
@@ -109,6 +111,7 @@ do
     local v4mt = {}
     v4mt.__mod = core.vec4_multiply
 
+	setmetatable (vec4, {__call = function (t, ...) return vec4.New(...) end})
     FFI.metatype ("vec4", v4mt)
 end
 
@@ -133,13 +136,13 @@ end
 
 do
     colour = {
-        white = vec3.New (1, 1, 1),
-        red = vec3.New (1, 0, 0),
-        green = vec3.New (0, 1, 0),
-        blue = vec3.New (0, 0, 1),
-        yellow = vec3.New (1, 1, 0),
-        magenta = vec3.New (1, 0, 1),
-        cyan = vec3.New (0, 1, 1),
-        black = vec3.New (0, 0, 0),
+        white = vec3 (1, 1, 1),
+        red = vec3 (1, 0, 0),
+        green = vec3 (0, 1, 0),
+        blue = vec3 (0, 0, 1),
+        yellow = vec3 (1, 1, 0),
+        magenta = vec3 (1, 0, 1),
+        cyan = vec3 (0, 1, 1),
+        black = vec3 (0, 0, 0),
     }
 end

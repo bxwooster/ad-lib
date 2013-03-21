@@ -57,7 +57,7 @@ function NewSystem (options, world)
             local phi2 = ring.A / 2 + options.external2.B
             phi = (phi + phi2) / 2
         end
-        local dir = vec3.New (math.cos (phi), math.sin (phi), 0)
+        local dir = vec3 (math.cos (phi), math.sin (phi), 0)
         S.rMat = mat4.Movement (dist * dir) ^ mat4.Rotation (vec3.z, ring.A)
         S.parent = ring
         scale = 0.9 * size
@@ -87,7 +87,7 @@ function NewSystem (options, world)
         for i = 0, orbit.nCells - 1 do
             ring[i] = {
                 parent = ring,
-                colour = vec3.New (0, 0, A * i % 0.689 + 0.3),
+                colour = vec3 (0, 0, A * i % 0.689 + 0.3),
                 B = A * i,
             }
         end

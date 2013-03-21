@@ -22,7 +22,7 @@ end
 
 function ScreenRay (pointer)
     local q = 1 / math.tan (math.pi * FOV / 180 / 2);
-    local screen = vec4.New (pointer.e.x / q, -pointer.e.y / q, 1, 0)
+    local screen = vec4 (pointer.e.x / q, -pointer.e.y / q, 1, 0)
     return (Sviewi % screen).v3;
 end
 

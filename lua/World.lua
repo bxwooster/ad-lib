@@ -3,14 +3,14 @@ function NewWorld ()
 
     world.camera = {
         speed = 3,
-        tMat = mat4.Movement (vec3.New (0, 1.75, 1.5)) ^
+        tMat = mat4.Movement (vec3 (0, 1.75, 1.5)) ^
             mat4.Rotation (vec3.x, 0.75 * math.pi)
     }
 
     world.center = {tMat = mat4.id}
 
     local P1 = {
-        colour = vec3.New (1, 1, 1),
+        colour = vec3 (1, 1, 1),
         radius = 1,
         orbits = {
             {width = 1, nCells = 3},
@@ -23,7 +23,7 @@ function NewWorld ()
 
     local P2 = {
         external = P1.rings[1][4],
-        colour = vec3.New (1, 1, 1),
+        colour = vec3 (1, 1, 1),
         radius = 1,
         orbits = {
             {width = 1, nCells = 3},
@@ -34,7 +34,7 @@ function NewWorld ()
     local P3 = {
         external = P1.rings[3][0],
         external2 = P1.rings[3][1],
-        colour = vec3.New (1, 1, 1),
+        colour = vec3 (1, 1, 1),
         radius = 1,
         orbits = {
             {width = 1, nCells = 4},
