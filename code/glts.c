@@ -1,4 +1,4 @@
-GLuint // program
+static GLuint // program
 link_it (
         GLuint vs,
         GLuint fs
@@ -20,7 +20,7 @@ link_it (
     return program;
 }
 
-void log_it (
+static void log_it (
         GLuint shader
 ) {
     GLint size = 0;
@@ -39,7 +39,7 @@ void log_it (
     }
 }
 
-GLuint
+static GLuint
 do_it (
         char const * pieces [],
         unsigned count,
@@ -100,16 +100,12 @@ load_it (
     return load_file (included_file);
 }
 
-GLuint // program
-glts_load (
-        char const * filename,
-        char const * text,
-        char const * typecode
-) {
+struct GLprog
+glts_load (char const * filename, char const * text) {
     GLuint program = GL_FALSE;
     unsigned maxN = 256;
 	char const * sources [maxN]; /* 1k of memory */
-	unsigned N = 1; /* first one is used internally */
+	unsigned N = 0;
 
     /* load initial .glts file */
     const char * at;
@@ -136,9 +132,6 @@ glts_load (
 	}
 
     sources[N++] = current_file;
-    sources[0] = (char *) typecode;
-    /* will need an extra when typecode is actually used */
-    /* note the -1's on two lines below */
 
     GLuint vs = do_it (sources, N, GL_VERTEX_SHADER);
     GLuint fs = do_it (sources, N, GL_FRAGMENT_SHADER);
@@ -158,48 +151,9 @@ end:
         logi ("Syntax error while loading a GLTS: %s:byte-%d",
             filename, (int) (at - current_file));
 
-	for (unsigned n = 1; n < N - 1; ++n) {
+	for (unsigned n = 0; n < N - 1; ++n) {
     	free ((char *) sources[n]);
     }
 
-    return program;        
-}
-
-struct glts_sectoro glts_load_sectoro (char const * filename, char const * text) {
-    struct glts_sectoro it;
-
-    it.program = glts_load (filename, text, "");
-
-    it.Apos2d = (GLuint) glGetAttribLocation (it.program, "Apos2d");
-    if (it.Apos2d == (GLuint) -1) {
-        logi ("GL attribute 'Apos2d' not found");
-    }
-
-    it.Umvp = glGetUniformLocation (it.program, "Umvp");
-    it.Ucolour = glGetUniformLocation (it.program, "Ucolour");
-    it.UR1 = glGetUniformLocation (it.program, "UR1");
-    it.UR2 = glGetUniformLocation (it.program, "UR2");
-    it.Uangle = glGetUniformLocation (it.program, "Uangle");
-
-    return it;
-}
-
-struct glts_planeta glts_load_planeta (char const * filename, char const * text) {
-    struct glts_planeta it;
-
-    it.program = glts_load (filename, text, "");
-
-    it.Apos2d = (GLuint) glGetAttribLocation (it.program, "Apos2d");
-    if (it.Apos2d == (GLuint) -1) {
-        logi ("GL attribute 'Apos2d' not found");
-    }
-
-    it.Umv = glGetUniformLocation (it.program, "Umv");
-    it.Umvp = glGetUniformLocation (it.program, "Umvp");
-    it.Ucolour = glGetUniformLocation (it.program, "Ucolour");
-    it.UR = glGetUniformLocation (it.program, "UR");
-    it.Uuvscale = glGetUniformLocation (it.program, "Uuvscale");
-    it.Utexture = glGetUniformLocation (it.program, "Uexture");
-
-    return it;
+    return (struct GLprog) {program};
 }

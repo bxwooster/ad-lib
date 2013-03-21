@@ -8,19 +8,17 @@ function DrawSpheres ()
 end
 
 function PreSphere ()
-	local shader = GPlanet
-
     GL.DepthMask (GL.TRUE)
     GL.Enable (GL.DEPTH_TEST)
     GL.Disable (GL.BLEND)
     GL.Disable (GL.STENCIL_TEST)
 
-    GL.UseProgram (shader.program)
-
+    GL.UseProgram (GPlanet.glsl.program)
     GL.BindBuffer (GL.ARRAY_BUFFER, VImposter.vbo)
     -- these two guys need to be called after GL.BindBuffer
-    GL.VertexAttribPointer (shader.Apos2d, 2, GL.FLOAT, GL.FALSE, 0, NULL)
-    GL.EnableVertexAttribArray (shader.Apos2d)
+	local Apos2d = GPlanet.attribute.Apos2d
+    GL.VertexAttribPointer (Apos2d, 2, GL.FLOAT, GL.FALSE, 0, NULL)
+    GL.EnableVertexAttribArray (Apos2d)
 
     -- kind of hacky...
     GL.ActiveTexture (GL.TEXTURE0)
@@ -61,14 +59,14 @@ function Sphere (tMat, colour, radius)
 	local mSuperModel = mat4.Moved (mFinalModel, vec3 (0, 0, -offset))
 	local mvp = Sviewproj ^ mSuperModel
 
-    local shader = GPlanet
+    local uniform = GPlanet.uniform
 
-    GL.UniformMatrix4fv (shader.Umvp, 1, GL.FALSE, mvp.p)
-    GL.UniformMatrix4fv (shader.Umv, 1, GL.FALSE, mFinalRot.p)
-    GL.Uniform1f (shader.Uuvscale, apparent / r)
-    GL.Uniform1f (shader.UR, r)
-    GL.Uniform1i (shader.Utexture, Tex.tex)
-    GL.Uniform3fv (shader.Ucolour, 1, colour.p)
+    GL.UniformMatrix4fv (uniform.Umvp, 1, GL.FALSE, mvp.p)
+    GL.UniformMatrix4fv (uniform.Umv, 1, GL.FALSE, mFinalRot.p)
+    GL.Uniform1f (uniform.Uuvscale, apparent / r)
+    GL.Uniform1f (uniform.UR, r)
+    GL.Uniform1i (uniform.Utexture, Tex.tex)
+    GL.Uniform3fv (uniform.Ucolour, 1, colour.p)
 
     GL.DrawArrays (GL.TRIANGLES, 0, VImposter.size)
 end
@@ -81,11 +79,8 @@ function VImposterInit ()
 end
 
 function GPlanetInit ()
-	local function gc (G)
-		GL.DeleteProgram (G.program)
-	end
 	local function hot (null, file, text)
-		GPlanet = FFI.gc (core.glts_load_planeta (file, text), gc)
+		GPlanet = LoadShader (file, text)
 	end
 	core.Pull ("glsl/planet.glts", hot)
 end

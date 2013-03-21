@@ -15,6 +15,48 @@ function PrepareGL ()
 	end
 end
 
+do
+	local function gc (G)
+		GL.DeleteProgram (G.program)
+	end
+	function LoadShader (file, text)
+		local glsl = FFI.gc (core.glts_load (file, text), gc)
+
+		local function ai (t, k)
+			local v = rawget (t, k)
+			if not v then
+				v = GL.GetAttribLocation (glsl.program, k);
+				t[k] = v
+			end
+			return v
+		end
+
+		local function ui (t, k)
+			local v = rawget (t, k)
+			if not v then
+				v = GL.GetUniformLocation (glsl.program, k)
+				t[k] = v
+			end
+			return v
+		end
+
+		attribute = setmetatable ({}, {__index = ai})
+		uniform = setmetatable ({}, {__index = ui})
+		return {
+			glsl = glsl,
+			attribute = attribute,
+			uniform = uniform,
+		}
+		end
+
+	local function index (t, k)
+		local cached = rawget (t, k)
+		if cached then return cached end
+	end
+
+	FFI.metatype ("GLprog", {__index = index})
+end
+
 function PlaneIntersection (C, V, N, P)
     local ratio = - (N .. (C - P)) / (N .. V)
 	return C + V * ratio
