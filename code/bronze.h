@@ -10,7 +10,6 @@ struct bronze_engine {
     struct hot_player * H;
     lua_State * L;
 
-    GLuint tex;
     struct glts_planeta gplanets [3];
     struct glts_sectoro gsector;
 

@@ -26,6 +26,13 @@ function PreSphere ()
     GL.ActiveTexture (GL.TEXTURE0)
 end
 
+function TexInit ()
+	local function gc (T)
+		GL.DeleteTextures (1, T.tex);
+	end
+    return FFI.gc (core.util_earth (), gc)
+end
+
 function VImposterInit ()
 	local function gc (V)
     	GL.DeleteBuffers (1, V.vbo);
@@ -74,7 +81,7 @@ function Sphere (tMat, colour, radius)
     GL.UniformMatrix4fv (shader.Umv, 1, GL.FALSE, mFinalRot.p)
     GL.Uniform1f (shader.Uuvscale, apparent / r)
     GL.Uniform1f (shader.UR, r)
-    GL.Uniform1i (shader.Utexture, core.XE.tex)
+    GL.Uniform1i (shader.Utexture, Tex.tex)
     GL.Uniform3fv (shader.Ucolour, 1, colour.p)
 
     GL.DrawArrays (GL.TRIANGLES, 0, VImposter.size)

@@ -87,7 +87,7 @@ util_earth_prepare (
     return tex;
 }
 
-GLuint // tex
+struct GLtex
 util_earth (void) {
     SDL_Surface * earth [6] = {0};
     GLenum GLformat = util_earth_load (earth);
@@ -98,7 +98,7 @@ util_earth (void) {
         SDL_FreeSurface (earth[i]);
     }
 
-    return tex;
+    return (struct GLtex) {tex};
 }
 
 struct GLvbo_and_size
