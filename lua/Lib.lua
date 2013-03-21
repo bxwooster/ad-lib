@@ -57,6 +57,9 @@ do
     end
     v2mt.__div = core.vec2_divided
     v2mt.__unm = function (v) return v2s (v, -1) end
+	v2mt.__tostring = function (v)
+		return '(' .. v.e.x .. ', ' .. v.e.y .. ')'
+	end
 
 	setmetatable (vec2, {__call = function (t, ...) return vec2.New(...) end})
     FFI.metatype ("vec2", v2mt)
@@ -96,6 +99,9 @@ do
     v3mt.__div = core.vec3_divided
     v3mt.__mod = core.vec3_multiply
     v3mt.__unm = function (v) return v3s (v, -1) end
+	v3mt.__tostring = function (v)
+		return '(' .. v.e.x .. ', ' .. v.e.y .. ', ' .. v.e.z .. ')'
+	end
 
 	setmetatable (vec3, {__call = function (t, ...) return vec3.New(...) end})
     FFI.metatype ("vec3", v3mt)
@@ -110,6 +116,9 @@ do
 
     local v4mt = {}
     v4mt.__mod = core.vec4_multiply
+	v4mt.__tostring = function (v)
+		return '(' .. v.e.x .. ', ' .. v.e.y .. ', '..v.e.z..', '..v.e.w ')'
+	end
 
 	setmetatable (vec4, {__call = function (t, ...) return vec4.New(...) end})
     FFI.metatype ("vec4", v4mt)
