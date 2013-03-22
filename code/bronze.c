@@ -43,6 +43,9 @@ bronze_init (struct SDL * sdl) {
     OK (E->L != NULL);
     luaL_openlibs (E->L);
 
+	lua_getglobal (E->L, "debug");
+	lua_getfield (E->L, -1, "traceback");
+	E->traceback = lua_gettop (E->L);
 	XE = E;
 
     hot_pull (E->H, "lua/Init.lua", lua_hot, E, 0);
@@ -53,7 +56,7 @@ bronze_init (struct SDL * sdl) {
 }
 
 void bronze_pcall (struct bronze_engine * E) {
-    int result = lua_pcall (E->L, 0, 0, 0);
+    int result = lua_pcall (E->L, 0, 0, E->traceback);
     if (result != 0) {
         logi ("Pcall failed:\n%s", lua_tostring (E->L, -1));
         sleep (1);
@@ -95,7 +98,6 @@ char bronze_frame (struct bronze_engine * E) {
 
     lua_getglobal (E->L, "Loop");
     bronze_pcall (E);
-
     SDL_GL_SwapWindow (E->sdl->window);
     hot_check (E->H);
     return E->halt;
