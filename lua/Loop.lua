@@ -24,8 +24,8 @@ function Loop ()
 	-- Ready, set... draw!
 	DrawSpheres ()
 	DrawSectors ()
-
-	DrawGUI ()
+	DrawCircles ()
+	--DrawGUI ()
 
     if KeyDown (KEY.L) then REPL () end
     if KeyDown (KEY.R) then World = NewWorld () end

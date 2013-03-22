@@ -42,6 +42,12 @@ function NewWorld ()
     }
     P3 = NewSystem (P3, world)
 
+	table.insert (world.circles, {
+		radius = 2,
+		tMat = mat4.id,
+		colour = colour.white
+	})
+
     return world
 end
 
@@ -53,6 +59,7 @@ function PrepareWorld ()
     world.systems = {}
     world.spheres = {}
     world.sectors = {}
+    world.circles = {}
 
     world.turn = {
         int = 0,

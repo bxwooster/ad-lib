@@ -1,0 +1,28 @@
+#if defined VS
+attribute vec2 Apos2d;
+#endif
+
+uniform float UR;
+uniform mat4 Umvp;
+uniform vec3 Ucolour;
+varying vec2 Vplanar;
+
+#if defined FS
+void main(void) {
+	float R = length (Vplanar);
+	if (R > UR) discard;
+    float alpha = (Ucolour.r < 0.0) ? 0.0 : 0.5;
+    float ambient = 0.5;
+    float inner = ambient + (R - UR) / R;
+
+    float brightness = 1.0;
+	vec3 result = brightness * Ucolour * inner;
+    gl_FragColor = vec4 (result, alpha);
+}
+#elif defined VS
+void main(void) {
+    vec4 position = Umvp * vec4 (UR * Apos2d, 0.0, 1.0);
+	Vplanar = UR * Apos2d;
+    gl_Position = position;
+}
+#endif
