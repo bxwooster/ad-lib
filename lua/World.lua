@@ -42,11 +42,14 @@ function NewWorld ()
     }
     P3 = NewSystem (P3, world)
 
-	table.insert (world.circles, {
-		radius = 2,
-		tMat = mat4.id,
-		colour = colour.white
-	})
+	local C1 = {
+		parent = P1.rings[1],
+		rMat = mat4.Movement (vec3 (-0.4, 0, 0)),
+		colour = colour.green,
+		radius = 0.1,
+	}
+	table.insert (world.circles, C1)
+	table.insert (world.nodes, C1)
 
     return world
 end

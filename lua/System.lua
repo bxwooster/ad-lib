@@ -147,18 +147,17 @@ function NewSystem (options, world)
         end
     end
 
-    -- phony sector
-    S.R1 = 0
-    S.R2 = S.radius
-    S.A = 2 * math.pi
+    -- phony circle
     local phony = {
-        parent = S,
+        parent = S.parent,
+		rMat = S.rMat,
         colour = -colour.white,
-        B = 0
+		radius = S.radius
     }
 
     -- Finally, inject it all into the world
-    table.insert (world.sectors, 1, phony)
+    table.insert (world.nodes, phony)
+    table.insert (world.circles, 1, phony)
     table.insert (world.systems, 1, S)
     table.insert (world.nodes, S)
     table.insert (world.spheres, S)

@@ -11,12 +11,10 @@ varying vec2 Vplanar;
 void main(void) {
 	float R = length (Vplanar);
 	if (R > UR) discard;
-    float alpha = (Ucolour.r < 0.0) ? 0.0 : 0.5;
-    float ambient = 0.5;
-    float inner = ambient + (R - UR) / R;
+    float alpha = (Ucolour.r < 0.0) ? 0.0 : 1.0;
+    float inner = 1.0 - 0.75 * R / UR;
 
-    float brightness = 1.0;
-	vec3 result = brightness * Ucolour * inner;
+	vec3 result = Ucolour * inner;
     gl_FragColor = vec4 (result, alpha);
 }
 #elif defined VS

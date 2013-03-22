@@ -23,8 +23,8 @@ function Loop ()
 
 	-- Ready, set... draw!
 	DrawSpheres ()
-	DrawSectors ()
 	DrawCircles ()
+	DrawSectors ()
 	--DrawGUI ()
 
     if KeyDown (KEY.L) then REPL () end
