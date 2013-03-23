@@ -1,5 +1,35 @@
+-- size of sector
+local function sos (nSectors)
+	return math.pi * 2 / nSectors
+end
+
+-- rotation of ring
+local function ror (R, turn)
+	return (R.A * turn) % (2 * math.pi)
+end
+
+-- angle of sector center
+local function aosc (S, turn)
+	return (S.B + S.parent.A * (turn + 0.5)) % (2 * math.pi)
+end
+
+-- width of ring
+local function wor (R)
+	return 0.5 * (R.R2 - R.R1)
+end
+
+-- radius of ring center
+local function rorc (R)
+	return wor (R) + R.R1
+end
+
+-- scale of embedded system
+local function soes (ring)
+	return 0.9 * wor (ring)
+end
+
 -- is a given angle inside a sector of given size with center at zero?
-local function CloseEnough (a, s)
+local function closeEnough (a, s)
 	-- angle might be > 2 PI, negative, obtuse
 	-- so normalize it to [-PI, PI]
     a = (a + math.pi) % (2 * math.pi) - math.pi
@@ -8,33 +38,24 @@ local function CloseEnough (a, s)
 end
 
 -- do two sectors intersect?
-local function Intersection (S1, S2, turn)
-	-- half angular size
-    local h1 = S1.parent.A / 2
-	local h2 = S2.parent.A / 2
-	-- angle where the sector center is
-    local c1 = S1.B + S1.parent.A * turn + h1
-	local c2 = S2.B + S2.parent.A * turn + h2
+local function intersection (S1, S2, turn)
 	-- sectors intersect if the difference between the angles
 	-- is less than sum of half-angular sizes
-    local s = h1 + h2
-	local a = c1 - c2
-    return CloseEnough (a, s)
+    local a = aosc (S1, turn) - aosc (S2, turn)
+    local s = (S1.parent.A + S2.parent.A) / 2
+    return closeEnough (a, s)
 end
 
 -- does a sector intersect the left/right semicircle?
-local function HalfIntersection (S, half, turn)
-	-- see Intersecton
-    local h1 = S.parent.A / 2
-	local h2 = math.pi / 2
-    local c1 = S.B + S.parent.A * turn + h1
-	local c2 = half and math.pi / 2 or -math.pi / 2
-    local s = h1 + h2
-	local a = c1 - c2
-    return CloseEnough (a, s)
+local function halfIntersection (S, half, turn)
+	-- see above
+	local c = half and math.pi / 2 or -math.pi / 2
+    local a = aosc (S, turn) - c
+	local s = (S.parent.A + math.pi) / 2
+    return closeEnough (a, s)
 end
 
-local function TotalSize (options)
+local function totalSize (options)
     local total = options.radius
     for r, orbit in ipairs (options.orbits) do
         total = total + orbit.width
@@ -50,45 +71,43 @@ function NewSystem (options, world)
 	local scale
     if options.external then
         local ring = options.external.parent
-        local size = 0.5 * (ring.R2 - ring.R1)
-        local dist = size + ring.R1
-        local phi = ring.A / 2 + options.external.B
+        local dist = rorc (ring)
+        local phi = aosc (options.external, 0)
         if options.external2 then
-            local phi2 = ring.A / 2 + options.external2.B
+            local phi2 = aosc (options.external2, 0)
             phi = (phi + phi2) / 2
         end
         local dir = vec3 (math.cos (phi), math.sin (phi), 0)
         S.rMat = mat4.Movement (dist * dir) ^ mat4.Rotation (vec3.z, ring.A)
         S.parent = ring
-        scale = 0.9 * size
+		scale = soes (ring)
     else
         S.rMat = mat4.id
         S.parent = world.center
         scale = 1
     end
 
-    scale = scale / TotalSize (options)
+    scale = scale / totalSize (options)
     S.rings = {}
 
     -- Generate the rings and sectors inside rings
     local R1 = S.radius
     for r, orbit in ipairs (options.orbits) do
-        local A = math.pi * 2 / orbit.nCells
         local R2 = R1 + orbit.width
-
         local ring = {
-            A = A,
+            A = sos (orbit.nSectors),
             parent = S,
             R1 = R1 * scale,
             R2 = R2 * scale,
         }
         S.rings[r - 1] = ring
 
-        for i = 0, orbit.nCells - 1 do
+        for i = 0, orbit.nSectors - 1 do
             ring[i] = {
                 parent = ring,
-                colour = vec3 (0, 0, A * i % 0.689 + 0.3),
-                B = A * i,
+				-- just to add some variation
+                colour = vec3 (0, 0, ring.A * i % 0.689 + 0.3),
+                B = ring.A * i,
             }
         end
 
@@ -115,7 +134,7 @@ function NewSystem (options, world)
         for _, R in zpairs (ring) do
             for _, P in zpairs (prev) do
                 local F = function (turn)
-                    return Intersection (R, P, turn)
+                    return intersection (R, P, turn)
                 end
                 R.links[P] = F
                 P.links[R] = F
@@ -129,10 +148,10 @@ function NewSystem (options, world)
         local O2 = options.external2
         for _, R in zpairs (S.rings[#S.rings]) do
             local F1 = function (turn)
-                return HalfIntersection (R, false, turn)
+                return halfIntersection (R, false, turn)
             end
             local F2 = function (turn)
-                return HalfIntersection (R, true, turn)
+                return halfIntersection (R, true, turn)
             end
             R.links[O1] = F1
             O1.links[R] = F1
@@ -177,7 +196,6 @@ function GetHovered ()
 		local hovered = HoveredInSystem (S)
 		if hovered ~= nil then return hovered end
 	end
-	return false
 end
 
 function HoveredInSystem (S)
@@ -203,6 +221,6 @@ function HoveredInSystem (S)
 end
 
 function UpdateRing (R)
-    R.phi = (R.A * World.turn.float) % (2 * math.pi)
+    R.phi = ror (R, world.turn.float)
     R.rMat = mat4.Rotation (vec3.z, R.phi)
 end

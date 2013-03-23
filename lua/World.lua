@@ -13,10 +13,10 @@ function NewWorld ()
         colour = vec3 (1, 1, 1),
         radius = 1,
         orbits = {
-            {width = 1, nCells = 3},
-            {width = 3, nCells = 7},
-            {width = 1, nCells = 65},
-            {width = 3, nCells = 13},
+            {width = 1, nSectors = 3},
+            {width = 3, nSectors = 7},
+            {width = 1, nSectors = 65},
+            {width = 3, nSectors = 13},
         }
     }
     P1 = NewSystem (P1, world)
@@ -26,7 +26,7 @@ function NewWorld ()
         colour = vec3 (1, 1, 1),
         radius = 1,
         orbits = {
-            {width = 1, nCells = 3},
+            {width = 1, nSectors = 3},
         }
     }
     P2 = NewSystem (P2, world)
@@ -37,7 +37,7 @@ function NewWorld ()
         colour = vec3 (1, 1, 1),
         radius = 1,
         orbits = {
-            {width = 1, nCells = 4},
+            {width = 1, nSectors = 4},
         }
     }
     P3 = NewSystem (P3, world)
