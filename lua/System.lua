@@ -1,34 +1,41 @@
+-- first off, some helper functions:
+--
 -- size of sector
 local function sos (nSectors)
 	return math.pi * 2 / nSectors
 end
-
--- rotation of ring
+--
+-- transform from Radius and Angle
+local function tfraa (R, A)
+	return mat4.Rotation (vec3.z, A) ^ mat4.Movement (R * vec3.x) 
+end
+--
+-- rotation of Ring
 local function ror (R, turn)
 	return (R.A * turn) % (2 * math.pi)
 end
-
--- angle of sector center
+--
+-- angle of Sector center
 local function aosc (S, turn)
 	return (S.B + S.parent.A * (turn + 0.5)) % (2 * math.pi)
 end
-
--- width of ring
+--
+-- width of Ring
 local function wor (R)
 	return 0.5 * (R.R2 - R.R1)
 end
-
--- radius of ring center
+--
+-- radius of Ring center
 local function rorc (R)
 	return wor (R) + R.R1
 end
-
+--
 -- scale of embedded system
 local function soes (ring)
 	return 0.9 * wor (ring)
 end
 
--- is a given angle inside a sector of given size with center at zero?
+-- is a given Angle inside a sector of given Size with center at zero?
 local function closeEnough (a, s)
 	-- angle might be > 2 PI, negative, obtuse
 	-- so normalize it to [-PI, PI]
@@ -70,15 +77,14 @@ function NewSystem (options, world)
 	}
 	local scale
     if options.external then
-        local ring = options.external.parent
+        local ring = options.external.ring
         local dist = rorc (ring)
-        local phi = aosc (options.external, 0)
-        if options.external2 then
-            local phi2 = aosc (options.external2, 0)
+        local phi = aosc (ring[options.external[1]], 0)
+        if options.external[2] then
+            local phi2 = aosc (ring[options.external[2]], 0)
             phi = (phi + phi2) / 2
         end
-        local dir = vec3 (math.cos (phi), math.sin (phi), 0)
-        S.rMat = mat4.Movement (dist * dir) ^ mat4.Rotation (vec3.z, ring.A)
+        S.rMat = tfraa (dist, phi)
         S.parent = ring
 		scale = soes (ring)
     else
@@ -143,27 +149,29 @@ function NewSystem (options, world)
     end
 
     -- External links
-    if options.external2 then
-        local O1 = options.external
-        local O2 = options.external2
-        for _, R in zpairs (S.rings[#S.rings]) do
-            local F1 = function (turn)
-                return halfIntersection (R, false, turn)
-            end
-            local F2 = function (turn)
-                return halfIntersection (R, true, turn)
-            end
-            R.links[O1] = F1
-            O1.links[R] = F1
-            R.links[O2] = F2
-            O2.links[R] = F2
-        end
-    elseif options.external then
-        local O = options.external
-        for _, R in zpairs (S.rings[#S.rings]) do
-            R.links[O] = true
-            O.links[R] = true
-        end
+    if options.external then
+		local ring = options.external.ring
+        local O1 = ring[options.external[1]]
+        local O2 = ring[options.external[2]]
+		if not O2 then
+			for _, R in zpairs (S.rings[#S.rings]) do
+				R.links[O1] = true
+				O1.links[R] = true
+			end
+		else
+			for _, R in zpairs (S.rings[#S.rings]) do
+				local F1 = function (turn)
+					return halfIntersection (R, false, turn)
+				end
+				local F2 = function (turn)
+					return halfIntersection (R, true, turn)
+				end
+				R.links[O1] = F1
+				O1.links[R] = F1
+				R.links[O2] = F2
+				O2.links[R] = F2
+			end
+		end
     end
 
     -- phony circle

@@ -9,10 +9,9 @@ function Loop ()
 	-- update rings. Must be done before nodes
     apply (UpdateRing, World.rings)
 
-	-- update nodes of the 3D transform hierarchy 
+	-- update nodes of the 3D transform hierarchy
     apply (UpdateNode, World.nodes)
 
-	-- camera updated and sent to core
     UpdateCamera (World.camera)
 
 	-- where is the pointer hovering on the 2D ground plane?
@@ -41,4 +40,3 @@ end
 function UpdateNode (N)
     N.tMat = N.parent.tMat ^ N.rMat
 end
-

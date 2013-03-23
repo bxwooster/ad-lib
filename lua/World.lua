@@ -22,7 +22,7 @@ function NewWorld ()
     P1 = NewSystem (P1, world)
 
     local P2 = {
-        external = P1.rings[1][4],
+        external = {ring = P1.rings[1], 4},
         colour = vec3 (1, 1, 1),
         radius = 1,
         orbits = {
@@ -32,8 +32,7 @@ function NewWorld ()
     P2 = NewSystem (P2, world)
 
     local P3 = {
-        external = P1.rings[3][0],
-        external2 = P1.rings[3][1],
+        external = {ring = P1.rings[3], 3, 4},
         colour = vec3 (1, 1, 1),
         radius = 1,
         orbits = {
