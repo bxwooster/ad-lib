@@ -2,8 +2,9 @@
 #define MAXSUB 32
 
 /* Limitations at the moment:
- * - only 1 level of nested directories watched (inotify doesn't do recursive)
  * - MAXSUB nested directories overall
+ * - only 1 level of nested directories watched (inotify doesn't do recursive)
+ * - Shared directories in VMware don't play well (need to investigate)
  */
 
 struct watcher {
