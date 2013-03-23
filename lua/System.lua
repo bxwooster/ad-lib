@@ -185,7 +185,7 @@ function NewSystem (options, world)
 
     -- Finally, inject it all into the world
     table.insert (world.nodes, phony)
-    table.insert (world.circles, 1, phony)
+    table.insert (world.circles, phony)
     table.insert (world.systems, 1, S)
     table.insert (world.nodes, S)
     table.insert (world.spheres, S)
@@ -203,7 +203,7 @@ end
 function GetHovered ()
 	for _, S in ipairs (World.systems) do
 		local hovered = HoveredInSystem (S)
-		if hovered ~= nil then return hovered end
+		if hovered then return hovered end
 	end
 end
 
@@ -213,9 +213,7 @@ function HoveredInSystem (S)
     R = vec3.Length (V) 
     A = math.atan2 (V.e.y, V.e.x)
     if A < 0 then A = A + 2 * math.pi end
-    if R < S.radius then
-        return false
-    end
+    if R < S.radius then return end
     for _, ring in zpairs (S.rings) do
         if ring.R1 < R and R < ring.R2 then
             for _, sector in zpairs (ring) do
@@ -225,6 +223,7 @@ function HoveredInSystem (S)
 					return sector
                 end
             end
+			return
         end
     end
 end
