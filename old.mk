@@ -52,6 +52,9 @@ ifeq ($(program),cosmos)
         ifeq ($(platform),windows)
             features += hotlocal
         endif
+        ifeq ($(platform),linux)
+            features += hotlocal
+        endif
     endif
 
 
@@ -72,6 +75,7 @@ endif
 
 ################################################################################
 
+files += $(program)
 defines += $(PLATFORM)
 includes += \
             math.h \
@@ -82,7 +86,6 @@ includes += \
             stdlib.h \
             stdarg.h \
             assert.h \
-            dirent.h \
             string.h \
             unistd.h \
 
@@ -93,16 +96,21 @@ ifeq ($(platform),windows)
     includes += malloc.h
 endif
 
-ifeq ($(program),watch)
-    ifeq ($(platform),windows)
-		defines += WIN32_LEAN_AND_MEAN
-        includes += windows.h
-    endif
-endif
-
 ifneq ($(filter hotlocal,$(features)),)
     defines += HOTLOCAL
     files += watch
+endif
+
+ifneq ($(filter watch,$(files)),)
+    ifeq ($(platform),windows)
+        files += watchwindows
+		defines += WIN32_LEAN_AND_MEAN
+        includes += windows.h
+    else ifeq ($(platform),linux)
+        files += watchlinux
+		includes += sys/inotify.h dirent.h
+		defines += _BSD_SOURCE
+    endif
 endif
 
 ifneq ($(filter hotremote,$(features)),)
@@ -182,7 +190,6 @@ else ifeq ($(profile),release)
     optimization := -Os -Werror
 endif
 
-files += $(program)
 all_source += $(shell find 2>/dev/null $(addprefix code/,$(addsuffix .c,$(files))))
 all_headers += $(shell find 2>/dev/null $(addprefix code/,$(addsuffix .h,$(files))))
 
