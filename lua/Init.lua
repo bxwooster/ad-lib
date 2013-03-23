@@ -7,6 +7,7 @@ function Init ()
     FFI.cdef (api_text)
     core = FFI.C
 
+    core.Require ("GUI")
     core.Require ("Lib")
     core.Require ("Util")
     core.Require ("Loop")
@@ -18,9 +19,9 @@ function Init ()
     core.Require ("Sphere")
     core.Require ("Circle")
     core.Require ("KeyDefs")
-    core.Require ("GUI")
+    core.Require ("Gameplay")
+    core.Require ("Selection")
 
-    World = NewWorld ()
 	GTestInit ()
 	VRectInit ()
 	GSectorInit ()
@@ -29,4 +30,6 @@ function Init ()
 	VImposterInit ()
 	GPlanetInit ()
 	TexInit ()
+
+    World = NewWorld ()
 end
