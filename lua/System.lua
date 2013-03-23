@@ -1,13 +1,8 @@
--- first off, some helper functions:
+-- first off, some common calculations:
 --
 -- size of sector
 local function sos (nSectors)
 	return math.pi * 2 / nSectors
-end
---
--- transform from Radius and Angle
-local function tfraa (R, A)
-	return mat4.Rotation (vec3.z, A) ^ mat4.Movement (R * vec3.x) 
 end
 --
 -- rotation of Ring
@@ -34,40 +29,52 @@ end
 local function soes (ring)
 	return 0.9 * wor (ring)
 end
-
--- is a given Angle inside a sector of given Size with center at zero?
-local function closeEnough (a, s)
-	-- angle might be > 2 PI, negative, obtuse
-	-- so normalize it to [-PI, PI]
+--
+-- Now, some helper functions:
+--
+-- transform from Radius and Angle
+local function tfraa (R, A)
+	return mat4.Rotation (vec3.z, A) ^ mat4.Movement (R * vec3.x) 
+end
+--
+-- does a sector of given Size with center at 0 contain the angle?
+local function contains (s, a)
+	-- normalize angle to [-PI, PI]
     a = (a + math.pi) % (2 * math.pi) - math.pi
 	-- delta is necessary
 	return s - math.abs (a) > 0.001
 end
-
+--
 -- do two sectors intersect?
-local function intersection (S1, S2, turn)
+local function int (S1, S2, turn)
 	-- sectors intersect if the difference between the angles
 	-- is less than sum of half-angular sizes
     local a = aosc (S1, turn) - aosc (S2, turn)
     local s = (S1.parent.A + S2.parent.A) / 2
-    return closeEnough (a, s)
+    return contains (s, a)
 end
-
+--
 -- does a sector intersect the left/right semicircle?
-local function halfIntersection (S, half, turn)
+local function halfint (S, half, turn)
 	-- see above
 	local c = half and math.pi / 2 or -math.pi / 2
     local a = aosc (S, turn) - c
 	local s = (S.parent.A + math.pi) / 2
-    return closeEnough (a, s)
+    return contains (s, a)
 end
-
+--
+-- radius of system specified by the options
 local function totalSize (options)
     local total = options.radius
     for r, orbit in ipairs (options.orbits) do
         total = total + orbit.width
     end
     return total
+end
+--
+local function link (S1, S2, F)
+	S1.links[S2] = F
+	S2.links[S1] = F
 end
 
 function NewSystem (options, world)
@@ -137,13 +144,12 @@ function NewSystem (options, world)
     for r = 1, #S.rings do
         local ring = S.rings[r]
         local prev = S.rings[r - 1]
-        for _, R in zpairs (ring) do
-            for _, P in zpairs (prev) do
+        for _, S1 in zpairs (ring) do
+            for _, S2 in zpairs (prev) do
                 local F = function (turn)
-                    return intersection (R, P, turn)
+                    return int (S1, S2, turn)
                 end
-                R.links[P] = F
-                P.links[R] = F
+				link (S1, S2, F)
             end
         end
     end
@@ -154,31 +160,26 @@ function NewSystem (options, world)
         local O1 = ring[options.external[1]]
         local O2 = ring[options.external[2]]
 		if not O2 then
-			for _, R in zpairs (S.rings[#S.rings]) do
-				R.links[O1] = true
-				O1.links[R] = true
+			-- embedded system fully inside sector, all links are solid
+			for _, S1 in zpairs (S.rings[#S.rings]) do
+				link (S1, O1, true);
 			end
 		else
-			for _, R in zpairs (S.rings[#S.rings]) do
-				local F1 = function (turn)
-					return halfIntersection (R, false, turn)
-				end
-				local F2 = function (turn)
-					return halfIntersection (R, true, turn)
-				end
-				R.links[O1] = F1
-				O1.links[R] = F1
-				R.links[O2] = F2
-				O2.links[R] = F2
+			-- embedded system on the edge of two sectors, links vary
+			for _, S1 in zpairs (S.rings[#S.rings]) do
+				local F1 = function (turn) return halfint (S1, false, turn) end
+				local F2 = function (turn) return halfint (S1, true, turn) end
+				link (S1, O1, F1)
+				link (S1, O2, F2)
 			end
 		end
     end
 
-    -- phony circle
+    -- phony circle, prevents clipping of central planet with containing sector
     local phony = {
         parent = S.parent,
 		rMat = S.rMat,
-        colour = -colour.white,
+        colour = -colour.white, --negative colour: do not draw
 		radius = S.radius
     }
 
