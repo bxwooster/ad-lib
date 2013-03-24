@@ -40,3 +40,13 @@ end
 function UpdateNode (N)
     N.tMat = N.parent.tMat ^ N.rMat
 end
+
+function Attach (N1, N2)
+	N1.rMat = mat4.Inverse (N2.tMat) ^ N1.tMat
+	N1.parent = N2
+end
+
+function Test (i)
+	Attach (World.camera, World.systems[3].rings[i])
+	table.insert (World.nodes, World.camera)
+end

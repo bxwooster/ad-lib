@@ -15,25 +15,40 @@ function CameraPointer (C)
     else
         C.lock = nil
     end
+
+	if KeyHeld (KEY.P2) then
+		local delta = C.ptr - core.Pointer ()
+		C.tMat = mat4.Rotation (vec3.z, delta.e.x) ^ C.tMat
+		C.tMat = mat4.Rotation (vec3.x, delta.e.y) ^ C.tMat
+	end
+	C.ptr = core.Pointer ()
 end
 
 function CameraArrows (C)
     local dist = Dt * C.speed
 
     if KeyHeld (KEY.Left) then
-        C.tMat = mat4.Movement (dist * vec3.left) ^ C.tMat
+        C.tMat = C.tMat ^ mat4.Movement (dist * vec3.left)
     end
 
     if KeyHeld (KEY.Right) then
-        C.tMat = mat4.Movement (dist * vec3.right) ^ C.tMat
+        C.tMat = C.tMat ^ mat4.Movement (dist * vec3.right)
     end
 
     if KeyHeld (KEY.Up) then
-        C.tMat = mat4.Movement (dist * vec3.back) ^ C.tMat
+        C.tMat = C.tMat ^ mat4.Movement (dist * vec3.back)
     end
 
     if KeyHeld (KEY.Down) then
-        C.tMat = mat4.Movement (dist * vec3.forward) ^ C.tMat
+        C.tMat = C.tMat ^ mat4.Movement (dist * vec3.forward)
+    end
+
+    if KeyHeld (KEY.PageUp) then
+        C.tMat = C.tMat ^ mat4.Movement (dist * vec3.up)
+    end
+
+    if KeyHeld (KEY.PageDown) then
+        C.tMat = C.tMat ^ mat4.Movement (dist * vec3.down)
     end
 end
 
