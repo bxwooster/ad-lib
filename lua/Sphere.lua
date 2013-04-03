@@ -20,8 +20,9 @@ function PreSphere ()
     GL.VertexAttribPointer (Apos2d, 2, GL.FLOAT, GL.FALSE, 0, NULL)
     GL.EnableVertexAttribArray (Apos2d)
 
-    -- kind of hacky...
     GL.ActiveTexture (GL.TEXTURE0)
+	GL.Enable (GL.TEXTURE_CUBE_MAP)
+	GL.BindTexture (GL.TEXTURE_CUBE_MAP, Tex.tex)
 end
 
 function Sphere (tMat, colour, radius)
@@ -64,7 +65,7 @@ function Sphere (tMat, colour, radius)
     GL.UniformMatrix4fv (uniform.Umv, 1, GL.FALSE, mv.p)
     GL.Uniform1f (uniform.Uuvscale, apparent / r)
     GL.Uniform1f (uniform.UR, r)
-    GL.Uniform1i (uniform.Utexture, Tex.tex)
+    GL.Uniform1i (uniform.Utexture, 0)
     GL.Uniform3fv (uniform.Ucolour, 1, colour.p)
 
     GL.DrawArrays (GL.TRIANGLES, 0, VImposter.size)
