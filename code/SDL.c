@@ -16,9 +16,11 @@ struct SDL * init_SDL (void) {
 
 
     char attr =
-        SDL_GL_SetAttribute (SDL_GL_CONTEXT_MAJOR_VERSION, 2) != 0 ||
-        SDL_GL_SetAttribute (SDL_GL_CONTEXT_MINOR_VERSION, 0) != 0 ||
-        SDL_GL_SetAttribute (SDL_GL_STENCIL_SIZE, 8);
+        SDL_GL_SetAttribute (SDL_GL_CONTEXT_MAJOR_VERSION, 4) != 0 ||
+        SDL_GL_SetAttribute (SDL_GL_CONTEXT_MINOR_VERSION, 3) != 0 ||
+        SDL_GL_SetAttribute (SDL_GL_STENCIL_SIZE, 8) != 0 ||
+        SDL_GL_SetAttribute (SDL_GL_CONTEXT_PROFILE_MASK,
+				SDL_GL_CONTEXT_PROFILE_COMPATIBILITY) != 0;
 
     OK_ELSE (attr == 0) {
         logi ("SDL_GL_SetAttribute error: %s.", SDL_GetError ());
