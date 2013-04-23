@@ -20,7 +20,7 @@ struct SDL * init_SDL (void) {
         SDL_GL_SetAttribute (SDL_GL_CONTEXT_MINOR_VERSION, 3) != 0 ||
         SDL_GL_SetAttribute (SDL_GL_STENCIL_SIZE, 8) != 0 ||
         SDL_GL_SetAttribute (SDL_GL_CONTEXT_PROFILE_MASK,
-				SDL_GL_CONTEXT_PROFILE_COMPATIBILITY) != 0;
+				SDL_GL_CONTEXT_PROFILE_CORE) != 0;
 
     OK_ELSE (attr == 0) {
         logi ("SDL_GL_SetAttribute error: %s.", SDL_GetError ());
@@ -60,6 +60,8 @@ struct SDL * init_SDL (void) {
         logi ("GL2.0 is not supported.");
     }
 #endif
+	// core profile gives an error, mute it
+	glGetError();
 
     return sdl;
 }

@@ -38,7 +38,7 @@ util_earth_prepare (
     GLuint tex;
     glGenTextures (1, &tex);
     glBindTexture (GL_TEXTURE_CUBE_MAP, tex); // ?
-#ifndef GLES
+#if 0
     glTexEnvf(GL_TEXTURE_FILTER_CONTROL, GL_TEXTURE_LOD_BIAS, -1.75f);
 
     GLenum tSTR [] = {

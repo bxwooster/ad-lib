@@ -1,4 +1,5 @@
 function PrepareGL ()
+	CheckGL ()
 	local size = core.ScreenSize ()
     GL.Viewport (0, 0, size.e.x, size.e.y)
     GL.DepthMask (GL.TRUE);
@@ -8,7 +9,9 @@ function PrepareGL ()
 						   GL.DEPTH_BUFFER_BIT,
 						   GL.STENCIL_BUFFER_BIT)
     GL.Clear (flags);
+end
 
+function CheckGL ()
     local E = GL.GetError ();
 	if E ~= 0 then
         print ("There occurred a GL error, # " .. tostring (E) .. ".");
