@@ -21,6 +21,7 @@ function Init ()
     core.Require ("KeyDefs")
     core.Require ("Gameplay")
     core.Require ("Selection")
+    core.Require ("Prototype")
 
 	GTestInit ()
 	VRectInit ()

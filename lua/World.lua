@@ -3,7 +3,7 @@ function NewWorld ()
 
     world.camera = {
         speed = 3,
-        tMat = mat4.Movement (vec3 (0, 1.75, 1.5)) ^
+        tMat = mat4.Movement (vec3 (0, 2.75, 2.5)) ^
             mat4.Rotation (vec3.x, 0.75 * math.pi)
     }
 
@@ -14,19 +14,7 @@ function NewWorld ()
         radius = 1,
         orbits = {
             {width = 3, nSectors = 3},
-            {width = 3, nSectors = 7},
-            {width = 3, nSectors = 10},
-            {width = 3, nSectors = 13},
-            {width = 3, nSectors = 15},
-            {width = 3, nSectors = 17},
-            {width = 3, nSectors = 22},
-            {width = 3, nSectors = 25},
-            {width = 3, nSectors = 32},
-            {width = 3, nSectors = 40},
-            {width = 3, nSectors = 60},
-            {width = 3, nSectors = 80},
-            {width = 3, nSectors = 111},
-            {width = 3, nSectors = 141},
+            {width = 1, nSectors = 7},
         }
     }
     P1 = NewSystem (P1, world)
@@ -40,16 +28,6 @@ function NewWorld ()
         }
     }
     P2 = NewSystem (P2, world)
-
-    local P3 = {
-        external = {ring = P1.rings[3], 3, 4},
-        colour = vec3 (1, 1, 1),
-        radius = 1,
-        orbits = {
-            {width = 1, nSectors = 4},
-        }
-    }
-    P3 = NewSystem (P3, world)
 
 	local C1 = {
 		parent = P1.rings[1],

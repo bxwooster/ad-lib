@@ -21,10 +21,12 @@ function Loop ()
     Selected = Selection (GetHovered ())
 
 	-- Ready, set... draw!
-	DrawSpheres ()
-	DrawCircles ()
-	DrawSectors ()
+	--DrawSpheres ()
+	--DrawCircles ()
+	--DrawSectors ()
 	--DrawGUI ()
+
+	Prototype ()
 
     if KeyDown (KEY.L) then REPL () end
     if KeyDown (KEY.R) then World = NewWorld () end

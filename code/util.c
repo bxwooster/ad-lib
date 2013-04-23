@@ -102,6 +102,42 @@ util_earth (void) {
 }
 
 struct GLvbo_and_size
+util_cube (void) {
+    struct {
+        float x;
+        float y;
+        float z;
+    } const tris [] [3] = {
+		//top
+        {{+1,+1,+1}, {+1,-1,+1}, {-1,+1,+1}},
+        {{+1,-1,+1}, {-1,+1,+1}, {-1,-1,+1}},
+		//bottom
+        {{+1,+1,-1}, {+1,-1,-1}, {-1,+1,-1}},
+        {{+1,-1,-1}, {-1,+1,-1}, {-1,-1,-1}},
+		//right
+        {{+1,+1,+1}, {+1,+1,-1}, {+1,-1,+1}},
+        {{+1,+1,-1}, {+1,-1,+1}, {+1,-1,-1}},
+		//left
+        {{-1,+1,+1}, {-1,+1,-1}, {-1,-1,+1}},
+        {{-1,+1,-1}, {-1,-1,+1}, {-1,-1,-1}},
+		//top
+        {{+1,+1,+1}, {+1,+1,-1}, {-1,+1,+1}},
+        {{+1,+1,-1}, {-1,+1,+1}, {-1,+1,-1}},
+		//bottom
+        {{+1,-1,+1}, {+1,-1,-1}, {-1,-1,+1}},
+        {{+1,-1,-1}, {-1,-1,+1}, {-1,-1,-1}},
+    };
+    unsigned vertices = sizeof (tris) / sizeof (tris[0][0]);
+
+    GLuint vbo;
+    glGenBuffers (1, &vbo);
+    glBindBuffer (GL_ARRAY_BUFFER, vbo);
+    glBufferData (GL_ARRAY_BUFFER, sizeof (tris), tris, GL_STATIC_DRAW);
+
+    return (struct GLvbo_and_size) {vbo, vertices};
+}
+
+struct GLvbo_and_size
 util_rect (void) {
     struct {
         float x;

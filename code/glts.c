@@ -59,7 +59,7 @@ do_it (
 #ifdef GLES
         "#version 100\nprecision mediump float;\n";
 #else
-        "#version 120\n";
+        "#version 130\n";
 #endif
     all_pieces[1] = (type == GL_VERTEX_SHADER) ?
         "#define VS\n" : "#define FS\n";
