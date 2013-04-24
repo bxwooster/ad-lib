@@ -24,7 +24,7 @@ do
 	local function hot (null, file, text)
 		GRender = LoadShader (file, text)
 	end
-	core.Pull ("glsl/render.glts", hot)
+	core.Pull ("glsl/prototype.glts", hot)
 end
 
 do

@@ -1,14 +1,38 @@
+enum kind {
+	KIND_VERTEX = 0,
+	KIND_GEOMETRY,
+	KIND_FRAGMENT,
+	KIND_COMPUTE,
+	KIND_COUNT
+};
+
+static GLenum gl_kinds [KIND_COUNT] = {
+	GL_VERTEX_SHADER,
+	GL_GEOMETRY_SHADER,
+	GL_FRAGMENT_SHADER,
+	GL_COMPUTE_SHADER,
+};
+
+static char * kind_defines [KIND_COUNT] = {
+	"#define VS\n",
+	"#define GS\n",
+	"#define FS\n",
+	"#define CS\n",
+};
+
 static GLuint // program
-link_it (
-        GLuint vs,
-        GLuint fs
+glts_link_it (
+        GLuint ks [KIND_COUNT]
 ) {
     GLuint program = glCreateProgram ();
-    glAttachShader (program, vs);
-    glAttachShader (program, fs);
-    glLinkProgram (program);
+	for (int i = 0; i < KIND_COUNT; i++) {
+		if (ks [i] != GL_FALSE)
+			debug ("have %d", i);
+			glAttachShader (program, ks [i]);
+	}
 
     GLint code = GL_FALSE;
+    glLinkProgram (program);
     glGetProgramiv (program, GL_LINK_STATUS, &code);
 
     if (code == GL_FALSE) {
@@ -20,7 +44,7 @@ link_it (
     return program;
 }
 
-static void log_it (
+static void glts_log_it (
         GLuint shader
 ) {
     GLint size = 0;
@@ -40,14 +64,14 @@ static void log_it (
 }
 
 static GLuint
-do_it (
+glts_do_it (
         char const * pieces [],
         unsigned count,
-        GLenum type
+        int kind
 ) {
     GLuint shader = GL_FALSE;
     GLint code = GL_FALSE;
-    shader = glCreateShader (type);
+    shader = glCreateShader (gl_kinds [kind]);
 
     unsigned const P = 2;
     unsigned const all_count = P + count;
@@ -61,8 +85,7 @@ do_it (
 #else
         "#version 150\n";
 #endif
-    all_pieces[1] = (type == GL_VERTEX_SHADER) ?
-        "#define VS\n" : "#define FS\n";
+    all_pieces[1] = kind_defines [kind];
 
     glShaderSource (shader, all_count, all_pieces, NULL);
     glCompileShader (shader);
@@ -72,7 +95,7 @@ do_it (
         logi ("Shader source:\n");
         for (unsigned i = 0; i < all_count; i++)
             logi ("Piece %d:\n%s", i, all_pieces[i]);
-        log_it (shader);
+        glts_log_it (shader);
         glDeleteShader (shader);
         shader = GL_FALSE;
     }
@@ -81,7 +104,7 @@ do_it (
 }
 
 char * // contents
-load_it (
+glts_load_it (
         char const * prefix,
         char const * id_starts,
         char const * id_ends_or_null
@@ -107,13 +130,48 @@ glts_load (char const * filename, char const * text) {
 	char const * sources [maxN]; /* 1k of memory */
 	unsigned N = 0;
 
+	unsigned kindmask = 1<<KIND_VERTEX | 1<<KIND_FRAGMENT;
+
     /* load initial .glts file */
     const char * at;
     const char * current_file = at = text;
 	if (current_file == NULL) goto end;
 
+    const char kinds_str [] = "#pragma kinds ";
+    int count = strlen (kinds_str);
+
+	if (strncmp (at, kinds_str, count) == 0) {
+		at += count;
+		char const * newline = strchr (at, '\n');
+		if (newline == NULL) goto end;
+
+		kindmask = 0;
+		unsigned kind;
+		for (char const * K = at; K != newline; K++) {
+			debug ("K=%c", *K);
+			switch (*K) {
+				case 'V': kind = KIND_VERTEX; break;
+				case 'G': kind = KIND_GEOMETRY; break;
+				case 'F': kind = KIND_FRAGMENT; break;
+				case 'C': kind = KIND_COMPUTE; break;
+				default:
+					logi ("Unknown kind: %c", *K);
+					goto end;
+			}
+			if (kindmask & 1<<kind) {
+				logi ("Kind duplication: %c", *K);
+				goto end;
+			}
+			kindmask |= 1<<kind;
+		}
+
+		at = newline + 1;
+	}
+
+	debug ("kindmask %x", kindmask);
+
     const char include_str [] = "#pragma include ";
-    int count = strlen (include_str);
+    count = strlen (include_str);
 
 	for (;strncmp (at, include_str, count) == 0;) {
 		at += count;
@@ -121,7 +179,7 @@ glts_load (char const * filename, char const * text) {
 		if (newline == NULL) goto end;
 
         char const * included_file = sources[N++] =
-                      load_it ("glsl/", at, newline);
+                      glts_load_it ("glsl/", at, newline);
         if (included_file == NULL) goto end;
 
 		at = newline + 1;
@@ -133,16 +191,23 @@ glts_load (char const * filename, char const * text) {
 
     sources[N++] = current_file;
 
-    GLuint vs = do_it (sources, N, GL_VERTEX_SHADER);
-    GLuint fs = do_it (sources, N, GL_FRAGMENT_SHADER);
+	GLuint ks [KIND_COUNT];
+	for (int i = 0; i < KIND_COUNT; ++i) {
+		if (kindmask & 1<<i) {
+			debug ("rave %d", i);
+			ks [i] = glts_do_it (sources, N, i);
+		} else
+			ks [i] = GL_FALSE;
+	}
 
-    if (vs == GL_FALSE || fs == GL_FALSE)
-        logi ("That happened while loading %s just now.", filename);
+    program = glts_link_it (ks);
+	if (program == GL_FALSE)
+		logi ("That happened while loading %s just now.", filename);
 
-    program = link_it (vs, fs);
-
-    glDeleteShader (vs);
-    glDeleteShader (fs);
+	for (int i = 0; i < KIND_COUNT; ++i) {
+		if (ks [i] != GL_FALSE)
+			glDeleteShader (ks [i]);
+	}
 
 	at = NULL; /* no syntax errors */
 

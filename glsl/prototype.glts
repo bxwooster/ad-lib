@@ -1,3 +1,4 @@
+#pragma kinds VF
 #if defined VS
 attribute vec3 Apos;
 #endif
