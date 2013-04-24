@@ -3,21 +3,30 @@
 attribute vec3 Apos;
 #endif
 
+uniform ivec2 grid;
 uniform mat4 Umvp;
 varying float Vid;
 
 #if defined VS
-void main(void) {
-    vec4 position = Umvp * vec4 (Apos, 1.0);
-	gl_Position = position;
-}
+void main(void) {}
 #elif defined GS
-layout(triangles) in;
+layout(points) in;
 layout(triangle_strip, max_vertices = 3) out;
 
+vec2 vertices [3] = {
+	{ 1.0, 0.0 },
+	{ 0.0, 1.0 },
+	{ 0.0, 0.0 },
+};
+
 void main() {
+	int N = gl_PrimitiveIDIn;
+	int u = N % grid.x;
+	int v = (N / grid.x) % grid.y;
+
 	for(int i = 0; i < 3; i++) {
-		gl_Position = gl_in[i].gl_Position;
+		vec2 offset = vec2 (u, v);
+		gl_Position = Umvp * vec4 (offset + vertices [i], 0, 1);
 		Vid = gl_PrimitiveIDIn;
 		EmitVertex();
 	}
@@ -25,7 +34,7 @@ void main() {
 }
 #elif defined FS
 void main(void) {
-	gl_FragColor = vec4 (vec3 (Vid / 12), 0.5);
+	gl_FragColor = vec4 (vec3 (1), 0.5);
 }
 #endif
 

@@ -5,19 +5,16 @@ function Prototype ()
     GL.Disable (GL.STENCIL_TEST)
 
 	GL.BindVertexArray (VAO[0])
-
     GL.UseProgram (GRender.glsl.program)
-    GL.BindBuffer (GL.ARRAY_BUFFER, VCube.vbo)
-    -- these two guys need to be called after GL.BindBuffer
-	local Apos = GRender.attribute.Apos
-	CheckGL ()
-    GL.VertexAttribPointer (Apos, 3, GL.FLOAT, GL.FALSE, 0, NULL)
-    GL.EnableVertexAttribArray (Apos)
 
 	local uniform = GRender.uniform
-	local mvp = Sviewproj
+	local grid = FFI.new ("int [2]")
+	grid [0] = 5
+	grid [1] = 5
+	local mvp = Sviewproj ^ mat4.Movement (vec3 (-grid [0] / 2, -grid [1] /2, 0))
     GL.UniformMatrix4fv (uniform.Umvp, 1, GL.FALSE, mvp.p)
-    GL.DrawArrays (GL.TRIANGLES, 0, VCube.size)
+    GL.Uniform2iv (uniform.grid, 1, grid)
+    GL.DrawArrays (GL.POINTS, 0, grid [0] * grid [1])
 end
 
 do

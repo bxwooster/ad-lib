@@ -27,7 +27,6 @@ glts_link_it (
     GLuint program = glCreateProgram ();
 	for (int i = 0; i < KIND_COUNT; i++) {
 		if (ks [i] != GL_FALSE) {
-			debug ("have %d", i);
 			glAttachShader (program, ks [i]);
 		}
 	}
@@ -149,7 +148,6 @@ glts_load (char const * filename, char const * text) {
 		kindmask = 0;
 		unsigned kind;
 		for (char const * K = at; K != newline; K++) {
-			debug ("K=%c", *K);
 			switch (*K) {
 				case 'V': kind = KIND_VERTEX; break;
 				case 'G': kind = KIND_GEOMETRY; break;
@@ -168,8 +166,6 @@ glts_load (char const * filename, char const * text) {
 
 		at = newline + 1;
 	}
-
-	debug ("kindmask %x", kindmask);
 
     const char include_str [] = "#pragma include ";
     count = strlen (include_str);
@@ -195,15 +191,16 @@ glts_load (char const * filename, char const * text) {
 	GLuint ks [KIND_COUNT];
 	for (int i = 0; i < KIND_COUNT; ++i) {
 		if (kindmask & 1<<i) {
-			debug ("rave %d", i);
 			ks [i] = glts_do_it (sources, N, i);
 		} else
 			ks [i] = GL_FALSE;
 	}
 
     program = glts_link_it (ks);
-	if (program == GL_FALSE)
-		logi ("That happened while loading %s just now.", filename);
+	if (program == GL_FALSE) {
+		logi ("That happened while loading %s just now. Kindmask is %d",
+				filename, kindmask);
+	}
 
 	for (int i = 0; i < KIND_COUNT; ++i) {
 		if (ks [i] != GL_FALSE)
