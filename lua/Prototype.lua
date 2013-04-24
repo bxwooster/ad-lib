@@ -9,9 +9,9 @@ function Prototype ()
 
 	local uniform = GRender.uniform
 	local grid = FFI.new ("int [2]")
-	grid [0] = 5
-	grid [1] = 5
-	local mvp = Sviewproj ^ mat4.Movement (vec3 (-grid [0] / 2, -grid [1] /2, 0))
+	grid [0] = 64
+	grid [1] = 64
+	local mvp = Sviewproj
     GL.UniformMatrix4fv (uniform.Umvp, 1, GL.FALSE, mvp.p)
     GL.Uniform2iv (uniform.grid, 1, grid)
     GL.DrawArrays (GL.POINTS, 0, grid [0] * grid [1])
@@ -26,7 +26,9 @@ end
 
 do
 	local function gc (V)
-    	GL.DeleteBuffers (1, V.vbo);
+		local p = FFI.new ("GLuint [1]")
+		p [0] = V.vbo
+    	GL.DeleteBuffers (1, p);
 	end
 	VCube = FFI.gc (core.util_cube (), gc)
 	VAO = FFI.new ("GLuint [1]")

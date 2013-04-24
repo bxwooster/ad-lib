@@ -3,6 +3,8 @@
 attribute vec3 Apos;
 #endif
 
+uniform vec2 vol0 = vec2 (0, 0);
+uniform vec2 vol1 = vec2 (1, 1);
 uniform ivec2 grid;
 uniform mat4 Umvp;
 varying float Vid;
@@ -11,22 +13,28 @@ varying float Vid;
 void main(void) {}
 #elif defined GS
 layout(points) in;
-layout(triangle_strip, max_vertices = 3) out;
+layout(triangle_strip, max_vertices = 6) out;
 
-vec2 vertices [3] = {
+vec2 vertices [4] = {
+	{ 0.0, 0.0 },
 	{ 1.0, 0.0 },
 	{ 0.0, 1.0 },
-	{ 0.0, 0.0 },
+	{ 1.0, 1.0 },
 };
+
+float f (vec2 pos) {
+	return sin (dot (pos, pos)) - 0.5;
+}
 
 void main() {
 	int N = gl_PrimitiveIDIn;
-	int u = N % grid.x;
-	int v = (N / grid.x) % grid.y;
+	ivec2 uv = ivec2 (N % grid.x, (N / grid.x) % grid.y);
+	vec2 scale = 1.0 / grid;
+	vec2 pos = vol0 + uv * scale * vol1;
+	float t = f (pos) > 0 ? 1 : 0;
 
-	for(int i = 0; i < 3; i++) {
-		vec2 offset = vec2 (u, v);
-		gl_Position = Umvp * vec4 (offset + vertices [i], 0, 1);
+	for(int i = 0; i < 4; i++) {
+		gl_Position = Umvp * vec4 (scale * (uv + t * vertices [i]), 0, 1);
 		Vid = gl_PrimitiveIDIn;
 		EmitVertex();
 	}
