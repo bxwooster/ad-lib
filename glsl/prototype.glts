@@ -7,13 +7,13 @@ uniform vec2 vol0 = vec2 (0, 0);
 uniform vec2 vol1 = vec2 (1, 1);
 uniform ivec2 grid;
 uniform mat4 Umvp;
-varying float Vid;
+varying vec2 block;
 
 #if defined VS
 void main(void) {}
 #elif defined GS
 layout(points) in;
-layout(triangle_strip, max_vertices = 6) out;
+layout(triangle_strip, max_vertices = 12) out;
 
 vec2 vertices [4] = {
 	{ 0.0, 0.0 },
@@ -22,27 +22,73 @@ vec2 vertices [4] = {
 	{ 1.0, 1.0 },
 };
 
-float f (vec2 pos) {
-	return sin (dot (pos, pos)) - 0.5;
+int counts [16] = {
+	0, 1, 1, 2,
+	1, 2, 2, 3,
+    1, 2, 2, 3,
+	2, 3, 3, 2
+};
+
+ivec3 indices [16] [4] = {
+	{{8, 8, 8}, {8, 8, 8}, {8, 8, 8}, {8, 8, 8}},
+	{{0, 4, 5}, {8, 8, 8}, {8, 8, 8}, {8, 8, 8}},
+	{{1, 4, 6}, {8, 8, 8}, {8, 8, 8}, {8, 8, 8}},
+	{{0, 1, 6}, {0, 5, 6}, {8, 8, 8}, {8, 8, 8}},
+
+	{{2, 5, 7}, {8, 8, 8}, {8, 8, 8}, {8, 8, 8}},
+	{{0, 4, 2}, {4, 2, 7}, {8, 8, 8}, {8, 8, 8}},
+	{{2, 5, 7}, {1, 4, 6}, {8, 8, 8}, {8, 8, 8}},
+	{{0, 2, 7}, {0, 7, 6}, {0, 6, 1}, {8, 8, 8}},
+
+	{{3, 7, 6}, {8, 8, 8}, {8, 8, 8}, {8, 8, 8}},
+	{{0, 4, 5}, {3, 7, 6}, {8, 8, 8}, {8, 8, 8}},
+	{{4, 1, 7}, {1, 7, 3}, {8, 8, 8}, {8, 8, 8}},
+	{{0, 5, 7}, {0, 7, 3}, {0, 3, 1}, {8, 8, 8}},
+
+	{{5, 6, 2}, {2, 6, 3}, {8, 8, 8}, {8, 8, 8}},
+	{{0, 2, 3}, {0, 3, 6}, {0, 6, 4}, {8, 8, 8}},
+	{{2, 1, 3}, {2, 5, 4}, {2, 1, 4}, {8, 8, 8}},
+	{{0, 1, 2}, {1, 2, 3}, {8, 8, 8}, {8, 8, 8}},
+};
+
+#define M_PI 3.1415926535897932384626433832795
+float fun (vec2 pos) {
+	return sin (70*dot (pos, pos) - 0.5);
+	float a = M_PI * 1.8;
+	return dot(pos - 0.5, vec2(sin(a), cos(a)));
 }
 
 void main() {
 	int N = gl_PrimitiveIDIn;
-	ivec2 uv = ivec2 (N % grid.x, (N / grid.x) % grid.y);
-	vec2 scale = 1.0 / grid;
-	vec2 pos = vol0 + uv * scale * vol1;
-	float t = f (pos) > 0 ? 1 : 0;
+	ivec2 uv = 1 + 2 * ivec2 (N % grid.x, (N / grid.x) % grid.y);
+	vec2 scale = 1.0 / (2 * grid);
+	vec2 center = vol0 + uv * scale * (vol1 - vol0);
+	vec2 delta = vec2 (scale * (vol1 - vol0));
+	vec2 flip = vec2 (1, -1);
 
-	for(int i = 0; i < 4; i++) {
-		gl_Position = Umvp * vec4 (scale * (uv + t * vertices [i]), 0, 1);
-		Vid = gl_PrimitiveIDIn;
-		EmitVertex();
+	vec2 pos [8] = {center - delta, center + delta * flip,
+		center - delta * flip, center + delta};
+	float f [4] = {fun (pos[0]), fun (pos[1]), fun (pos[2]), fun (pos[3])};
+	float s [4];
+	pos[4] = (pos[1] * f[0] - pos[0] * f[1]) / (f[0] - f[1]);
+	pos[5] = (pos[2] * f[0] - pos[0] * f[2]) / (f[0] - f[2]);
+	pos[6] = (pos[3] * f[1] - pos[1] * f[3]) / (f[1] - f[3]);
+	pos[7] = (pos[3] * f[2] - pos[2] * f[3]) / (f[2] - f[3]);
+
+	int C = (f[0]>0?1:0) + (f[1]>0?2:0) + (f[2]>0?4:0) + (f[3]>0?8:0);
+
+	for (int p = 0; p < counts [C]; ++p) {
+		for(int v = 0; v < 3; v++) {
+			gl_Position = Umvp * vec4 (pos[indices [C] [p] [v]], 0, 1);
+			block = vec2 (C / 16.0);
+			EmitVertex();
+		}
+		EndPrimitive();
 	}
-	EndPrimitive();
 }
 #elif defined FS
 void main(void) {
-	gl_FragColor = vec4 (vec3 (1), 0.5);
+	gl_FragColor = vec4 (vec3 (0.5+0.5*sin(block*100), 1), 0.5);
 }
 #endif
 

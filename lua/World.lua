@@ -3,8 +3,8 @@ function NewWorld ()
 
     world.camera = {
         speed = 3,
-        tMat = mat4.Movement (vec3 (0, 2.75, 2.5)) ^
-            mat4.Rotation (vec3.x, 0.75 * math.pi)
+        tMat = mat4.Movement (vec3 (0.5, 0.5, 1.5)) ^
+            mat4.Rotation (vec3.x, 1.0 * math.pi)
     }
 
     world.center = {tMat = mat4.id}

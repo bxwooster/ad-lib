@@ -9,8 +9,8 @@ function Prototype ()
 
 	local uniform = GRender.uniform
 	local grid = FFI.new ("int [2]")
-	grid [0] = 64
-	grid [1] = 64
+	grid [0] = 50
+	grid [1] = 50
 	local mvp = Sviewproj
     GL.UniformMatrix4fv (uniform.Umvp, 1, GL.FALSE, mvp.p)
     GL.Uniform2iv (uniform.grid, 1, grid)
