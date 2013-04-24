@@ -1,3 +1,21 @@
+API void DebugCallbackARB (
+		GLenum source,
+		GLenum type,
+		GLuint id,
+		GLenum severity,
+		GLsizei length,
+		const GLchar * message,
+		GLvoid * userParam
+) {
+	(void) source;
+	(void) type;
+	(void) id;
+	(void) severity;
+	(void) length;
+	(void) userParam;
+	logi ("%s", message);
+}
+
 struct SDL * init_SDL (void) {
     int require = IMG_INIT_JPG;
     int initted = IMG_Init (require);
@@ -20,7 +38,9 @@ struct SDL * init_SDL (void) {
         SDL_GL_SetAttribute (SDL_GL_CONTEXT_MINOR_VERSION, 3) != 0 ||
         SDL_GL_SetAttribute (SDL_GL_STENCIL_SIZE, 8) != 0 ||
         SDL_GL_SetAttribute (SDL_GL_CONTEXT_PROFILE_MASK,
-				SDL_GL_CONTEXT_PROFILE_CORE) != 0;
+				SDL_GL_CONTEXT_PROFILE_CORE) != 0 ||
+		SDL_GL_SetAttribute (SDL_GL_CONTEXT_FLAGS,
+				SDL_GL_CONTEXT_DEBUG_FLAG) != 0;
 
     OK_ELSE (attr == 0) {
         logi ("SDL_GL_SetAttribute error: %s.", SDL_GetError ());
@@ -56,12 +76,13 @@ struct SDL * init_SDL (void) {
         logi ("GLEW error: %s.", glewGetErrorString (glew));
     }
 
-    OK_ELSE (GLEW_VERSION_2_0) {
-        logi ("GL2.0 is not supported.");
+    OK_ELSE (GLEW_VERSION_4_3) {
+        logi ("GL4.3 is not supported.");
     }
-#endif
-	// core profile gives an error, mute it
+
+	// core profile gives an error with GLEW, mute it
 	glGetError();
+#endif
 
     return sdl;
 }

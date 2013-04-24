@@ -378,6 +378,8 @@ local cache = {
 	 MAX_RENDERBUFFER_SIZE          = 0x84E8,
 	 
 	 INVALID_FRAMEBUFFER_OPERATION  = 0x0506,
+
+	 DEBUG_OUTPUT_SYNCHRONOUS_ARB = 0x8242,
 }
 
 -- GLES2 typedefs & functions
@@ -775,6 +777,12 @@ typedef void (* PFNGLBINDVERTEXARRAYPROC) (GLuint array);
 typedef void (* PFNGLDELETEVERTEXARRAYSPROC) (GLsizei n, const GLuint *arrays);
 typedef void (* PFNGLGENVERTEXARRAYSPROC) (GLsizei n, GLuint *arrays);
 typedef GLboolean (* PFNGLISVERTEXARRAYPROC) (GLuint array);
+/* Debug */
+typedef void (* GLDEBUGPROCARB)(GLenum source,GLenum type,GLuint id,GLenum severity,GLsizei length,const GLchar *message,GLvoid *userParam);
+typedef void (* PFNGLDEBUGMESSAGECONTROLARBPROC) (GLenum source, GLenum type, GLenum severity, GLsizei count, const GLuint *ids, GLboolean enabled);
+typedef void (* PFNGLDEBUGMESSAGEINSERTARBPROC) (GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *buf);
+typedef void (* PFNGLDEBUGMESSAGECALLBACKARBPROC) (GLDEBUGPROCARB callback, const GLvoid *userParam);
+typedef GLuint (* PFNGLGETDEBUGMESSAGELOGARBPROC) (GLuint count, GLsizei bufsize, GLenum *sources, GLenum *types, GLuint *ids, GLenum *severities, GLsizei *lengths, GLchar *messageLog);
 ]]
 end
 

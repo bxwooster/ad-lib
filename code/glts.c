@@ -26,9 +26,10 @@ glts_link_it (
 ) {
     GLuint program = glCreateProgram ();
 	for (int i = 0; i < KIND_COUNT; i++) {
-		if (ks [i] != GL_FALSE)
+		if (ks [i] != GL_FALSE) {
 			debug ("have %d", i);
 			glAttachShader (program, ks [i]);
+		}
 	}
 
     GLint code = GL_FALSE;
@@ -83,7 +84,7 @@ glts_do_it (
 #ifdef GLES
         "#version 100\nprecision mediump float;\n";
 #else
-        "#version 150\n";
+        "#version 430 core\n";
 #endif
     all_pieces[1] = kind_defines [kind];
 

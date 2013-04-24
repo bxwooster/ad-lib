@@ -7,6 +7,9 @@ function Init ()
     FFI.cdef (api_text)
     core = FFI.C
 
+	GL.DebugMessageCallbackARB (core.DebugCallbackARB, nil)
+	GL.Enable (GL.DEBUG_OUTPUT_SYNCHRONOUS_ARB)
+
     core.Require ("GUI")
     core.Require ("Lib")
     core.Require ("Util")
