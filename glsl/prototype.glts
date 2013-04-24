@@ -9,7 +9,6 @@ varying float Vid;
 #if defined VS
 void main(void) {
     vec4 position = Umvp * vec4 (Apos, 1.0);
-	Vid = gl_VertexID;
 	gl_Position = position;
 }
 #elif defined GS
@@ -19,13 +18,14 @@ layout(triangle_strip, max_vertices = 3) out;
 void main() {
 	for(int i = 0; i < 3; i++) {
 		gl_Position = gl_in[i].gl_Position;
+		Vid = gl_PrimitiveIDIn;
 		EmitVertex();
 	}
 	EndPrimitive();
 }
 #elif defined FS
 void main(void) {
-	gl_FragColor = vec4 (vec3 (Vid / 36), 0.5);
+	gl_FragColor = vec4 (vec3 (Vid / 12), 0.5);
 }
 #endif
 
