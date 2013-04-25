@@ -32,7 +32,10 @@ layout(points) in;
 layout(triangle_strip, max_vertices = 15) out;
 
 float fun (vec3 pos) {
-	return 0.1 - dot (pos - 0.5, pos - 0.5);
+	vec3 c = abs(pos - 0.5);
+	float d = time*0.01+0.25 - max (c.x, max (c.y, c.z));
+	float s = time*0.01+0.2 - dot (c,c);
+	return 0.5 * (d + s);
 }
 
 void main() {
@@ -53,8 +56,8 @@ void main() {
 	vec3 dy = vec3 (0, delta.y, 0);
 	vec3 dz = vec3 (0, 0, delta.z);
 
-	vec3 pos [8] = {c-dx-dy-dz, c+dx-dy-dz, c-dx+dy-dz, c+dx+dy-dz,
-					c-dx-dy+dz, c+dx-dy+dz, c-dx+dy+dz, c+dx+dy+dz};
+	vec3 pos [8] = {c-dx-dy-dz, c-dx+dy-dz, c+dx+dy-dz, c+dx-dy-dz,
+					c-dx-dy+dz, c-dx+dy+dz, c+dx+dy+dz, c+dx-dy+dz};
 
 	float f [8] = {fun (pos[0]), fun (pos[1]), fun (pos[2]), fun (pos[3]),
 				   fun (pos[4]), fun (pos[5]), fun (pos[6]), fun (pos[7])};
@@ -62,14 +65,14 @@ void main() {
 	vec3 edge [12];
 	edge[ 0] = (pos[1] * f[0] - pos[0] * f[1]) / (f[0] - f[1]);
 	edge[ 1] = (pos[2] * f[1] - pos[1] * f[2]) / (f[1] - f[2]);
-	edge[ 2] = (pos[3] * f[2] - pos[2] * f[3]) / (f[2] - f[3]);
-	edge[ 3] = (pos[0] * f[3] - pos[3] * f[0]) / (f[3] - f[0]);
+	edge[ 2] = (pos[2] * f[3] - pos[3] * f[2]) / (f[3] - f[2]);
+	edge[ 3] = (pos[3] * f[0] - pos[0] * f[3]) / (f[0] - f[3]);
 	edge[ 4] = (pos[5] * f[4] - pos[4] * f[5]) / (f[4] - f[5]);
 	edge[ 5] = (pos[6] * f[5] - pos[5] * f[6]) / (f[5] - f[6]);
-	edge[ 6] = (pos[7] * f[6] - pos[6] * f[7]) / (f[6] - f[7]);
-	edge[ 7] = (pos[4] * f[7] - pos[7] * f[4]) / (f[7] - f[4]);
+	edge[ 6] = (pos[6] * f[7] - pos[7] * f[6]) / (f[7] - f[6]);
+	edge[ 7] = (pos[7] * f[4] - pos[4] * f[7]) / (f[4] - f[7]);
 	edge[ 8] = (pos[4] * f[0] - pos[0] * f[4]) / (f[0] - f[4]);
-	edge[ 8] = (pos[5] * f[1] - pos[1] * f[5]) / (f[1] - f[5]);
+	edge[ 9] = (pos[5] * f[1] - pos[1] * f[5]) / (f[1] - f[5]);
 	edge[10] = (pos[6] * f[2] - pos[2] * f[6]) / (f[2] - f[6]);
 	edge[11] = (pos[7] * f[3] - pos[3] * f[7]) / (f[3] - f[7]);
 
