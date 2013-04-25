@@ -11,23 +11,32 @@ local function index (t, k)
 	local cached = rawget (t, k)
 	if cached then return cached end
 
-	local function trylib (k) return lib[k] end
-	local ok, value = pcall (trylib, "gl" .. k)
+	local g = "gl" .. k
+	local function trylib (g) return lib[g] end
+	local ok, value = pcall (trylib, g)
 	if ok then
 		t[k] = value
 		return value
 	end
 
 	if FFI.os == "Windows" then
-		local ptr = lib.wglGetProcAddress ("gl" .. k)
-		local ctype = FFI.typeof ("PFNGL" .. k:upper () .. "PROC") -- wow
-		local result = FFI.cast (ctype, ptr)
-		t[k] = result
-		return result
+		local function trygpa (g)
+			local ptr = lib.wglGetProcAddress (g)
+			local ctype = FFI.typeof ("PFN" .. g:upper () .. "PROC") -- wow
+			return FFI.cast (ctype, ptr)
+		end
+		local ok, value = pcall (trygpa, g)
+		if ok then
+			t[k] = value
+			return value
+		end
 	end
+
+	error ("Can't find OpenGL symbol " .. k)
 end
 
--- constants have been taken from GLES2 headers
+-- constants and declarations have been mostly taken from GLES2 headers,
+-- but it's now a great ball of string with bits from different specs.
 local cache = {
 	 DEPTH_BUFFER_BIT               = 0x00000100,
 	 STENCIL_BUFFER_BIT             = 0x00000400,
@@ -92,6 +101,8 @@ local cache = {
 	 BACK                           = 0x0405,
 	 FRONT_AND_BACK                 = 0x0408,
 
+	 TEXTURE_BUFFER                 = 0x8C2A,
+	 TEXTURE_1D                     = 0x0DE0,
 	 TEXTURE_2D                     = 0x0DE1,
 	 CULL_FACE                      = 0x0B44,
 	 BLEND                          = 0x0BE2,
@@ -380,6 +391,9 @@ local cache = {
 	 INVALID_FRAMEBUFFER_OPERATION  = 0x0506,
 
 	 DEBUG_OUTPUT_SYNCHRONOUS_ARB = 0x8242,
+
+	 TEXTURE_BASE_LEVEL = 0x813C,
+	 TEXTURE_MAX_LEVEL = 0x813D,
 }
 
 -- GLES2 typedefs & functions
@@ -507,6 +521,7 @@ void         glStencilMask (GLuint mask);
 void         glStencilMaskSeparate (GLenum face, GLuint mask);
 void         glStencilOp (GLenum fail, GLenum zfail, GLenum zpass);
 void         glStencilOpSeparate (GLenum face, GLenum fail, GLenum zfail, GLenum zpass);
+void         glTexImage1D (GLenum target, GLint level, GLint internalformat, GLsizei width, GLint border, GLenum format, GLenum type, const GLvoid* pixels);
 void         glTexImage2D (GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid* pixels);
 void         glTexParameterf (GLenum target, GLenum pname, GLfloat param);
 void         glTexParameterfv (GLenum target, GLenum pname, const GLfloat* params);
@@ -783,6 +798,7 @@ typedef void (* PFNGLDEBUGMESSAGECONTROLARBPROC) (GLenum source, GLenum type, GL
 typedef void (* PFNGLDEBUGMESSAGEINSERTARBPROC) (GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *buf);
 typedef void (* PFNGLDEBUGMESSAGECALLBACKARBPROC) (GLDEBUGPROCARB callback, const GLvoid *userParam);
 typedef GLuint (* PFNGLGETDEBUGMESSAGELOGARBPROC) (GLuint count, GLsizei bufsize, GLenum *sources, GLenum *types, GLuint *ids, GLenum *severities, GLsizei *lengths, GLchar *messageLog);
+typedef void (* PFNGLTEXBUFFERPROC) (GLenum target, GLenum internalformat, GLuint buffer);
 ]]
 end
 

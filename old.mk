@@ -45,6 +45,7 @@ ifeq ($(program),cosmos)
              socket \
              hot \
              hot_player \
+			 edge \
 
     features += SDLGL lua
 

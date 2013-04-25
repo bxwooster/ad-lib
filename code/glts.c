@@ -20,6 +20,44 @@ static char * kind_defines [KIND_COUNT] = {
 	"#define CS\n",
 };
 
+static void glts_prlog_it (
+        GLuint program
+) {
+    GLint size = 0;
+    glGetProgramiv (program, GL_INFO_LOG_LENGTH, &size);
+    char * log;
+    if (size > 0) {
+        log = malloc (size);
+        OK (log);
+
+        glGetProgramInfoLog (program, size, NULL, log);
+        logi ("%s", log);
+
+        free (log);
+    } else {
+        logi ("No program log available.");
+    }
+}
+
+static void glts_shlog_it (
+        GLuint shader
+) {
+    GLint size = 0;
+    glGetShaderiv (shader, GL_INFO_LOG_LENGTH, &size);
+    char * log;
+    if (size > 0) {
+        log = malloc (size);
+        OK (log);
+
+        glGetShaderInfoLog (shader, size, NULL, log);
+        logi ("%s", log);
+
+        free (log);
+    } else {
+        logi ("No shader log available.");
+    }
+}
+
 static GLuint // program
 glts_link_it (
         GLuint ks [KIND_COUNT]
@@ -37,30 +75,12 @@ glts_link_it (
 
     if (code == GL_FALSE) {
         logi ("Shader linking failed.");
+		glts_prlog_it (program);
         glDeleteProgram (program);
         return GL_FALSE;
     }
 
     return program;
-}
-
-static void glts_log_it (
-        GLuint shader
-) {
-    GLint size = 0;
-    glGetShaderiv (shader, GL_INFO_LOG_LENGTH, &size);
-    char * log;
-    if (size > 0) {
-        log = malloc (size);
-        OK (log);
-
-        glGetShaderInfoLog (shader, size, NULL, log);
-        logi ("%s", log);
-
-        free (log);
-    } else {
-        logi ("No shader log available.");
-    }
 }
 
 static GLuint
@@ -95,7 +115,7 @@ glts_do_it (
         logi ("Shader source:\n");
         for (unsigned i = 0; i < all_count; i++)
             logi ("Piece %d:\n%s", i, all_pieces[i]);
-        glts_log_it (shader);
+        glts_shlog_it (shader);
         glDeleteShader (shader);
         shader = GL_FALSE;
     }
