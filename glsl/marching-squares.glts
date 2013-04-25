@@ -7,6 +7,7 @@ uniform vec2 vol0 = vec2 (0, 0);
 uniform vec2 vol1 = vec2 (1, 1);
 uniform ivec2 grid;
 uniform mat4 Umvp;
+uniform float time;
 varying vec2 block;
 
 #if defined VS
@@ -53,8 +54,9 @@ ivec3 indices [16] [4] = {
 
 #define M_PI 3.1415926535897932384626433832795
 float fun (vec2 pos) {
-	return sin (70*dot (pos, pos) - 0.5);
-	float a = M_PI * 1.8;
+	pos = pos - 0.5;
+	return sin (pow(2,5+time*0.7)*dot (pos, pos));
+	float a = time;
 	return dot(pos - 0.5, vec2(sin(a), cos(a)));
 }
 
