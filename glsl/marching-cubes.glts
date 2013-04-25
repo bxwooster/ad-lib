@@ -1,0 +1,81 @@
+#pragma kinds VGF
+#define M_PI 3.1415926535897932384626433832795
+
+/* How many tris to generate for each case */
+int counts [256] = {0, 1};
+
+/* Indices of tri vertices for each case.
+	8 means none. For 0-7, see explanation of positions below
+*/
+ivec3 indices [256] [5] = {
+	{{-1,-1,-1}, {-1,-1,-1}, {-1,-1,-1}, {-1,-1,-1}, {-1,-1,-1}},
+	{{ 0, 1, 2}, { 1, 2, 3}, { 4, 5, 6}, { 5, 6, 7}, {-1,-1,-1}},
+};
+
+uniform vec3 vol0 = vec3 (0, 0, 0);
+uniform vec3 vol1 = vec3 (1, 1, 1);
+uniform ivec3 grid;
+
+uniform mat4 Umvp;
+uniform float time;
+
+varying float Vid;
+
+#if defined VS
+void main(void) {}
+#elif defined GS
+layout(points) in;
+layout(triangle_strip, max_vertices = 15) out;
+
+float fun (vec3 pos) {
+	return dot (pos - 0.5, pos - 0.5) - 0.5;
+}
+
+void main() {
+	/* Grid: 0 .. 2U, 0 .. 2V, 0 .. 2W correspond to vol0 .. vol1 in space
+	   N = U * V * W
+	   Square centers are at odd uvw's
+	   Square edges are along even uvw's
+	 */
+	int N1 = gl_PrimitiveIDIn;
+	int N2 = N1 / grid.x;
+	int N3 = N2 / grid.y;
+	ivec3 uvw = 1 + 2 * ivec3 (N1 % grid.x, N2 % grid.y, N3);
+	vec3 scale = 1.0 / (2 * grid);
+	vec3 delta = scale * (vol1 - vol0);
+
+	vec3 c = vol0 + uvw * delta;
+	vec3 dx = vec3 (delta.x, 0, 0);
+	vec3 dy = vec3 (0, delta.y, 0);
+	vec3 dz = vec3 (0, 0, delta.z);
+
+	vec3 pos [3] = {c - dx - dy, c + dx - dy, c - dx + dy};
+
+	/*
+	float f [4] = {fun (pos[0]), fun (pos[1]), fun (pos[2]), fun (pos[3])};
+	pos[4] = (pos[1] * f[0] - pos[0] * f[1]) / (f[0] - f[1]);
+	pos[5] = (pos[2] * f[0] - pos[0] * f[2]) / (f[0] - f[2]);
+	pos[6] = (pos[3] * f[1] - pos[1] * f[3]) / (f[1] - f[3]);
+	pos[7] = (pos[3] * f[2] - pos[2] * f[3]) / (f[2] - f[3]);
+
+	int C = (f[0]>0?1:0) + (f[1]>0?2:0) + (f[2]>0?4:0) + (f[3]>0?8:0);
+	*/
+
+	/* Which case? */
+	int C = fun (c) > 0 ? 1 : 0;
+
+	for (int p = 0; p < counts [C]; ++p) {
+		for(int v = 0; v < 3; v++) {
+			gl_Position = Umvp * vec4 (pos[v], 1);
+			Vid = C;
+			EmitVertex();
+		}
+		EndPrimitive();
+	}
+}
+#elif defined FS
+void main(void) {
+	gl_FragColor = vec4 (vec2 (0.5+0.5*sin(Vid*100/16)), 1, 0.5);
+}
+#endif
+

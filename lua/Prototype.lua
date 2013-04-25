@@ -8,21 +8,22 @@ function Prototype ()
     GL.UseProgram (GRender.glsl.program)
 
 	local uniform = GRender.uniform
-	local grid = FFI.new ("int [2]")
+	local grid = FFI.new ("int [3]")
 	grid [0] = 64
 	grid [1] = 64
+	grid [2] = 64
 	local mvp = Sviewproj
     GL.UniformMatrix4fv (uniform.Umvp, 1, GL.FALSE, mvp.p)
-    GL.Uniform2iv (uniform.grid, 1, grid)
+    GL.Uniform3iv (uniform.grid, 1, grid)
     GL.Uniform1f (uniform.time, Time)
-    GL.DrawArrays (GL.POINTS, 0, grid [0] * grid [1])
+    GL.DrawArrays (GL.POINTS, 0, grid [0] * grid [1] * grid[2])
 end
 
 do
 	local function hot (null, file, text)
 		GRender = LoadShader (file, text)
 	end
-	core.Pull ("glsl/marching-squares.glts", hot)
+	core.Pull ("glsl/marching-cubes.glts", hot)
 end
 
 do
