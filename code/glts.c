@@ -20,9 +20,7 @@ static char * kind_defines [KIND_COUNT] = {
 	"#define CS\n",
 };
 
-static void glts_prlog_it (
-        GLuint program
-) {
+static void glts_program_log (GLuint program) {
     GLint size = 0;
     glGetProgramiv (program, GL_INFO_LOG_LENGTH, &size);
     char * log;
@@ -39,9 +37,7 @@ static void glts_prlog_it (
     }
 }
 
-static void glts_shlog_it (
-        GLuint shader
-) {
+static void glts_shader_log (GLuint shader) {
     GLint size = 0;
     glGetShaderiv (shader, GL_INFO_LOG_LENGTH, &size);
     char * log;
@@ -58,10 +54,7 @@ static void glts_shlog_it (
     }
 }
 
-static GLuint // program
-glts_link_it (
-        GLuint ks [KIND_COUNT]
-) {
+static GLuint glts_link (GLuint ks [KIND_COUNT]) {
     GLuint program = glCreateProgram ();
 	for (int i = 0; i < KIND_COUNT; i++) {
 		if (ks [i] != GL_FALSE) {
@@ -75,20 +68,21 @@ glts_link_it (
 
     if (code == GL_FALSE) {
         logi ("Shader linking failed.");
-		glts_prlog_it (program);
+		glts_program_log (program);
         glDeleteProgram (program);
         return GL_FALSE;
     }
 
+	for (int i = 0; i < KIND_COUNT; i++) {
+		if (ks [i] != GL_FALSE) {
+			glDetachShader (program, ks [i]);
+		}
+	}
+
     return program;
 }
 
-static GLuint
-glts_do_it (
-        char const * pieces [],
-        unsigned count,
-        int kind
-) {
+static GLuint glts_do_it (char const * pieces [], unsigned count, int kind) {
     GLuint shader = GL_FALSE;
     GLint code = GL_FALSE;
     shader = glCreateShader (gl_kinds [kind]);
@@ -115,7 +109,7 @@ glts_do_it (
         logi ("Shader source:\n");
         for (unsigned i = 0; i < all_count; i++)
             logi ("Piece %d:\n%s", i, all_pieces[i]);
-        glts_shlog_it (shader);
+        glts_shader_log (shader);
         glDeleteShader (shader);
         shader = GL_FALSE;
     }
@@ -123,8 +117,8 @@ glts_do_it (
     return shader;
 }
 
-char * // contents
-glts_load_it (
+static char * // contents
+glts_get_file (
         char const * prefix,
         char const * id_starts,
         char const * id_ends_or_null
@@ -196,7 +190,7 @@ glts_load (char const * filename, char const * text) {
 		if (newline == NULL) goto end;
 
         char const * included_file = sources[N++] =
-                      glts_load_it ("glsl/", at, newline);
+                      glts_get_file ("glsl/", at, newline);
         if (included_file == NULL) goto end;
 
 		at = newline + 1;
@@ -216,7 +210,7 @@ glts_load (char const * filename, char const * text) {
 			ks [i] = GL_FALSE;
 	}
 
-    program = glts_link_it (ks);
+    program = glts_link (ks);
 	if (program == GL_FALSE) {
 		logi ("That happened while loading %s just now. Kindmask is %d",
 				filename, kindmask);
