@@ -21,9 +21,11 @@ function Loop ()
     Selected = Selection (GetHovered ())
 
 	-- Ready, set... draw!
-	--DrawSpheres ()
-	--DrawCircles ()
-	--DrawSectors ()
+	--[[
+	DrawSpheres ()
+	DrawCircles ()
+	DrawSectors ()
+	--]]
 	--DrawGUI ()
 
 	Prototype ()

@@ -9,7 +9,7 @@ function Prototype ()
 
 	local uniform = GRender.uniform
 	local grid = FFI.new ("int [3]")
-	local D = 16
+	local D = 40
 	grid [0] = D
 	grid [1] = D
 	grid [2] = D
