@@ -7,8 +7,10 @@ function Init ()
     FFI.cdef (api_text)
     core = FFI.C
 
-	GL.DebugMessageCallbackARB (core.DebugCallbackARB, nil)
-	GL.Enable (GL.DEBUG_OUTPUT_SYNCHRONOUS_ARB)
+	if GL.DebugMessageCallbackARB then
+		GL.DebugMessageCallbackARB (core.DebugCallbackARB, nil)
+		GL.Enable (GL.DEBUG_OUTPUT_SYNCHRONOUS_ARB)
+	end
 
     core.Require ("GUI")
     core.Require ("Lib")
@@ -25,7 +27,7 @@ function Init ()
     core.Require ("Gameplay")
     core.Require ("Selection")
     core.Require ("Prototype")
-
+--[[
 	GTestInit ()
 	VRectInit ()
 	GSectorInit ()
@@ -34,6 +36,7 @@ function Init ()
 	VImposterInit ()
 	GPlanetInit ()
 	TexInit ()
+	--]]
 
     World = NewWorld ()
 end

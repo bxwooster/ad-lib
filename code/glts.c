@@ -1,3 +1,7 @@
+#ifndef GL_COMPUTE_SHADER
+#define GL_COMPUTE_SHADER GL_FALSE
+#endif
+
 enum kind {
 	KIND_VERTEX = 0,
 	KIND_GEOMETRY,
@@ -97,7 +101,7 @@ static GLuint glts_do_it (char const * pieces [], unsigned count, int kind) {
 #ifdef GLES
         "#version 100\nprecision mediump float;\n";
 #else
-        "#version 430 core\n";
+        "#version 150 core\n";
 #endif
     all_pieces[1] = kind_defines [kind];
 

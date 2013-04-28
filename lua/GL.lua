@@ -32,7 +32,7 @@ local function index (t, k)
 		end
 	end
 
-	error ("Can't find OpenGL symbol " .. k)
+	--error ("Can't find OpenGL symbol " .. k)
 end
 
 -- constants and declarations have been mostly taken from GLES2 headers,
@@ -564,7 +564,8 @@ void         glViewport (GLint x, GLint y, GLsizei width, GLsizei height);
 -- on Windows, not all functions are directly available, see 'index'
 -- the probably is != to the GLES2 spec
 
-if FFI.os == "Windows" then
+--if FFI.os == "Windows" then
+do
 	FFI.cdef [[
 void * wglGetProcAddress (char const *);
 typedef void (* PFNGLBLENDCOLORPROC) (GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
@@ -791,14 +792,20 @@ typedef void (* PFNGLUNIFORMMATRIX4X3FVPROC) (GLint location, GLsizei count, GLb
 typedef void (* PFNGLBINDVERTEXARRAYPROC) (GLuint array);
 typedef void (* PFNGLDELETEVERTEXARRAYSPROC) (GLsizei n, const GLuint *arrays);
 typedef void (* PFNGLGENVERTEXARRAYSPROC) (GLsizei n, GLuint *arrays);
-typedef GLboolean (* PFNGLISVERTEXARRAYPROC) (GLuint array);
+void glBindVertexArray(GLuint array);
+void glGenVertexArrays(	GLsizei n, GLuint *arrays);
+void glDeleteVertexArrays(	GLsizei	n, const GLuint * 	arrays);
+
 /* Debug */
 typedef void (* GLDEBUGPROCARB)(GLenum source,GLenum type,GLuint id,GLenum severity,GLsizei length,const GLchar *message,GLvoid *userParam);
 typedef void (* PFNGLDEBUGMESSAGECONTROLARBPROC) (GLenum source, GLenum type, GLenum severity, GLsizei count, const GLuint *ids, GLboolean enabled);
 typedef void (* PFNGLDEBUGMESSAGEINSERTARBPROC) (GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *buf);
 typedef void (* PFNGLDEBUGMESSAGECALLBACKARBPROC) (GLDEBUGPROCARB callback, const GLvoid *userParam);
 typedef GLuint (* PFNGLGETDEBUGMESSAGELOGARBPROC) (GLuint count, GLsizei bufsize, GLenum *sources, GLenum *types, GLuint *ids, GLenum *severities, GLsizei *lengths, GLchar *messageLog);
+
+/* Tex Buffer */
 typedef void (* PFNGLTEXBUFFERPROC) (GLenum target, GLenum internalformat, GLuint buffer);
+void glTexBuffer(GLenum target, GLenum internalFormat, GLuint buffer);
 ]]
 end
 

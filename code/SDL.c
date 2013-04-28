@@ -34,8 +34,8 @@ struct SDL * init_SDL (void) {
 
 
     char attr =
-        SDL_GL_SetAttribute (SDL_GL_CONTEXT_MAJOR_VERSION, 4) != 0 ||
-        SDL_GL_SetAttribute (SDL_GL_CONTEXT_MINOR_VERSION, 3) != 0 ||
+        SDL_GL_SetAttribute (SDL_GL_CONTEXT_MAJOR_VERSION, 3) != 0 ||
+        SDL_GL_SetAttribute (SDL_GL_CONTEXT_MINOR_VERSION, 2) != 0 ||
         SDL_GL_SetAttribute (SDL_GL_STENCIL_SIZE, 8) != 0 ||
         SDL_GL_SetAttribute (SDL_GL_CONTEXT_PROFILE_MASK,
 				SDL_GL_CONTEXT_PROFILE_CORE) != 0 ||
@@ -76,8 +76,8 @@ struct SDL * init_SDL (void) {
         logi ("GLEW error: %s.", glewGetErrorString (glew));
     }
 
-    OK_ELSE (GLEW_VERSION_4_3) {
-        logi ("GL4.3 is not supported.");
+    OK_ELSE (GLEW_VERSION_3_2) {
+        logi ("GL3.2 is not supported.");
     }
 
 	// core profile gives an error with GLEW, mute it

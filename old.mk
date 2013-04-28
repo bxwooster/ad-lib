@@ -181,7 +181,7 @@ ifneq ($(filter SDLGL,$(features)),)
         link_flags += -lopengl32 -lglew32
     else ifeq ($(platform),darwin)
         link_flags += -framework OpenGL
-        includes += OpenGL/gl.h
+        includes += OpenGL/gl3.h
     endif
 endif
 
