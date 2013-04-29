@@ -1,12 +1,7 @@
 function NewWorld ()
     world = PrepareWorld ()
 
-    world.camera = {
-        speed = 3,
-        tMat = mat4.Movement (vec3 (0.5, 1.2, 0.6)) ^
-            mat4.Rotation (vec3.x, 0.5 * math.pi)
-    }
-
+    world.camera = DefaultCamera ()
     world.center = {tMat = mat4.id}
 
     local P1 = {

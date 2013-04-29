@@ -1,8 +1,18 @@
 FOV = 60 -- yes, just like that
 
+function DefaultCamera ()
+	return {
+        speed = 0.1,
+        cMov = mat4.Movement (vec3 (0.0, 0.7, 0.1)),
+		cYaw = mat4.id,
+		cPitch = mat4.Rotation (vec3.x, 0.5 * math.pi),
+    }
+end
+
 function UpdateCamera (C)
     CameraPointer (C)
     CameraArrows (C)
+	C.tMat = C.cMov ^ C.cYaw ^ C.cPitch
     SetCamera (C.tMat)
 end
 
@@ -11,44 +21,45 @@ function CameraPointer (C)
         C.lock = Lock;
     elseif KeyHeld (KEY.P1) then
         local delta = C.lock - Lock
-        C.tMat = mat4.Movement (delta) ^ C.tMat
+        C.cMov = mat4.Movement (delta) ^ C.cMov
     else
         C.lock = nil
     end
 
 	if KeyHeld (KEY.P2) then
 		local delta = C.ptr - core.Pointer ()
-		C.tMat = mat4.Rotation (vec3.z, delta.e.x) ^ C.tMat
-		C.tMat = mat4.Rotation (vec3.x, delta.e.y) ^ C.tMat
+		C.cYaw = mat4.Rotation (vec3.z, delta.e.x) ^ C.cYaw
+		C.cPitch = mat4.Rotation (vec3.x, delta.e.y) ^ C.cPitch
 	end
 	C.ptr = core.Pointer ()
 end
 
 function CameraArrows (C)
     local dist = Dt * C.speed
+	--if KeyHeld (KEY.Shift) then dist = dist * 5 end
 
-    if KeyHeld (KEY.Left) then
-        C.tMat = C.tMat ^ mat4.Movement (dist * vec3.left)
+    if KeyHeld (KEY.Up) or KeyHeld (KEY.W) then
+        C.cMov = C.cMov ^ mat4.Movement (C.cYaw % (dist * vec3.back))
     end
 
-    if KeyHeld (KEY.Right) then
-        C.tMat = C.tMat ^ mat4.Movement (dist * vec3.right)
+    if KeyHeld (KEY.Down) or KeyHeld (KEY.S) then
+        C.cMov = C.cMov ^ mat4.Movement (C.cYaw % (dist * vec3.forward))
     end
 
-    if KeyHeld (KEY.Up) then
-        C.tMat = C.tMat ^ mat4.Movement (dist * vec3.back)
+    if KeyHeld (KEY.Left) or KeyHeld (KEY.A) then
+        C.cMov = C.cMov ^ mat4.Movement (C.cYaw % (dist * vec3.left))
     end
 
-    if KeyHeld (KEY.Down) then
-        C.tMat = C.tMat ^ mat4.Movement (dist * vec3.forward)
+    if KeyHeld (KEY.Right) or KeyHeld (KEY.D) then
+        C.cMov = C.cMov ^ mat4.Movement (C.cYaw % (dist * vec3.right))
     end
 
-    if KeyHeld (KEY.PageUp) then
-        C.tMat = C.tMat ^ mat4.Movement (dist * vec3.up)
+    if KeyHeld (KEY.PageUp) or KeyHeld (KEY.Q) then
+        C.cMov = C.cMov ^ mat4.Movement (dist * vec3.up)
     end
 
-    if KeyHeld (KEY.PageDown) then
-        C.tMat = C.tMat ^ mat4.Movement (dist * vec3.down)
+    if KeyHeld (KEY.PageDown) or KeyHeld (KEY.E) then
+        C.cMov = C.cMov ^ mat4.Movement (dist * vec3.down)
     end
 end
 

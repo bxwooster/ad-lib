@@ -251,5 +251,5 @@ util_projection (
         float fov
 ) {
     float const screen_aspect = ((float) width) / height;
-    return util_projection_afn (screen_aspect, fov, 0.1f);
+    return util_projection_afn (screen_aspect, fov, 0.01f);
 } 
