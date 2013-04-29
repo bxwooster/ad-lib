@@ -43,7 +43,7 @@ float fun (vec3 pos) {
 	float s = -time*0.1+0.25 - dot (c,c);
 	float w = 1; vec3 k = vec3 (1, 2, 0);
 	float v = 0.2 * sin(time * w + dot (k, pos)) + pos.z - 0.5;
-	return d+0.0000*texture (noise, pos*16);
+	return pc.z + 0.2*texture (noise, pos + time*0.002);
 	return sin(2 * M_PI * s);
 }
 
@@ -108,7 +108,7 @@ void main() {
 #elif defined FS
 out vec4 out_colour;
 void main(void) {
-	out_colour = vec4 (texture(noise, vec3(gl_FragCoord.xy / 100, 0)).xyz * 0 + 0.5, 1);
+	out_colour = vec4 (colour, 1);
 }
 #endif
 
