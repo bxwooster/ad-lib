@@ -12,6 +12,7 @@ function Init ()
 		GL.Enable (GL.DEBUG_OUTPUT_SYNCHRONOUS_ARB)
 	end
 
+	core.Require ("GLI")
     core.Require ("GUI")
     core.Require ("Lib")
     core.Require ("Util")
