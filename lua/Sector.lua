@@ -41,14 +41,14 @@ function DrawSectors ()
 	apply (DrawSector, World.sectors)
 end
 
-function GSectorInit ()
+do
 	local function hot (null, file, text)
 		GSector = LoadShader (file, text)
 	end
 	core.Pull ("glsl/sector.glts", hot)
 end
 
-function VSectorInit ()
+do
 	local function gc (V)
     	GL.DeleteBuffers (1, V.vbo);
 	end

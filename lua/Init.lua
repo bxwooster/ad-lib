@@ -28,16 +28,6 @@ function Init ()
     core.Require ("Gameplay")
     core.Require ("Selection")
     core.Require ("Prototype")
---[[
-	GTestInit ()
-	VRectInit ()
-	GSectorInit ()
-	GCircleInit ()
-	VSectorInit ()
-	VImposterInit ()
-	GPlanetInit ()
-	TexInit ()
-	--]]
 
     World = NewWorld ()
 end

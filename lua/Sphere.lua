@@ -71,21 +71,21 @@ function Sphere (tMat, colour, radius)
     GL.DrawArrays (GL.TRIANGLES, 0, VImposter.size)
 end
 
-function VImposterInit ()
+do
 	local function gc (V)
     	GL.DeleteBuffers (1, V.vbo);
 	end
 	VImposter = FFI.gc (core.util_imposter (), gc)
 end
 
-function GPlanetInit ()
+do
 	local function hot (null, file, text)
 		GPlanet = LoadShader (file, text)
 	end
 	core.Pull ("glsl/planet.glts", hot)
 end
 
-function TexInit ()
+do
 	local function gc (T)
 		GL.DeleteTextures (1, T.tex);
 	end

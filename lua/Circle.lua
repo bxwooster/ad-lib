@@ -34,7 +34,7 @@ function DrawCircles ()
 	apply (DrawCircle, World.circles)
 end
 
-function GCircleInit ()
+do
 	local function hot (null, file, text)
 		GCircle = LoadShader (file, text)
 	end
