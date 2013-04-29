@@ -28,30 +28,31 @@ function CameraPointer (C)
 
 	if KeyHeld (KEY.P2) then
 		local delta = C.ptr - core.Pointer ()
-		C.cYaw = mat4.Rotation (vec3.z, delta.e.x) ^ C.cYaw
-		C.cPitch = mat4.Rotation (vec3.x, delta.e.y) ^ C.cPitch
+		C.cYaw = mat4.Rotation (vec3.z, -delta.e.x) ^ C.cYaw
+		C.cPitch = mat4.Rotation (vec3.x, -delta.e.y) ^ C.cPitch
 	end
 	C.ptr = core.Pointer ()
 end
 
 function CameraArrows (C)
     local dist = Dt * C.speed
-	--if KeyHeld (KEY.Shift) then dist = dist * 5 end
+	if KeyHeld (KEY.Shift) then dist = dist * 5 end
+	local rot = C.cYaw ^ C.cPitch ^ mat4.Rotation (vec3.x, 0.5 * math.pi)
 
     if KeyHeld (KEY.Up) or KeyHeld (KEY.W) then
-        C.cMov = C.cMov ^ mat4.Movement (C.cYaw % (dist * vec3.back))
+        C.cMov = C.cMov ^ mat4.Movement (rot % (dist * vec3.forward))
     end
 
     if KeyHeld (KEY.Down) or KeyHeld (KEY.S) then
-        C.cMov = C.cMov ^ mat4.Movement (C.cYaw % (dist * vec3.forward))
+        C.cMov = C.cMov ^ mat4.Movement (rot % (dist * vec3.back))
     end
 
     if KeyHeld (KEY.Left) or KeyHeld (KEY.A) then
-        C.cMov = C.cMov ^ mat4.Movement (C.cYaw % (dist * vec3.left))
+        C.cMov = C.cMov ^ mat4.Movement (rot % (dist * vec3.left))
     end
 
     if KeyHeld (KEY.Right) or KeyHeld (KEY.D) then
-        C.cMov = C.cMov ^ mat4.Movement (C.cYaw % (dist * vec3.right))
+        C.cMov = C.cMov ^ mat4.Movement (rot % (dist * vec3.right))
     end
 
     if KeyHeld (KEY.PageUp) or KeyHeld (KEY.Q) then

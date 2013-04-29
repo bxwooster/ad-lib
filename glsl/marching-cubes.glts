@@ -43,7 +43,7 @@ float fun (vec3 pos) {
 	float s = -time*0.1+0.25 - dot (c,c);
 	float w = 1; vec3 k = vec3 (1, 2, 0);
 	float v = 0.2 * sin(time * w + dot (k, pos)) + pos.z - 0.5;
-	return pc.z + 0.2*texture (noise, pos + time*0.002);
+	return pc.z + 0.2 * texture (noise, pos + time*0.001);
 	return sin(2 * M_PI * s);
 }
 

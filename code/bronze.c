@@ -34,7 +34,7 @@ bronze_init (struct SDL * sdl) {
 
     int max;
     SDL_GetKeyboardState (& max);
-    E->key = malloc (max);
+    E->key = malloc (max >= 512 ? max : 512);
     E->key_max = (unsigned) max;
     OK (E->key);
     memset (E->key, -1, max);
@@ -79,19 +79,31 @@ void bronze_frame_input (struct bronze_engine * E) {
         }
     }
 
-    uint8_t mb = SDL_GetMouseState (NULL, NULL);
-    for (unsigned i = 1; i <= 3; ++i) {
-        int8_t sign = (mb & SDL_BUTTON (i)) ? 1 : -1;
-        int8_t mult = (sign * E->key[i]) < 0 ? 2 : 1;
-        E->key[i] = sign * mult;
-    }
-
     Uint8 * keys = SDL_GetKeyboardState (NULL);
-    for (unsigned i = 4; i < E->key_max; ++i) {
+    for (unsigned i = 0; i < E->key_max && i < 500; ++i) {
         int8_t sign = keys[i] ? 1 : -1;
         int8_t mult = (sign * E->key[i]) < 0 ? 2 : 1;
         E->key[i] = sign * mult;
     }
+
+    uint8_t mb = SDL_GetMouseState (NULL, NULL);
+    for (unsigned i = 501; i <= 503; ++i) {
+        int8_t sign = (mb & SDL_BUTTON (i - 500)) ? 1 : -1;
+        int8_t mult = (sign * E->key[i]) < 0 ? 2 : 1;
+        E->key[i] = sign * mult;
+    }
+
+	SDL_Keymod kmods [] = {
+		KMOD_LSHIFT, 
+		KMOD_RSHIFT,
+		KMOD_LSHIFT | KMOD_RSHIFT
+	};
+	SDL_Keymod mods = SDL_GetModState ();
+	for (unsigned i = 504; i <= 506; ++i) {
+		int8_t sign = mods & kmods[i - 504] ? 1 : -1;
+		int8_t mult = (sign * E->key[i]) < 0 ? 2 : 1;
+		E->key[i] = sign * mult;
+	}
 }
 
 char bronze_frame (struct bronze_engine * E) {

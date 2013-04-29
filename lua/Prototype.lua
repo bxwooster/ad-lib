@@ -12,7 +12,7 @@ function Prototype ()
 	local D = 64
 	grid [0] = D
 	grid [1] = D
-	grid [2] = D
+	grid [2] = D / 2
 	local mvp = Sviewproj ^ mat4.Movement (vec3 (-0.5, -0.5, -0.5))
     GL.UniformMatrix4fv (uniform.Umvp, 1, GL.FALSE, mvp.p)
     GL.Uniform3iv (uniform.grid, 1, grid)

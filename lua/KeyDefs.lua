@@ -1,8 +1,11 @@
 KEY = {
     -- Not SDL
-    P1 = 1,
-    P2 = 3,
-    P3 = 2,
+    P1 = 501,
+    P3 = 502,
+    P2 = 503,
+	LShift = 504,
+	RShift = 505,
+	Shift = 506,
 
     -- SDL Scancodes
     A = 4,
