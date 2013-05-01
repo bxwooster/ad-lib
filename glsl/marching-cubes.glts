@@ -37,13 +37,13 @@ layout(points) in;
 layout(triangle_strip, max_vertices = 15) out;
 
 float fun (vec3 pos) {
-	vec3 pc = pos - 0.5;
+	vec3 pc = pos - 1;
 	vec3 c = abs(pc + 0.00 * sin(10*atan(pc.x,pc.y)));
 	float d = 0.25 - max (c.x, max (c.y, c.z));
 	float s = -time*0.1+0.25 - dot (c,c);
 	float w = 1; vec3 k = vec3 (1, 2, 0);
 	float v = 0.2 * sin(time * w + dot (k, pos)) + pos.z - 0.5;
-	return pc.z + 0.2 * texture (noise, pos + time*0.001);
+	return 1.0 + pc.z + 0.2 * texture (noise, pos*0.5 + time*0.001);
 	return sin(2 * M_PI * s);
 }
 

@@ -1,4 +1,11 @@
 function Prototype ()
+	Single (vec3 (-0.5, -0.5, -0.5))
+	Single (vec3 (-0.5,  0.5, -0.5))
+	Single (vec3 ( 0.5,  0.5, -0.5))
+	Single (vec3 ( 0.5, -0.5, -0.5))
+end
+
+function Single (center)
     GL.DepthMask (GL.TRUE)
     GL.Enable (GL.DEPTH_TEST)
     GL.Disable (GL.BLEND)
@@ -9,13 +16,17 @@ function Prototype ()
 
 	local uniform = GRender.uniform
 	local grid = FFI.new ("int [3]")
-	local D = 64
+	local D = 32
 	grid [0] = D
 	grid [1] = D
 	grid [2] = D / 2
-	local mvp = Sviewproj ^ mat4.Movement (vec3 (-0.5, -0.5, -0.5))
+	local mvp = Sviewproj
+	local size = 1
+	local halfsize = vec3 (size / 2, size / 2, size / 2)
     GL.UniformMatrix4fv (uniform.Umvp, 1, GL.FALSE, mvp.p)
     GL.Uniform3iv (uniform.grid, 1, grid)
+    GL.Uniform3fv (uniform.vol0, 1, (center - halfsize).p)
+    GL.Uniform3fv (uniform.vol1, 1, (center + halfsize).p)
     GL.Uniform1f (uniform.time, Time)
 	GL.Uniform1i (uniform.edges, 0)
 	GL.Uniform1i (uniform.noise, 1)
