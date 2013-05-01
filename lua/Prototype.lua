@@ -36,28 +36,32 @@ function Single (center)
 	GL.BindTexture (GL.TEXTURE_BUFFER, TEdge[0])
 	GL.ActiveTexture (GL.TEXTURE1)
 	GL.BindTexture (GL.TEXTURE_3D, TNoise[0])
-	--GL.BindBufferBase (GL.TRANSFORM_FEEDBACK_BUFFER, 0, BFeedback[0])
+	GL.BindBufferBase (GL.TRANSFORM_FEEDBACK_BUFFER, 0, BFeedback[0])
 
-	--GL.BeginQuery (GL.TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN, QFeedback[0])
-	--GL.Enable (GL.RASTERIZER_DISCARD)
-	--GL.BeginTransformFeedback (GL.TRIANGLES)
+	GL.BeginQuery (GL.TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN, QFeedback[0])
+	GL.Enable (GL.RASTERIZER_DISCARD)
+	GL.BeginTransformFeedback (GL.TRIANGLES)
     GL.DrawArrays (GL.POINTS, 0, total)
-	--GL.EndTransformFeedback ()
-	--GL.Disable (GL.RASTERIZER_DISCARD)
-	--GL.EndQuery (GL.TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN)
+	GL.EndTransformFeedback ()
+	GL.Disable (GL.RASTERIZER_DISCARD)
+	GL.EndQuery (GL.TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN)
 
-	--[[
+	--GL.BindBuffer (GL.TRANSFORM_FEEDBACK_BUFFER, 0)
+
 	local uint = FFI.new ("uint32_t [1]")
-	uint[0]=0x1337
 	GL.GetQueryObjectuiv (QFeedback[0], GL.QUERY_RESULT, uint)
 	print (uint[0])
-	
+
     GL.UseProgram (GRender.glsl.program)
 	local uniform = GRender.uniform
     GL.UniformMatrix4fv (uniform.Umvp, 1, GL.FALSE, mvp.p)
+	GL.BindBuffer (GL.ARRAY_BUFFER, BFeedback[0])
+	GL.EnableVertexAttribArray (GRender.attribute.pos)
+	GL.VertexAttribPointer (GRender.attribute.pos, 4, GL.FLOAT, GL.FALSE, 0, nil)
 
 	GL.DrawArrays (GL.TRIANGLES, 0, uint[0])
-	--]]
+
+	GL.DisableVertexAttribArray (GRender.attribute.pos)
 end
 
 do
@@ -67,11 +71,11 @@ do
 		GL.TransformFeedbackVaryings (program, 1, strs, GL.INTERLEAVED_ATTRIBS)
 	end
 	local function hot (null, file, text)
-		GMarching = LoadShader (file, text)
+		GMarching = LoadShader (file, text, cb)
 	end
 	core.Pull ("glsl/marching-cubes.glts", hot)
 end
-do	
+do
 	local function hot (null, file, text)
 		GRender = LoadShader (file, text)
 	end
@@ -100,7 +104,8 @@ GL.BindBuffer (GL.ARRAY_BUFFER, BEdge[0])
 GL.BufferData (GL.ARRAY_BUFFER, 1280 * 4, core.edge_data (), GL.STATIC_DRAW)
 
 BFeedback = GLI.NewBuffer ()
-GL.BufferData (GL.ARRAY_BUFFER, 10000, nil, GL.STREAM_DRAW)
+GL.BindBuffer (GL.ARRAY_BUFFER, BFeedback[0])
+GL.BufferData (GL.ARRAY_BUFFER, 1048576, nil, GL.STREAM_DRAW)
 QFeedback = GLI.NewQuery ()
 
 TEdge = GLI.NewTexture ()

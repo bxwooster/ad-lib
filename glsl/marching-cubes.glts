@@ -25,7 +25,7 @@ uniform mat4 Umvp;
 uniform float time;
 
 #ifdef GS
-//out vec4 position;
+out vec4 position;
 out vec3 colour;
 #elif defined FS
 in vec3 colour;
@@ -44,7 +44,7 @@ float fun (vec3 pos) {
 	float s = -time*0.1+0.25 - dot (c,c);
 	float w = 1; vec3 k = vec3 (1, 2, 0);
 	float v = 0.2 * sin(time * w + dot (k, pos)) + pos.z - 0.5;
-	return 1.0 + pc.z + 0.2 * texture (noise, pos/2) +
+	return 1.0 + pc.z + 0.2 * texture (noise, pos/2 + time * 0.1) +
 		0.1 * texture (noise, pos/4);
 	return sin(2 * M_PI * s);
 }
@@ -100,7 +100,7 @@ void main() {
 		vec3 normal = normalize (cross (e0 - e1, e1 - e2));
 		vec3 kase = vec3(indices.xyz / 11.0);
 		for(int v = 0; v < 3; v++) {
-			gl_Position = Umvp * vec4 (edge[indices[v]],1);
+			position = gl_Position = vec4 (edge[indices[v]],1);
 			colour = normal * 0.5 + 0.5;
 			EmitVertex();
 		}
