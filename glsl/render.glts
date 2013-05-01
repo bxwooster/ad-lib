@@ -1,17 +1,21 @@
 #if defined VS
 in vec4 pos;
+in vec3 normal;
 #endif
 
 uniform mat4 Umvp;
 
 #if defined VS
+out vec3 vNormal;
 void main(void) {
     vec4 position = Umvp * pos;
 	gl_Position = position;
+	vNormal = normal;
 }
 #elif defined FS
+in vec3 vNormal;
 void main(void) {
-	gl_FragColor = vec4 (1);
+	gl_FragColor = vec4 (vNormal, 1);
 }
 #endif
 

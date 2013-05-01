@@ -46,8 +46,6 @@ function Single (center)
 	GL.Disable (GL.RASTERIZER_DISCARD)
 	GL.EndQuery (GL.TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN)
 
-	--GL.BindBuffer (GL.TRANSFORM_FEEDBACK_BUFFER, 0)
-
 	local uint = FFI.new ("uint32_t [1]")
 	GL.GetQueryObjectuiv (QFeedback[0], GL.QUERY_RESULT, uint)
 	print (uint[0])
@@ -57,18 +55,25 @@ function Single (center)
     GL.UniformMatrix4fv (uniform.Umvp, 1, GL.FALSE, mvp.p)
 	GL.BindBuffer (GL.ARRAY_BUFFER, BFeedback[0])
 	GL.EnableVertexAttribArray (GRender.attribute.pos)
-	GL.VertexAttribPointer (GRender.attribute.pos, 4, GL.FLOAT, GL.FALSE, 0, nil)
+	GL.EnableVertexAttribArray (GRender.attribute.normal)
+	local offset = FFI.cast ("char *", 0)
+	GL.VertexAttribPointer (GRender.attribute.pos, 4, GL.FLOAT,
+		GL.FALSE, 28, offset)
+	GL.VertexAttribPointer (GRender.attribute.normal, 3, GL.FLOAT,
+		GL.FALSE, 28, offset + 16)
 
 	GL.DrawArrays (GL.TRIANGLES, 0, uint[0])
 
 	GL.DisableVertexAttribArray (GRender.attribute.pos)
+	GL.DisableVertexAttribArray (GRender.attribute.normal)
 end
 
 do
 	local function cb (program)
-		strs = FFI.new ("char const * [1]")
+		strs = FFI.new ("char const * [2]")
 		strs[0] = "position"
-		GL.TransformFeedbackVaryings (program, 1, strs, GL.INTERLEAVED_ATTRIBS)
+		strs[1] = "colour"
+		GL.TransformFeedbackVaryings (program, 2, strs, GL.INTERLEAVED_ATTRIBS)
 	end
 	local function hot (null, file, text)
 		GMarching = LoadShader (file, text, cb)
