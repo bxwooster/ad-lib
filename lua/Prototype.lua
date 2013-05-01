@@ -1,4 +1,11 @@
 function Prototype ()
+    GL.DepthMask (GL.TRUE)
+    GL.Enable (GL.DEPTH_TEST)
+    GL.Disable (GL.BLEND)
+    GL.Disable (GL.STENCIL_TEST)
+
+	GL.BindVertexArray (VAO[0])
+
 	Single (vec3 (-0.5, -0.5, -0.5))
 	Single (vec3 (-0.5,  0.5, -0.5))
 	Single (vec3 ( 0.5,  0.5, -0.5))
@@ -6,20 +13,15 @@ function Prototype ()
 end
 
 function Single (center)
-    GL.DepthMask (GL.TRUE)
-    GL.Enable (GL.DEPTH_TEST)
-    GL.Disable (GL.BLEND)
-    GL.Disable (GL.STENCIL_TEST)
+    GL.UseProgram (GMarching.glsl.program)
 
-	GL.BindVertexArray (VAO[0])
-    GL.UseProgram (GRender.glsl.program)
-
-	local uniform = GRender.uniform
+	local uniform = GMarching.uniform
 	local grid = FFI.new ("int [3]")
 	local D = 32
 	grid [0] = D
 	grid [1] = D
-	grid [2] = D / 2
+	grid [2] = D
+	local total = grid[0] * grid[1] * grid[2]
 	local mvp = Sviewproj
 	local size = 1
 	local halfsize = vec3 (size / 2, size / 2, size / 2)
@@ -34,14 +36,46 @@ function Single (center)
 	GL.BindTexture (GL.TEXTURE_BUFFER, TEdge[0])
 	GL.ActiveTexture (GL.TEXTURE1)
 	GL.BindTexture (GL.TEXTURE_3D, TNoise[0])
-    GL.DrawArrays (GL.POINTS, 0, grid[0] * grid[1] * grid[2])
+	--GL.BindBufferBase (GL.TRANSFORM_FEEDBACK_BUFFER, 0, BFeedback[0])
+
+	--GL.BeginQuery (GL.TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN, QFeedback[0])
+	--GL.Enable (GL.RASTERIZER_DISCARD)
+	--GL.BeginTransformFeedback (GL.TRIANGLES)
+    GL.DrawArrays (GL.POINTS, 0, total)
+	--GL.EndTransformFeedback ()
+	--GL.Disable (GL.RASTERIZER_DISCARD)
+	--GL.EndQuery (GL.TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN)
+
+	--[[
+	local uint = FFI.new ("uint32_t [1]")
+	uint[0]=0x1337
+	GL.GetQueryObjectuiv (QFeedback[0], GL.QUERY_RESULT, uint)
+	print (uint[0])
+	
+    GL.UseProgram (GRender.glsl.program)
+	local uniform = GRender.uniform
+    GL.UniformMatrix4fv (uniform.Umvp, 1, GL.FALSE, mvp.p)
+
+	GL.DrawArrays (GL.TRIANGLES, 0, uint[0])
+	--]]
 end
 
 do
+	local function cb (program)
+		strs = FFI.new ("char const * [1]")
+		strs[0] = "position"
+		GL.TransformFeedbackVaryings (program, 1, strs, GL.INTERLEAVED_ATTRIBS)
+	end
+	local function hot (null, file, text)
+		GMarching = LoadShader (file, text)
+	end
+	core.Pull ("glsl/marching-cubes.glts", hot)
+end
+do	
 	local function hot (null, file, text)
 		GRender = LoadShader (file, text)
 	end
-	core.Pull ("glsl/marching-cubes.glts", hot)
+	core.Pull ("glsl/render.glts", hot)
 end
 
 do
@@ -65,7 +99,10 @@ BEdge = GLI.NewBuffer ()
 GL.BindBuffer (GL.ARRAY_BUFFER, BEdge[0])
 GL.BufferData (GL.ARRAY_BUFFER, 1280 * 4, core.edge_data (), GL.STATIC_DRAW)
 
+BFeedback = GLI.NewBuffer ()
+GL.BufferData (GL.ARRAY_BUFFER, 10000, nil, GL.STREAM_DRAW)
+QFeedback = GLI.NewQuery ()
+
 TEdge = GLI.NewTexture ()
 GL.BindTexture (GL.TEXTURE_BUFFER, TEdge[0])
 GL.TexBuffer (GL.TEXTURE_BUFFER, GL.RGBA8I, BEdge[0])
-

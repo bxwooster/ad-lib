@@ -1,19 +1,17 @@
 #if defined VS
-attribute vec3 Apos;
+in vec4 pos;
 #endif
 
 uniform mat4 Umvp;
-varying float Vid;
 
 #if defined VS
 void main(void) {
-    vec4 position = Umvp * vec4 (Apos, 1.0);
-	Vid = gl_VertexID;
+    vec4 position = Umvp * pos;
 	gl_Position = position;
 }
 #elif defined FS
 void main(void) {
-	gl_FragColor = vec4 (vec3 (Vid / 36), 0.5);
+	gl_FragColor = vec4 (1);
 }
 #endif
 

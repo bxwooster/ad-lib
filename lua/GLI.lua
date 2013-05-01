@@ -19,3 +19,8 @@ end
 function GLI.NewVertexArray ()
 	return NewThing (GL.GenVertexArrays, GL.DeleteVertexArrays)
 end
+
+function GLI.NewQuery ()
+	return NewThing (GL.GenQueries, GL.DeleteQueries)
+end
+

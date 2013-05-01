@@ -22,8 +22,8 @@ do
 	local function gc (G)
 		GL.DeleteProgram (G.program)
 	end
-	function LoadShader (file, text)
-		local glsl = FFI.gc (core.glts_load (file, text), gc)
+	function LoadShader (file, text, cb)
+		local glsl = FFI.gc (core.glts_load (file, text, cb), gc)
 
 		local function ai (t, k)
 			local v = rawget (t, k)

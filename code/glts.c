@@ -58,13 +58,15 @@ static void glts_shader_log (GLuint shader) {
     }
 }
 
-static GLuint glts_link (GLuint ks [KIND_COUNT]) {
+static GLuint glts_link (GLuint ks [KIND_COUNT], glts_callback cb) {
     GLuint program = glCreateProgram ();
 	for (int i = 0; i < KIND_COUNT; i++) {
 		if (ks [i] != GL_FALSE) {
 			glAttachShader (program, ks [i]);
 		}
 	}
+
+	if (cb) cb (program);
 
     GLint code = GL_FALSE;
     glLinkProgram (program);
@@ -142,7 +144,7 @@ glts_get_file (
 }
 
 struct GLprog
-glts_load (char const * filename, char const * text) {
+glts_load (char const * filename, char const * text, glts_callback cb) {
     GLuint program = GL_FALSE;
     unsigned maxN = 256;
 	char const * sources [maxN]; /* 1k of memory */
@@ -214,7 +216,7 @@ glts_load (char const * filename, char const * text) {
 			ks [i] = GL_FALSE;
 	}
 
-    program = glts_link (ks);
+    program = glts_link (ks, cb);
 	if (program == GL_FALSE) {
 		logi ("That happened while loading %s just now. Kindmask is %d",
 				filename, kindmask);
