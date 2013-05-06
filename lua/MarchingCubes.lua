@@ -1,9 +1,8 @@
-function GenerateBuffer (size, center)
+function GenerateBuffer (size, center, D)
     GL.UseProgram (GMarching.glsl.program)
 
 	local uniform = GMarching.uniform
 	local grid = FFI.new ("int [3]")
-	local D = Dynamic and 32 or 128
 	grid [0] = D
 	grid [1] = D
 	grid [2] = D
@@ -97,9 +96,7 @@ do
 	GL.TexParameteri (GL.TEXTURE_3D, GL.TEXTURE_MAX_LEVEL, 0)
 end
 
-if VAO then return end --hack to prevent re-creation of resources on reload
-
-VAO = GLI.NewVertexArray ()
+if BEdge then return end --hack to prevent re-creation of resources on reload
 
 BEdge = GLI.NewBuffer ()
 GL.BindBuffer (GL.ARRAY_BUFFER, BEdge[0])

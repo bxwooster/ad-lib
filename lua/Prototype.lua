@@ -3,12 +3,11 @@ function GenerateCache ()
 	Cache = {}
 	for i = 0, N do
 		local size = 2 ^ (N - i)
-		local buffer, vertices = GenerateBuffer (size, vec3 (0, 0, 0))
+		local D = 16
+		local buffer, vertices = GenerateBuffer (size, vec3 (0, 0, 0), D)
 		Cache[i+1] = {buffer = buffer, vertices = vertices}
 	end
 end
-
-if Dynamic == nil then Dynamic = true end
 
 function Prototype ()
     GL.DepthMask (GL.TRUE)
@@ -17,13 +16,10 @@ function Prototype ()
     GL.Disable (GL.STENCIL_TEST)
 	GL.PolygonMode (GL.FRONT_AND_BACK, GL.LINE)
 
-	GL.BindVertexArray (VAO[0])
-
-	if KeyDown (KEY.M) then
-		Dynamic = not Dynamic
-		if not Dynamic then GenerateCache () end
+	if KeyDown (KEY.U) or not Cache then
+		GenerateCache ()
 	end
-	if Dynamic then GenerateCache () end
+	
 	for _,node in ipairs (Cache) do
 		DrawBuffer (node.buffer, node.vertices)
 	end

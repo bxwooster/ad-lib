@@ -1,5 +1,5 @@
 GLI = {}
--- GL Improvements
+-- GL Improvisation
 
 local function NewThing (Gen, Del, N)
 	N = N or 1
@@ -23,5 +23,15 @@ end
 
 function GLI.NewQuery (N)
 	return NewThing (GL.GenQueries, GL.DeleteQueries, N)
+end
+
+if GL.DebugMessageCallbackARB then
+	GL.DebugMessageCallbackARB (core.DebugCallbackARB, nil)
+	GL.Enable (GL.DEBUG_OUTPUT_SYNCHRONOUS_ARB)
+end
+
+if GL.BindVertexArray then
+	VAO = GLI.NewVertexArray ()
+	GL.BindVertexArray (VAO[0])
 end
 
