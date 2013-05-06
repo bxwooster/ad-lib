@@ -4,12 +4,12 @@ in vec3 normal;
 #endif
 
 uniform mat4 Umvp;
+uniform float Uoffset;
 
 #if defined VS
 out vec3 vNormal;
 void main(void) {
-    vec4 position = Umvp * pos;
-	gl_Position = position;
+    gl_Position = Umvp * pos + vec4 (0, 0, Uoffset, 0);
 	vNormal = normal;
 }
 #elif defined FS

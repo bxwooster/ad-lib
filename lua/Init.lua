@@ -28,6 +28,7 @@ function Init ()
     core.Require ("Gameplay")
     core.Require ("Selection")
     core.Require ("Prototype")
+    core.Require ("MarchingCubes")
 
     World = NewWorld ()
 end

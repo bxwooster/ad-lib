@@ -3,9 +3,9 @@ FOV = 60 -- yes, just like that
 function DefaultCamera ()
 	return {
         speed = 0.1,
-        cMov = mat4.Movement (vec3 (0.0, 0.7, 0.1)),
+        cMov = mat4.Movement (vec3 (0.0, 0.0, 5.0)),
 		cYaw = mat4.id,
-		cPitch = mat4.Rotation (vec3.x, 0.5 * math.pi),
+		cPitch = mat4.Rotation (vec3.x, 1.0 * math.pi),
     }
 end
 
