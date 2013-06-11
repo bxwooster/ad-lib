@@ -1,12 +1,15 @@
+function LODSelect (observer, level, x, y)
+	local size = 2 ^ level
+	local D = 16
+	local center = vec3 (x * size, y * size, 0)
+	local buffer, vertices = GenerateBuffer (size, center, D)
+	table.insert (Cache, {buffer = buffer, vertices = vertices})
+end
+
 function GenerateCache ()
-	local N = 2
 	Cache = {}
-	for i = 0, N do
-		local size = 2 ^ (N - i)
-		local D = 16
-		local buffer, vertices = GenerateBuffer (size, vec3 (0, 0, 0), D)
-		Cache[i+1] = {buffer = buffer, vertices = vertices}
-	end
+	local highest = 2
+	LODSelect (vec3 (0, 0, 0), highest, 0, 0)
 end
 
 function Prototype ()
