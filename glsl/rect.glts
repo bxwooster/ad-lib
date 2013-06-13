@@ -1,0 +1,19 @@
+uniform vec2 resolution;
+uniform vec2 s1;
+uniform vec2 s2;
+uniform int type;
+
+#if defined FS
+out vec4 colour;
+void main(void) {
+	if (type > 2 && length (gl_FragCoord.xy - resolution / 2) < 50) discard;
+	if (type > 1 && length (gl_FragCoord.xy - resolution / 2) > 100) discard;
+    colour = vec4 (1.0, 0.5, 0.0, 1.0);
+}
+#elif defined VS
+in vec2 Apos2d;
+void main(void) {
+	vec2 coord = s1 + (s2 - s1) * Apos2d;
+    gl_Position = vec4 (-1.0 + 2 * coord / resolution, 0.0, 1.0);
+}
+#endif

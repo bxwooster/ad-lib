@@ -8,22 +8,9 @@ function Init ()
     core = FFI.C
 
 	core.Require ("GLI")
-    core.Require ("GUI")
     core.Require ("Lib")
     core.Require ("Util")
+    core.Require ("Test")
     core.Require ("Loop")
-    core.Require ("World")
-    core.Require ("AStar")
-    core.Require ("Camera")
-    core.Require ("System")
-    core.Require ("Sector")
-    core.Require ("Sphere")
-    core.Require ("Circle")
     core.Require ("KeyDefs")
-    core.Require ("Gameplay")
-    core.Require ("Selection")
-    core.Require ("Prototype")
-    core.Require ("MarchingCubes")
-
-    World = NewWorld ()
 end

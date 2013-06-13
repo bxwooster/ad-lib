@@ -3,7 +3,7 @@ function PrepareGL ()
 	local size = core.ScreenSize ()
     GL.Viewport (0, 0, size.e.x, size.e.y)
     GL.DepthMask (GL.TRUE);
-    GL.ClearColor (0, 0, 0, 0);
+    GL.ClearColor (1, 1, 1, 0);
     GL.ClearStencil (0);
 	local flags = BIT.bor (GL.COLOR_BUFFER_BIT,
 						   GL.DEPTH_BUFFER_BIT,
