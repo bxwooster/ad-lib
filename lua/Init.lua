@@ -8,17 +8,20 @@ function Init ()
     FFI.cdef (api_text)
 
 	core.Require ("GLI")
-    core.Require ("GUI")
     core.Require ("Lib")
     core.Require ("Util")
-    core.Require ("Loop")
-    core.Require ("Camera")
-    core.Require ("Sector")
-    core.Require ("Sphere")
-    core.Require ("Circle")
     core.Require ("KeyDefs")
 
+    core.Require ("Camera")
+    core.Require ("Loop")
+
+    core.Require ("Circle")
+    core.Require ("Sector")
+    core.Require ("Sphere")
+    core.Require ("MarchingCubes")
+
     --core.Require ("Cosmos")
+    core.Require ("GUI")
     core.Require ("AStar")
     core.Require ("World")
     core.Require ("System")
@@ -26,8 +29,7 @@ function Init ()
     core.Require ("Selection")
 
     core.Require ("Dach")
-    core.Require ("MarchingCubes")
-    core.Require ("Prototype")
+    --core.Require ("Prototype")
 
     World = NewWorld ()
 end

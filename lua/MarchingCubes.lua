@@ -1,23 +1,17 @@
-function GenerateBuffer (size, center, D)
-    GL.UseProgram (GMarching.glsl.program)
-
-	local uniform = GMarching.uniform
+function MCGenerateBuffer (shader, D, vol0, vol1)
 	local grid = FFI.new ("int [3]")
 	grid [0] = D
 	grid [1] = D
 	grid [2] = D
 	local total = grid[0] * grid[1] * grid[2]
-	local halfsize = vec3 (size / 2, size / 2, size / 2)
+
+    GL.UseProgram (shader.glsl.program)
+	local uniform = shader.uniform
     GL.Uniform3iv (uniform.grid, 1, grid)
-    GL.Uniform3fv (uniform.vol0, 1, (center - halfsize).p)
-    GL.Uniform3fv (uniform.vol1, 1, (center + halfsize).p)
-    GL.Uniform1f (uniform.time, Time)
+    GL.Uniform3fv (uniform.vol0, 1, vol0.p)
+    GL.Uniform3fv (uniform.vol1, 1, vol1.p)
 	GL.Uniform1i (uniform.edges, 0)
-	GL.Uniform1i (uniform.noise, 1)
-	GL.ActiveTexture (GL.TEXTURE0)
-	GL.BindTexture (GL.TEXTURE_BUFFER, TEdge[0])
-	GL.ActiveTexture (GL.TEXTURE1)
-	GL.BindTexture (GL.TEXTURE_3D, TNoise[0])
+
 	GL.BindBufferBase (GL.TRANSFORM_FEEDBACK_BUFFER, 0, BFeedback[0])
 
 	GL.BeginQuery (GL.TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN, QFeedback[0])
@@ -41,10 +35,9 @@ function GenerateBuffer (size, center, D)
 	return out, 3 * uint[0]
 end
 
-function DrawBuffer (buffer, vertices)
+function MCDrawBuffer (buffer, vertices, mvp)
     GL.UseProgram (GRender.glsl.program)
 	local uniform = GRender.uniform
-	local mvp = Sviewproj
     GL.UniformMatrix4fv (uniform.Umvp, 1, GL.FALSE, mvp.p)
 	GL.Uniform1f (uniform.Uoffset, 0)
 	GL.BindBuffer (GL.ARRAY_BUFFER, buffer[0])
@@ -62,18 +55,6 @@ function DrawBuffer (buffer, vertices)
 	GL.DisableVertexAttribArray (GRender.attribute.normal)
 end
 
-do
-	local function cb (program)
-		strs = FFI.new ("char const * [2]")
-		strs[0] = "position"
-		strs[1] = "colour"
-		GL.TransformFeedbackVaryings (program, 2, strs, GL.INTERLEAVED_ATTRIBS)
-	end
-	local function hot (null, file, text)
-		GMarching = LoadShader (file, text, cb)
-	end
-	core.Pull ("glsl/marching-cubes.glts", hot)
-end
 do
 	local function hot (null, file, text)
 		GRender = LoadShader (file, text)

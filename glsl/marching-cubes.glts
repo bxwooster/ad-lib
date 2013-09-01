@@ -1,5 +1,5 @@
 #pragma kinds VGF
-#define M_PI 3.1415926535897932384626433832795
+#pragma include mc-noise
 
 #ifdef GS
 /* How many tris to generate for each case */
@@ -19,10 +19,6 @@ uniform vec3 vol0;
 uniform vec3 vol1;
 uniform ivec3 grid;
 uniform isamplerBuffer edges;
-uniform sampler3D noise;
-
-uniform mat4 Umvp;
-uniform float time;
 
 #ifdef GS
 out vec4 position;
@@ -36,17 +32,6 @@ void main(void) {}
 #elif defined GS
 layout(points) in;
 layout(triangle_strip, max_vertices = 15) out;
-
-float fun (vec3 pos) {
-	vec3 c = abs(pos);
-	float d = 0.25 - max (c.x, max (c.y, c.z));
-	float s = -time*0.1+0.25 - dot (c,c);
-	float w = 1; vec3 k = vec3 (1, 2, 0);
-	float v = 0.2 * sin(time * w + dot (k, pos)) + pos.z - 0.5;
-	return pos.z;
-	return pos.z - 0.1 + 0.2 * texture (noise, pos/2.04 + time * 0.001).x;
-	return sin(2 * M_PI * s);
-}
 
 void main() {
 	/* Grid: 0 .. 2U, 0 .. 2V, 0 .. 2W correspond to vol0 .. vol1 in space

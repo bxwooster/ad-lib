@@ -11,7 +11,6 @@ void DebugCallbackARB (
 ) {
 	(void) userParam;
 
-	//logi ("GL Error: %s", message);
 	gl_error.valid = 1;
 	gl_error.source = source;
 	gl_error.type = type;

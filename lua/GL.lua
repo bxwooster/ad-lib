@@ -7,6 +7,7 @@ else
 	lib = FFI.load ("GL")
 end
 
+NO_GL_WARNINGS = 0
 local WRAPPER = 1
 
 local function wrapper (glfunc)
@@ -25,7 +26,14 @@ if (WRAPPER == 1) then
 			if E.valid == 1 then
 				E.valid = 0
 				local msg = FFI.string (E.message, E.length)
-				error (msg)
+				local msg2 = "SRC: %x, TYPE: %x, ID: %x, SEV: %x"
+				if not NO_GL_WARNINGS then
+					print (msg)
+				end
+				if E.severity == GL.DEBUG_SEVERITY_HIGH_ARB then
+					print (msg2:format(E.source, E.type, E.id, E.severity))
+					error (msg)
+				end
 			end
 			return result
 		end
