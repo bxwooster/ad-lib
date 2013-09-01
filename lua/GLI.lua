@@ -25,13 +25,13 @@ function GLI.NewQuery (N)
 	return NewThing (GL.GenQueries, GL.DeleteQueries, N)
 end
 
-if GL.DebugMessageCallbackARB then
-	GL.DebugMessageCallbackARB (core.DebugCallbackARB, nil)
-	GL.Enable (GL.DEBUG_OUTPUT_SYNCHRONOUS_ARB)
-end
-
 if GL.BindVertexArray then
 	VAO = GLI.NewVertexArray ()
 	GL.BindVertexArray (VAO[0])
+end
+
+if GL.DebugMessageCallbackARB then
+	GL.DebugMessageCallbackARB (core.DebugCallbackARB, XE)
+	GL.Enable (GL.DEBUG_OUTPUT_SYNCHRONOUS_ARB)
 end
 

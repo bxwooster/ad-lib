@@ -21,12 +21,12 @@ function PreSphere ()
     GL.EnableVertexAttribArray (Apos2d)
 
     GL.ActiveTexture (GL.TEXTURE0)
-	GL.Enable (GL.TEXTURE_CUBE_MAP)
+	--GL.Enable (GL.TEXTURE_CUBE_MAP)
 	GL.BindTexture (GL.TEXTURE_CUBE_MAP, Tex.tex)
 end
 
 function Sphere (tMat, colour, radius)
-    --[[ this is somewhat hacky and might need more work
+	--[[ this is somewhat hacky and might need more work
      * we want to split tMat into pure translation and rotation
      * for some unknown yet reason I had to invert the rotation
      * so it looked right. Well, that's it! --]]

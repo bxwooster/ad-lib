@@ -10,8 +10,6 @@ function DefaultCamera ()
 end
 
 function UpdateCamera (C)
-    CameraPointer (C)
-    CameraArrows (C)
 	C.tMat = C.cMov ^ C.cYaw ^ C.cPitch
     SetCamera (C.tMat)
 end

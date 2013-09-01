@@ -42,4 +42,11 @@ char * /* contents */ load_file (char const * filename) {
         Sleep (sec * 1000);
         return 0; 
     }
+
+	char * strdup (char const * src) {
+		size_t size = strlen (src);
+		char * mem = malloc (size + 1);
+		strcpy (mem, src);
+		return mem;
+	}
 #endif

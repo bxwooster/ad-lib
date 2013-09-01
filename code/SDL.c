@@ -1,21 +1,3 @@
-API void DebugCallbackARB (
-		GLenum source,
-		GLenum type,
-		GLuint id,
-		GLenum severity,
-		GLsizei length,
-		const GLchar * message,
-		GLvoid * userParam
-) {
-	(void) source;
-	(void) type;
-	(void) id;
-	(void) severity;
-	(void) length;
-	(void) userParam;
-	logi ("%s", message);
-}
-
 struct SDL * init_SDL (void) {
     int require = IMG_INIT_JPG;
     int initted = IMG_Init (require);
