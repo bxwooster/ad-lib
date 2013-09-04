@@ -15,9 +15,9 @@ function Init ()
     core.Require ("Camera")
     core.Require ("Loop")
 
-    core.Require ("Circle")
-    core.Require ("Sector")
-    core.Require ("Sphere")
+    --core.Require ("Circle")
+    --core.Require ("Sector")
+    --core.Require ("Sphere")
     core.Require ("MarchingCubes")
 
     --core.Require ("Cosmos")
