@@ -1,5 +1,5 @@
 #pragma kinds VGF
-#pragma include mc-noise
+#pragma include mc-new
 
 #ifdef GS
 /* How many tris to generate for each case */
