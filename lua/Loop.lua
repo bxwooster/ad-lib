@@ -1,8 +1,8 @@
 function Loop ()
 	UpdateTimers ()
 
-	Dach ()
-	--Cosmos ()
+	--Dach ()
+	Cosmos ()
 
     if KeyDown (KEY.Escape) then core.Halt () end
 end

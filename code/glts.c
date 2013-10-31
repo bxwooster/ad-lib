@@ -103,7 +103,7 @@ static GLuint glts_do_it (char const * pieces [], unsigned count, int kind) {
 #ifdef GLES
         "#version 100\nprecision mediump float;\n";
 #else
-        "#version 150 core\n";
+        "#version 120\n";
 #endif
     all_pieces[1] = kind_defines [kind];
 

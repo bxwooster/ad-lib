@@ -7,7 +7,7 @@ vec3 fragment () {
     float effect = sqrt (1.0 - radius);
 
     vec3 normal = the_normal ();
-    vec3 result = texture (Utexture, normal).rgb;
+    vec3 result = textureCube (Utexture, normal).rgb;
 
     result += Ucolour;
     result *= effect;
