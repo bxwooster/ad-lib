@@ -1,5 +1,6 @@
 *.swp
 .tags
+/tags
 .DS_Store
 
 /.build/
