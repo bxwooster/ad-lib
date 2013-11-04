@@ -1,3 +1,5 @@
+core.Require ("Five")
+
 function Loop ()
 	UpdateTimers ()
 

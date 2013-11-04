@@ -1,3 +1,15 @@
+core.Require ("Circle")
+core.Require ("Sector")
+core.Require ("Sphere")
+
+core.Require ("GUI")
+core.Require ("AStar")
+core.Require ("World")
+core.Require ("System")
+core.Require ("Gameplay")
+core.Require ("Selection")
+World = NewWorld ()
+
 function Cosmos ()
 	PrepareGL ()
 

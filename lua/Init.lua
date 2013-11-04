@@ -12,7 +12,6 @@ function Init ()
     core.Require ("Util")
     core.Require ("KeyDefs")
 
-    core.Require ("Camera")
     core.Require ("Loop")
 
     core.Require ("Five")

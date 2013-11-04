@@ -60,7 +60,7 @@ void bronze_pcall (struct bronze_engine * E) {
     if (result != 0) {
         logi ("Pcall failed:\n%s", lua_tostring (E->L, -1));
 		lua_pop (E->L, 1);
-        sleep (1);
+		exit (1);
     }
 }
 
