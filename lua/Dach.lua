@@ -36,20 +36,8 @@ function Dach ()
 	NO_GL_WARNINGS = 0
 end
 
-if not VCube then
-	local function gc (V)
-		ptr = FFI.new ("int [1]", V.vbo)
-    	GL.DeleteBuffers (1, ptr);
-	end
-	VCube = FFI.gc (core.util_cube (), gc)
-end
-
-if not GCube then
-	local function hot (null, file, text)
-		GCube = LoadShader (file, text)
-	end
-	core.Pull ("glsl/render-cube.glts", hot)
-end
+GCube = GetShader ("glsl/render-cube.glts")
+VCube = WrapVBO (core.util_cube ())
 
 if not GMarching then
 	local function cb (program)

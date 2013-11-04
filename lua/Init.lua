@@ -12,24 +12,8 @@ function Init ()
     core.Require ("Util")
     core.Require ("KeyDefs")
 
-    core.Require ("Camera")
     core.Require ("Loop")
 
-    --core.Require ("Circle")
-    --core.Require ("Sector")
-    --core.Require ("Sphere")
     core.Require ("MarchingCubes")
 
-    --core.Require ("Cosmos")
-    core.Require ("GUI")
-    core.Require ("AStar")
-    core.Require ("World")
-    core.Require ("System")
-    core.Require ("Gameplay")
-    core.Require ("Selection")
-
-    core.Require ("Dach")
-    --core.Require ("Prototype")
-
-    World = NewWorld ()
 end
