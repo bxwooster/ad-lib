@@ -84,7 +84,15 @@ function GetShader (file)
 	else
 		local function hot (null, cfile, text)
 			file = FFI.string (cfile)
-			shader_cache[file] = LoadShader (file, text)
+			existing = shader_cache[file]
+			new = LoadShader (file, text)
+			if existing == nil then
+				shader_cache[file] = new
+			else
+				existing.glsl = new.glsl
+				existing.uniform = new.uniform
+				existing.attribute = new.attribute
+			end
 		end
 		core.Pull (file, hot)
 		return shader_cache[file]

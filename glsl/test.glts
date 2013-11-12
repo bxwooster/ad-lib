@@ -2,13 +2,25 @@
 attribute vec2 Apos2d;
 #endif
 
+uniform vec4 color;
+uniform float T;
 uniform vec2 Us1;
 uniform vec2 Us2;
 varying vec2 Vplanar;
 
 #if defined FS
 void main(void) {
-    gl_FragColor = vec4 (Vplanar, 0.0, 0.5);
+	vec2 z = Vplanar - 0.5;
+	vec2 t = vec2(0.5 - T);
+	vec2 g = vec2(greaterThan(abs(z), t));
+	vec2 r = g * (z - sign(z) * t);
+	float p = 0.0005;
+	float Tp = T + p;
+	float Tm = T - p;
+	float R = length (r);
+	if (R > Tp) discard;
+	float alpha = clamp ((Tp - R) / (2 * p), 0.0, 1.0);
+    gl_FragColor = vec4 (color.rgb, color.a * alpha);
 }
 #elif defined VS
 void main(void) {
